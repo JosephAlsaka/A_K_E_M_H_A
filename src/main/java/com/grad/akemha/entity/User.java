@@ -52,13 +52,18 @@ public class User implements UserDetails {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-//    @Column
-//    private date dob;
 
-//    @ManyToOne
-//    @JoinColumn(name = "restaurant_id", nullable = true)
-//    private Restaurant restaurant;
+    @OneToMany() //fetch = FetchType.LAZY, cascade = CascadeType.ALL
+    @JoinColumn(name = "like_id")
+    private List<Like> likes;
 
+    @OneToMany() //fetch = FetchType.LAZY, cascade = CascadeType.ALL
+    @JoinColumn(name = "comment_id")
+    private List<Comment> comments;
+
+    @OneToMany() //fetch = FetchType.LAZY, cascade = CascadeType.ALL
+    @JoinColumn(name = "post_id")
+    private List<Post> posts;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

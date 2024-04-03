@@ -3,6 +3,8 @@ package com.grad.akemha.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalTime;
+
 @ToString
 @Setter
 @Getter
@@ -10,19 +12,16 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "like_info")
-public class Like {
+@Table(name = "alarm_history")
+public class AlarmHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @Column
+    private LocalTime takeDate; //TODO , check the type
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    //there is one to many from user so in the table I have user_id
+    @JoinColumn(name = "alarm_id")
+    private Alarm alarm;
 }

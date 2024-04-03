@@ -10,19 +10,17 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "like_info")
-public class Like {
+@Table(name = "supervision")
+public class Supervision {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "supervisor_id")
+    private User supervisor;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    //there is one to many from user so in the table I have user_id
+    @JoinColumn(name = "supervised_id")
+    private User supervised;
 }

@@ -3,6 +3,8 @@ package com.grad.akemha.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @ToString
 @Setter
 @Getter
@@ -10,19 +12,19 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "like_info")
-public class Like {
+@Table(name = "medicine")
+public class Medicine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @Column
+    private String name;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
-    //there is one to many from user so in the table I have user_id
+    @OneToMany(mappedBy = "medicine")
+    private List<Alarm> alarms;
 }

@@ -53,18 +53,21 @@ public class User implements UserDetails {
     private Boolean isActive = true;
 
 
-    @OneToMany() //fetch = FetchType.LAZY, cascade = CascadeType.ALL
-    @JoinColumn(name = "like_id")
-    private List<Like> likes;
+//    @OneToMany(cascade = CascadeType.ALL) //fetch = FetchType.LAZY, cascade = CascadeType.ALL
+////    @JoinColumn(name = "user_id")
+////    private List<Like> likes;
 
-    @OneToMany() //fetch = FetchType.LAZY, cascade = CascadeType.ALL
-    @JoinColumn(name = "comment_id")
-    private List<Comment> comments;
+//    @OneToMany(mappedBy = "user")
+//    private List<Comment> comments;
 
-    @OneToMany() //fetch = FetchType.LAZY, cascade = CascadeType.ALL
-    @JoinColumn(name = "post_id")
-    private List<Post> posts;
+//    @OneToMany(mappedBy = "user")
+//    private List<Post> posts;
 
+//    @OneToMany(mappedBy = "beneficiary")
+//    private List<Consultation> beneficiaryConsultations;
+//
+//    @OneToMany(mappedBy = "doctor")
+//    private List<Consultation> doctorConsultationList;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

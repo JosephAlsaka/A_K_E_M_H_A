@@ -3,6 +3,8 @@ package com.grad.akemha.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @ToString
 @Setter
 @Getter
@@ -26,5 +28,26 @@ public class Consultation {
     @Column(nullable = false)
     private String status;
 
+    @ManyToOne
+    @JoinColumn(name = "specialization_id")
+    private Specialization specialization;
+
+//    private User doctor_id;
+
+    @ManyToOne
+    @JoinColumn(name = "beneficiary_id",nullable = false)
+    private User beneficiary;
+
+    @ManyToOne
+    @JoinColumn(name = "doctor_id")
+    private User doctor;
+
+    @OneToMany
+    @JoinColumn(name = "consultation_id")
+    private List<Image> images;
+
+    @OneToMany
+    @JoinColumn(name = "consultation_id")
+    private List<Message> messages;
     //specialization_type
 }

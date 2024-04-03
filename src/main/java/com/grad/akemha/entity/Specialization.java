@@ -3,6 +3,8 @@ package com.grad.akemha.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @ToString
 @Setter
 @Getter
@@ -18,4 +20,7 @@ public class Specialization {
 
     @Column(name = "specialization_type",unique = true,nullable = false)
     private String specializationType;
+
+    @OneToMany(mappedBy = "specialization")
+    private List<Consultation> consultations;
 }

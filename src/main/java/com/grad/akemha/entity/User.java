@@ -41,8 +41,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-//    //Creation Date //TODO
-//    private Timestamp creationDate;
+    //Creation Date
+    @Column()
+    private Timestamp creationDate;
+
     @Column(name = "dob", nullable = false)
     private LocalDate dob;
 

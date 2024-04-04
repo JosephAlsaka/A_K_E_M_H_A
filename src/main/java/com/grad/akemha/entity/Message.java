@@ -17,6 +17,6 @@ public class Message {
     private Long id;
 
     //TODO user_id ?
-    @Column(name = "textMsg", nullable = false)
+    @Column(name = "text_msg", nullable = false)
     private String textMsg;
 }

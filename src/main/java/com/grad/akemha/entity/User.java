@@ -52,6 +52,9 @@ public class User implements UserDetails {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @Column(name = "description")
+    private String description;
+
 
 //    @OneToMany(cascade = CascadeType.ALL) //fetch = FetchType.LAZY, cascade = CascadeType.ALL
 ////    @JoinColumn(name = "user_id")

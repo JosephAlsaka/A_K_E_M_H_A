@@ -21,7 +21,6 @@ public class Post {
     @Column()
     private String text;
 
-    //TODO user_id
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;

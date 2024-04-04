@@ -16,8 +16,6 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //TODO user_id
-
     @Column(nullable = false)
     private String text;
 

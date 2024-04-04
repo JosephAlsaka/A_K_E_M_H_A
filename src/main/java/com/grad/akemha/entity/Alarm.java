@@ -1,5 +1,6 @@
 package com.grad.akemha.entity;
 
+import com.grad.akemha.entity.enums.WeekDays;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +31,7 @@ public class Alarm {
     private LocalTime alarmTime; // Time variable representing the alarm time
     //alarm.setAlarmTime(LocalTime.of(7, 30)); // Sets alarm time to 7:30 AM
 
-//    private repietDays repietDays; // TODO enum days of a week
+    private WeekDays medicineDays;
 
     @ManyToOne
     @JoinColumn(name = "medicine_id")

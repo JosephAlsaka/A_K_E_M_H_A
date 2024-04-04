@@ -47,7 +47,7 @@ public class MedicalRecord {
     @Column
     private BloodType bloodType;
 
-    @OneToMany(mappedBy = "medicalRecord") //TODO check the DB design
+    @OneToMany(mappedBy = "medicalRecord")
     private List<AdditionalRecordInfo> additionalRecordInfos;
 
 

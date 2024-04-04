@@ -1,5 +1,6 @@
 package com.grad.akemha.entity;
 
+import com.grad.akemha.entity.enums.DeviceReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,5 +25,6 @@ public class DeviceReservation {
     @JoinColumn(name = "medical_device_id")
     private MedicalDevice MedicalDevice;
 
-    //TODO status
+    @Column()
+    private DeviceReservationStatus status;
 }

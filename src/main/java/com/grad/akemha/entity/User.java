@@ -1,5 +1,6 @@
 package com.grad.akemha.entity;
 
+import com.grad.akemha.entity.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -56,6 +57,12 @@ public class User implements UserDetails {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "gender")
+    private Gender gender;
+
+    @Column(name = "specialization")
+    private String specialization;
 
 
 //    @OneToMany(cascade = CascadeType.ALL) //fetch = FetchType.LAZY, cascade = CascadeType.ALL

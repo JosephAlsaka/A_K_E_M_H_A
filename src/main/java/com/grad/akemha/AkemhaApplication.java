@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Configuration;
 @SpringBootApplication
 public class AkemhaApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AkemhaApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AkemhaApplication.class, args);
+    }
 
 	@Configuration
 	public static class OpenApiConfig {

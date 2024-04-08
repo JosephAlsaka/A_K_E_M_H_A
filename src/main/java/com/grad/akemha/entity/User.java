@@ -1,5 +1,7 @@
 package com.grad.akemha.entity;
 
+import com.grad.akemha.entity.enums.Gender;
+import com.grad.akemha.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,9 +27,6 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-//    @Enumerated(EnumType.STRING)
-//    private Role role;
 
     @Column(nullable = false)
     private String name;
@@ -57,22 +56,20 @@ public class User implements UserDetails {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "gender")
+    private Gender gender;
+
+    @ManyToOne
+    @JoinColumn(name = "doctor_specialization_id")
+    private DoctorSpecialization doctorSpecialization;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 //    @OneToMany(cascade = CascadeType.ALL) //fetch = FetchType.LAZY, cascade = CascadeType.ALL
 ////    @JoinColumn(name = "user_id")
 ////    private List<Like> likes;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Comment> comments;
-
-//    @OneToMany(mappedBy = "user")
-//    private List<Post> posts;
-
-//    @OneToMany(mappedBy = "beneficiary")
-//    private List<Consultation> beneficiaryConsultations;
-//
-//    @OneToMany(mappedBy = "doctor")
-//    private List<Consultation> doctorConsultationList;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

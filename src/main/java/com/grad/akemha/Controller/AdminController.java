@@ -1,6 +1,7 @@
 package com.grad.akemha.Controller;
 
 import com.grad.akemha.dto.AddDoctorDto;
+import com.grad.akemha.entity.DoctorSpecialization;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.service.userServive.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,18 @@ public class AdminController {
     }
 
     @DeleteMapping()
-    public ResponseEntity<String> deleteDoctor(@PathVariable  Long userId) {
+    public ResponseEntity<String> deleteDoctor(@PathVariable Long userId) {
         try {
             adminService.deleteDoctor(userId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/specialization")
+    public ResponseEntity<List<DoctorSpecialization>> getDoctorSpecialization() {
+        return (ResponseEntity<List<DoctorSpecialization>>) adminService.getDoctorSpecialization();
     }
 
 }

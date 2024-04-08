@@ -61,9 +61,9 @@ public class User implements UserDetails {
     @Column(name = "gender")
     private Gender gender;
 
-    @Column(name = "specialization")
-    private String specialization;
-
+    @ManyToOne
+    @JoinColumn(name = "doctor_specialization_id")
+    private DoctorSpecialization doctorSpecialization;
 
 //    @OneToMany(cascade = CascadeType.ALL) //fetch = FetchType.LAZY, cascade = CascadeType.ALL
 ////    @JoinColumn(name = "user_id")

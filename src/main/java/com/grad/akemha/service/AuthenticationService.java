@@ -35,7 +35,7 @@ public class AuthenticationService {
                 .phoneNumber(request.getPhoneNumber())
                 .dob(request.getDob())
                 .password(passwordEncoder.encode(request.getPassword()))
-//                .role(request.getRole())
+                .role(request.getRole())
                 .isActive(true)
                 .build();
 

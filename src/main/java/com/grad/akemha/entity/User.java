@@ -64,6 +64,7 @@ public class User implements UserDetails {
     private DoctorSpecialization doctorSpecialization;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
 //    @OneToMany(cascade = CascadeType.ALL) //fetch = FetchType.LAZY, cascade = CascadeType.ALL

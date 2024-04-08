@@ -20,7 +20,7 @@ public class AkemhaApplication {
 	@Configuration
 	public static class OpenApiConfig {
 
-		// Swagger URL: http://localhost:8080/swagger-ui/index.html
+		// Swagger URL: http://localhost:8090/swagger-ui/index.html
 		@Bean
 		public OpenAPI customOpenAPI() {
 			var securityKey = "Auth Token";

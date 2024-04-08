@@ -51,11 +51,10 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    // TODO: salim
     public String generateToken(User user) {
         Map<String, Object> claims = Map.of(
-                "id", user.getId()
-//                "role", user.getRole() //TODO
+                "id", user.getId(),
+                "role", user.getRole()
         );
         return buildToken(claims, user);
     }

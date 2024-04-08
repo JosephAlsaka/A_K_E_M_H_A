@@ -1,6 +1,7 @@
 package com.grad.akemha.dto.auth.authrequest;
 
 
+import com.grad.akemha.entity.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +19,5 @@ public class RegisterRequest {
     private String phoneNumber;
     private String password;
     private LocalDate dob;
-    //private Role role; //TODO
+    private Role role;
 }

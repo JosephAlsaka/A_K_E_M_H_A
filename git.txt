@@ -3,6 +3,6 @@
 2- to view list of branches you have
 	git branch
 3- to choose a specific branch
-    git chekout branchnameyouwanttogo
+    git checkout branchnameyouwanttogo
 
 after finished working on a branch go to gitlab and merge with master

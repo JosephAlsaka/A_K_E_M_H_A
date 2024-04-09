@@ -1,5 +1,6 @@
 package com.grad.akemha.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.entity.enums.Role;
 import jakarta.persistence.*;
@@ -24,6 +25,8 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 public class User implements UserDetails {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +37,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true, name = "phone_number")
+    @Column(nullable = true, unique = true, name = "phone_number")
     private String phoneNumber;
 
     @Column(nullable = false)
@@ -44,27 +47,29 @@ public class User implements UserDetails {
     @Column()
     private Timestamp creationDate;
 
-    @Column(name = "dob", nullable = false)
+    @Column(name = "dob", nullable = true)
     private LocalDate dob;
 
-    @Column(name = "profile_image")
+    @Column(name = "profile_image",nullable = true)
     private String profileImage;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active",nullable = true)
     private Boolean isActive = true;
 
-    @Column(name = "description")
+    @Column(name = "description",nullable = true)
     private String description;
 
-    @Column(name = "gender")
+    @Column(name = "gender",nullable = true)
     private Gender gender;
 
+
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "doctor_specialization_id")
-    private DoctorSpecialization doctorSpecialization;
+    @JoinColumn(name = "specialization_id")
+    private Specialization specialization;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Role role;
 
 //    @OneToMany(cascade = CascadeType.ALL) //fetch = FetchType.LAZY, cascade = CascadeType.ALL
@@ -95,7 +100,6 @@ public class User implements UserDetails {
     public boolean isAccountNonLocked() {
         return true;
     }
-
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
@@ -105,4 +109,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return getIsActive();
     }
+
 }

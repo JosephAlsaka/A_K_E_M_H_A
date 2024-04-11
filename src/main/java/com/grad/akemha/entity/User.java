@@ -82,12 +82,12 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-//        List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
-//        String role = String.valueOf(getRole());
-//        list.add(new SimpleGrantedAuthority("ROLE_"+role));
-//        System.out.println("list is"+list);
-//        return list;
+//        return null;
+        List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
+        String role = String.valueOf(getRole());
+        list.add(new SimpleGrantedAuthority("ROLE_"+role));
+        System.out.println("list is"+list);
+        return list;
     }
 
     @Override

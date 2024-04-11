@@ -5,6 +5,7 @@ import com.grad.akemha.dto.auth.authrequest.LoginRequest;
 import com.grad.akemha.dto.auth.authrequest.RegisterRequest;
 import com.grad.akemha.dto.auth.authresponse.AuthResponse;
 import com.grad.akemha.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,26 +28,28 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<BaseResponse<AuthResponse>> register(
-            @RequestBody RegisterRequest request
+           @Valid @RequestBody RegisterRequest request
     ) {
         AuthResponse response = authService.register(request);
-        try {
+//        try {
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.OK.value(), "User registered successfully", response));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "email is taken",null));
-        }
+//        } catch (Exception e) {
+//            System.out.println("============================ in catch");
+//
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "email is taken",null));
+//        }
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<BaseResponse<AuthResponse>> login(
-//            @RequestBody LoginRequest request
-//    ) {
+    @PostMapping("/login")
+    public ResponseEntity<BaseResponse<AuthResponse>> login(
+            @RequestBody LoginRequest request
+    ) {
 //        try {
-//            AuthResponse response = authService.login(request);
-//            return ResponseEntity.ok()
-//                    .body(new BaseResponse<>(HttpStatus.OK.value(), "User logged successfully", response));
+            AuthResponse response = authService.login(request);
+            return ResponseEntity.ok()
+                    .body(new BaseResponse<>(HttpStatus.OK.value(), "User logged successfully", response));
 //        } catch (BadCredentialsException e) {
 //            // Handle user not found exception
 //            //another way
@@ -56,6 +59,6 @@ public class AuthController {
 //                    .body(new BaseResponse<>(HttpStatus.NOT_FOUND.value(), "user not found",null));
 //        }
 //    }
-
+}
 
 }

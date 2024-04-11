@@ -4,6 +4,8 @@ import com.grad.akemha.dto.auth.authrequest.LoginRequest;
 import com.grad.akemha.dto.auth.authrequest.RegisterRequest;
 import com.grad.akemha.dto.auth.authresponse.AuthResponse;
 import com.grad.akemha.entity.User;
+import com.grad.akemha.exeption.authExceptions.EmailAlreadyExistsException;
+import com.grad.akemha.exeption.authExceptions.UserNotFoundException;
 import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +27,9 @@ public class AuthenticationService {
     public AuthResponse register(RegisterRequest request)
 //            throws RegistrationException
     {
-//        if (userAlreadyExists(request.getEmail())) {
-//            throw new EmailAlreadyExistsException("User already exists");
-//        }
+        if (userAlreadyExists(request.getEmail())) {
+            throw new EmailAlreadyExistsException("User already exists");
+        }
 
         var user = User.builder()
                 .name(request.getName())
@@ -52,35 +54,33 @@ public class AuthenticationService {
         return userRepository.existsByEmail(email);
     }
 
-//    public AuthResponse login(LoginRequest request) throws BadCredentialsException {
-////        try {
-//        authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        request.getEmail(),
-//                        request.getPassword()
-//                )
-//        );
-//        var user = userRepository.findByEmail(request.getEmail())
-//                .orElseThrow(() -> new UserNotFoundException("User not found"));
-//
-//        var jwtToken = jwtService.generateToken(user);
-//        final AuthResponse authResponseModel;
-//        return
-//                AuthResponse.builder()
-//                        .token(jwtToken)
-//                        .userEmail(user.getEmail())
-//                        .build();
+    public AuthResponse login(LoginRequest request) throws BadCredentialsException {
+        try {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        var jwtToken = jwtService.generateToken(user);
+        return
+                AuthResponse.builder()
+                        .token(jwtToken)
+                        .userEmail(user.getEmail())
+                        .build();
+        //another way
+////        final AuthResponse authResponseModel;
 ////        authResponseModel = new AuthResponseModel(
 ////                jwtToken,
 ////                HttpStatus.OK.value(),
 ////                user.getEmail(),
 ////                "Successfully logged in"
 ////        );
-////        } catch (BadCredentialsException e){
-////            System.out.println("i am in catch");
-////            return AuthenticationResponse.builder()
-////                    .errorMessage("User not found")
-////                    .build();
-////        }
-//    }
+        } catch (BadCredentialsException e){
+            throw new UserNotFoundException("User not found");
+        }
+    }
 }

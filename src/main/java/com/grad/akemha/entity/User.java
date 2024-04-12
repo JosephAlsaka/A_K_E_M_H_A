@@ -66,6 +66,9 @@ public class User implements UserDetails {
     @Column(name = "gender",nullable = true)
     private Gender gender;
 
+    @Column(name = "location",nullable = true)
+    private String location;
+
 
     @JsonIgnore
     @ManyToOne

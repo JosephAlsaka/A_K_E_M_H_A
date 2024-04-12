@@ -1,8 +1,11 @@
 package com.grad.akemha.service.userServive;
 
-import com.grad.akemha.dto.AddDoctorDto;
+import com.grad.akemha.controller.AuthController;
+import com.grad.akemha.dto.auth.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
+import com.grad.akemha.exeption.authExceptions.EmailAlreadyExistsException;
+import com.grad.akemha.exeption.authExceptions.UserNotFoundException;
 import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,10 @@ public class AdminService {
         return userRepository.findAll();
     }
 
-    public User addDoctor(AddDoctorDto request) {
+    public void addDoctor(AddDoctorRequest request) {
+        if (userAlreadyExists(request.getEmail())) {
+            throw new EmailAlreadyExistsException("User already exists");
+        }
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
@@ -39,28 +44,27 @@ public class AdminService {
         Specialization specialization = specializationRepository.findBySpecializationType(request.getSpecialization());
         System.out.println(specialization);
         if (specialization == null) {
-            specialization=new Specialization();
+            specialization = new Specialization();
             specialization.setSpecializationType(request.getSpecialization());
             specializationRepository.save(specialization);
         }
         user.setSpecialization(specialization);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
-    public boolean deleteDoctor(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            userRepository.deleteById(userId);
-            return true;
-        }
-        return false;
+    private boolean userAlreadyExists(String email) {
+        return userRepository.existsByEmail(email);
     }
+
+    public void deleteDoctor(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        userRepository.delete(user);
+    }
+
 
     public List<Specialization> getDoctorSpecialization() {
         return specializationRepository.findAll();
     }
-
-
 }
 
 

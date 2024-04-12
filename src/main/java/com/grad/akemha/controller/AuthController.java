@@ -1,5 +1,4 @@
 package com.grad.akemha.controller;
-
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.auth.authrequest.LoginRequest;
 import com.grad.akemha.dto.auth.authrequest.RegisterRequest;
@@ -28,12 +27,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<BaseResponse<AuthResponse>> register(
-           @Valid @RequestBody RegisterRequest request
+            @Valid @RequestBody RegisterRequest request
     ) {
         AuthResponse response = authService.register(request);
 //        try {
-            return ResponseEntity.ok()
-                    .body(new BaseResponse<>(HttpStatus.OK.value(), "User registered successfully", response));
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "User registered successfully", response));
 //        } catch (Exception e) {
 //            System.out.println("============================ in catch");
 //
@@ -47,9 +46,9 @@ public class AuthController {
             @RequestBody LoginRequest request
     ) {
 //        try {
-            AuthResponse response = authService.login(request);
-            return ResponseEntity.ok()
-                    .body(new BaseResponse<>(HttpStatus.OK.value(), "User logged successfully", response));
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "User logged successfully", response));
 //        } catch (BadCredentialsException e) {
 //            // Handle user not found exception
 //            //another way
@@ -59,6 +58,6 @@ public class AuthController {
 //                    .body(new BaseResponse<>(HttpStatus.NOT_FOUND.value(), "user not found",null));
 //        }
 //    }
-}
+    }
 
 }

@@ -26,7 +26,7 @@ public class AkemhaApplication {
 			var securityKey = "Auth Token";
 			var securityScheme = new SecurityScheme();
 			securityScheme
-					.name("bearerAuth")
+					.name("bearerAuth") 
 					.type(SecurityScheme.Type.HTTP)
 					.scheme("bearer");
 			return new OpenAPI()

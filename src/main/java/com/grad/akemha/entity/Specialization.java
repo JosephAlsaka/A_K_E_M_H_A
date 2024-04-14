@@ -24,7 +24,7 @@ public class Specialization {
     private String specializationType;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "specialization")
+    @OneToMany(mappedBy = "specialization", cascade = CascadeType.ALL)
     private List<Consultation> consultations;
 
     @JsonIgnore

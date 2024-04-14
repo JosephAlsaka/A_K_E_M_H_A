@@ -1,6 +1,5 @@
-package com.grad.akemha.service.userServive;
+package com.grad.akemha.service.userService;
 
-import com.grad.akemha.controller.AuthController;
 import com.grad.akemha.dto.auth.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;

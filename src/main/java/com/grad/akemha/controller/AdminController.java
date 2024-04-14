@@ -4,7 +4,7 @@ import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.auth.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
-import com.grad.akemha.service.userServive.AdminService;
+import com.grad.akemha.service.userService.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

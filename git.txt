@@ -1,8 +1,11 @@
 1- Create new branch
-	git branch -b branchName
+	git branch branchName
 2- to view list of branches you have
 	git branch
 3- to choose a specific branch
     git checkout branchnameyouwanttogo
 
-after finished working on a branch go to gitlab and merge with main
+4- if u want to do step 1 & 3 together u can type:
+    git checkout -b branchName
+
+after u finish working on a branch go to gitlab and merge with main

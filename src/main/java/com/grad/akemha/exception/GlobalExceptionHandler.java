@@ -1,7 +1,8 @@
-package com.grad.akemha.exeption;
+package com.grad.akemha.exception;
 
-import com.grad.akemha.exeption.authExceptions.EmailAlreadyExistsException;
-import com.grad.akemha.exeption.authExceptions.UserNotFoundException;
+import com.grad.akemha.dto.ErrorResponse;
+import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
+import com.grad.akemha.exception.authExceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,8 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice
 @ResponseStatus
@@ -20,7 +19,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorMessage> handleRegisterApiException(
             EmailAlreadyExistsException exception,
             WebRequest request
-    ){
+    ) {
         //first way
 //        final ErrorMessage errorMessage = new ErrorMessage();
 //        errorMessage.setMessage(exception.getMessage());
@@ -33,9 +32,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleLoginApiException(UserNotFoundException exception){
+    public ResponseEntity<ErrorMessage> handleLoginApiException(UserNotFoundException exception) {
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.BAD_REQUEST, exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    }
+
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body
+                (new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body
+                (new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()));
     }
 
 }

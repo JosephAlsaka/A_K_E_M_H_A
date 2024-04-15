@@ -89,7 +89,7 @@ public class User implements UserDetails {
         List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
         String role = String.valueOf(getRole());
         list.add(new SimpleGrantedAuthority("ROLE_"+role));
-        System.out.println("list is"+list);
+//        System.out.println("list is"+list);
         return list;
     }
 

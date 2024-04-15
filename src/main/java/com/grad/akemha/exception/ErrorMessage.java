@@ -1,4 +1,4 @@
-package com.grad.akemha.exeption;
+package com.grad.akemha.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

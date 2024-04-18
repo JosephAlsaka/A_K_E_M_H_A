@@ -3,6 +3,7 @@ package com.grad.akemha.service.userService;
 import com.grad.akemha.dto.auth.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
+import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exeption.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exeption.authExceptions.UserNotFoundException;
 import com.grad.akemha.repository.SpecializationRepository;
@@ -27,7 +28,7 @@ public class AdminService {
 
 
     public List<User> getDoctors() {
-        return userRepository.findAll();
+        return userRepository.findByRole(Role.DOCTOR);
     }
 
     public void addDoctor(AddDoctorRequest request) {
@@ -37,6 +38,7 @@ public class AdminService {
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
+        user.setRole(Role.DOCTOR);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setGender(request.getGender());
         //check if the specialization not exist  create it and assign it to user

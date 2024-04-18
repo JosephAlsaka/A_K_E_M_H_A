@@ -1,6 +1,7 @@
 package com.grad.akemha.repository;
 
 import com.grad.akemha.entity.User;
+import com.grad.akemha.entity.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -13,5 +14,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    List<User> findAll();
+    List<User> findByRole(Role role);
 }

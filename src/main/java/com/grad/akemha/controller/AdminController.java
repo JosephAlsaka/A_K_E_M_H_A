@@ -19,7 +19,7 @@ import java.util.List;
 public class AdminController {
     @Autowired
     AdminService adminService;
-
+    //comment test
     @GetMapping()
     public ResponseEntity<BaseResponse<List<User>>> getDoctors() {
         List<User> doctors = adminService.getDoctors();

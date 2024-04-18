@@ -40,10 +40,7 @@ public class AdminController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor deleted successfully",null));
     }
 
-    @GetMapping("/specialization")
-    public ResponseEntity<BaseResponse<List<Specialization>>> getDoctorSpecialization() {
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(),"" ,adminService.getDoctorSpecialization()));
-    }
+
 
 
 }

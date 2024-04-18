@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/specialization")
-@CrossOrigin(origins = "http://localhost:3000")
 public class SpecializationController {
 
     @Autowired
@@ -28,9 +27,9 @@ public class SpecializationController {
     }
 
     @DeleteMapping("/{specializationId}") // TODO: note: all consultation will be deleted because of casecade. solve it later
-    public ResponseEntity<BaseResponse<String>> deleteSpecializationById(@PathVariable Long specializationId) {
-        specializationService.deleteSpecializationById(specializationId);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", null));
+    public ResponseEntity<BaseResponse<Specialization>> deleteSpecializationById(@PathVariable Long specializationId) {
+        Specialization response = specializationService.deleteSpecializationById(specializationId);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", response));
     }
 
     @PostMapping

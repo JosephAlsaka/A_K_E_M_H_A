@@ -63,8 +63,11 @@ public class User implements UserDetails {
     @Column(name = "description",nullable = true)
     private String description;
 
-    @Column(name = "gender",nullable = true)
-    private Gender gender;
+@Enumerated(EnumType.STRING)
+private Gender gender;
+
+    @Column(name = "location",nullable = true)
+    private String location;
 
     @Column(name = "location",nullable = true)
     private String location;

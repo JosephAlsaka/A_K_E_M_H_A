@@ -69,8 +69,6 @@ private Gender gender;
     @Column(name = "location",nullable = true)
     private String location;
 
-    @Column(name = "location",nullable = true)
-    private String location;
 
 
     @JsonIgnore

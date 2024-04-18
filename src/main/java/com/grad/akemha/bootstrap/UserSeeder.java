@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 // this class works on application run
-// it fills the table Role with roles
+// it fills the table Role with roles/
 @Component
 public class UserSeeder implements ApplicationListener<ContextRefreshedEvent> {
     private final UserRepository userRepository;

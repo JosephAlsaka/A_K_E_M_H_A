@@ -27,7 +27,6 @@ public class Admin2Controller {
 
     @PostMapping()
     public ResponseEntity<BaseResponse<?>> addDoctor(@RequestBody AddDoctorRequest request) {
-        //TODO add role (doctor) to user
         adminService.addDoctor(request);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor added successfully", null));
     }

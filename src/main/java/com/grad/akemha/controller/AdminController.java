@@ -20,6 +20,7 @@ public class AdminController {
     @Autowired
     AdminService adminService;
     //comment test
+    //comment test2222
     @GetMapping()
     public ResponseEntity<BaseResponse<List<User>>> getDoctors() {
         List<User> doctors = adminService.getDoctors();

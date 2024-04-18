@@ -61,9 +61,6 @@ public class AdminService {
     }
 
 
-    public List<Specialization> getDoctorSpecialization() {
-        return specializationRepository.findAll();
-    }
 }
 
 

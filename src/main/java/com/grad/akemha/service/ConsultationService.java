@@ -9,7 +9,7 @@ import com.grad.akemha.entity.Image;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.ConsultationStatus;
-import com.grad.akemha.exeption.authExceptions.UserNotFoundException;
+import com.grad.akemha.exception.authExceptions.UserNotFoundException;
 import com.grad.akemha.repository.ConsultationRepository;
 import com.grad.akemha.repository.ImageRepository;
 import com.grad.akemha.repository.SpecializationRepository;

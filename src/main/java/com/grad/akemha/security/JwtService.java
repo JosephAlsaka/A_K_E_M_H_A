@@ -1,6 +1,7 @@
 package com.grad.akemha.security;
 
 import com.grad.akemha.entity.User;
+import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -18,13 +19,15 @@ import java.security.Key;
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
     private static final String SECRET_KEY = "97e74ee81f5206429721abf0cd87b2450299e2ba3be8feca9d85d3c2c18842e7";
-//    @Autowired
-//    private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public String getIdentifier(String token) {
         Claims claims = Jwts.parser()
@@ -44,6 +47,25 @@ public class JwtService {
 //        return claims;
 //    }
 
+    public User extractUserFromToken(HttpHeaders httpHeaders) {
+        String token = Objects.requireNonNull(httpHeaders.get("Authorization")).get(0);
+        String jwt = token.replace("Bearer ", "");
+        String userEmail = Jwts
+                .parser()
+                .verifyWith(getSignInKey()) //56:33
+                .build()
+                .parseSignedClaims(jwt)
+                .getPayload()
+                .getSubject();
+
+        Optional<User> optionalUser = userRepository.findByEmail(userEmail);
+        if (optionalUser.isPresent()) {
+            return optionalUser.get();
+        } else {
+            throw new NotFoundException("Something Went Wrong When getting the user id");
+        }
+    }
+
     public String extractUserId(HttpHeaders httpHeaders) { //when we will use this method? when we receive the token from the client when client makes a request to the server and through this token we get the user name
         // Assuming your token is in the "Authorization" header
         String token = httpHeaders.getFirst("Authorization");
@@ -51,6 +73,7 @@ public class JwtService {
         var id = extractAllClaims(jwt).get("id");
         return String.valueOf(id);
     }
+
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);

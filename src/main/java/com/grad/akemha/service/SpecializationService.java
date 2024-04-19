@@ -2,7 +2,7 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.specializationDTO.SpecializationRequest;
 import com.grad.akemha.entity.Specialization;
-import com.grad.akemha.exeption.authExceptions.UserNotFoundException;
+import com.grad.akemha.exception.authExceptions.UserNotFoundException;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.repository.SpecializationRepository;
 import org.springframework.beans.factory.annotation.Autowired;

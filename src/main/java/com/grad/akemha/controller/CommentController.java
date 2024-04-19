@@ -23,34 +23,34 @@ public class CommentController {
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<CommentResponse>> getCommentById(
             @PathVariable int id) {
-        try {
+//        try {
             CommentResponse response = commentService.getCommentById(id);
 
             return ResponseEntity.ok().body(new BaseResponse<>
                     (HttpStatus.OK.value(), "Comment Found successfully", response));
 
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>
-                    (HttpStatus.NOT_FOUND.value(), e.getMessage(), null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
-                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
-        }
+//        } catch (NotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse<>
+//                    (HttpStatus.NOT_FOUND.value(), e.getMessage(), null));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
+//                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
+//        }
     }
 
     @GetMapping("/all/{postId}")
-    public ResponseEntity<BaseResponse<List<CommentResponse>>> getAllComments(@PathVariable int postId) {
-        try {
+    public ResponseEntity<BaseResponse<List<CommentResponse>>> getAllCommentsForOnePost(@PathVariable int postId) {
+//        try {
             List<Comment> comments = commentService.getAllComments(postId);
             List<CommentResponse> response = comments.stream().map(CommentResponse::new).toList();
 
             return ResponseEntity.ok().body(new BaseResponse<>
                     (HttpStatus.OK.value(), "All Comments", response));
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
-                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
-        }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
+//                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
+//        }
     }
 
     //    @PreAuthorize("hasRole('DOCTOR')")
@@ -59,14 +59,14 @@ public class CommentController {
                                                                  @RequestParam String text,
                                                                  @RequestHeader HttpHeaders httpHeaders
     ) {
-        try {
+//        try {
             CommentResponse response = commentService.createComment(postId, text, httpHeaders);
             return ResponseEntity.ok().body(new BaseResponse<>
                     (HttpStatus.CREATED.value(), "Comment created successfully", response));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
-                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
-        }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
+//                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
+//        }
 
     }
 
@@ -75,13 +75,13 @@ public class CommentController {
     public ResponseEntity<BaseResponse<CommentResponse>> updateComment(
             @PathVariable int id, @RequestParam String description) {
         CommentResponse response = commentService.updateComment(id, description);
-        try {
+//        try {
             return ResponseEntity.ok().body(new BaseResponse<>
                     (HttpStatus.CREATED.value(), "Comment updated successfully", response));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
-                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
-        }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
+//                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
+//        }
     }
 
 
@@ -90,13 +90,13 @@ public class CommentController {
     public ResponseEntity<BaseResponse<CommentResponse>> deleteComment(
             @PathVariable int id) {
         CommentResponse response = commentService.deleteComment(id);
-        try {
+//        try {
             return ResponseEntity.ok().body(new BaseResponse<>
                     (HttpStatus.OK.value(), "Comment deleted successfully", response));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
-                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
-        }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>
+//                    (HttpStatus.BAD_REQUEST.value(), "Something went wrong", null));
+//        }
     }
 
 

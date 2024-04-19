@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,5 +110,4 @@ public class CommentService {
             throw new NotFoundException("No Comment in that id: " + id);
         }
     }
-
 }

@@ -1,7 +1,10 @@
 package com.grad.akemha.service;
 
+import com.grad.akemha.dto.comment.CommentResponse;
 import com.grad.akemha.dto.post.DoctorResponse;
+import com.grad.akemha.dto.post.PostDetailsResponse;
 import com.grad.akemha.dto.post.PostResponse;
+import com.grad.akemha.entity.Comment;
 import com.grad.akemha.entity.Like;
 import com.grad.akemha.entity.Post;
 import com.grad.akemha.entity.User;
@@ -24,14 +27,17 @@ public class PostService {
     private final PostRepository postRepository;
     private final JwtService jwtService;
     private final LikeRepository likeRepository;
+    private final CommentService commentService;
 
     // Read
-    public PostResponse getPostById(int id) {
+    public PostDetailsResponse getPostById(int id) {
         Optional<Post> optionalPost = postRepository.findById((long) id);
 
         if (optionalPost.isPresent()) {
             Post post = optionalPost.get();
-            return PostResponse
+            List<Comment> comments = commentService.getAllComments(id);
+            List<CommentResponse> response = comments.stream().map(CommentResponse::new).toList();
+            return PostDetailsResponse
                     .builder()
                     .id(post.getId())
                     .doctor(new DoctorResponse(post.getUser()))
@@ -39,6 +45,7 @@ public class PostService {
                     .description(post.getText())
                     .likesCount(post.getLikes().size())
                     .commentsCount(post.getComments().size())
+                    .comments(response)
                     .build();
         } else {
             throw new NotFoundException("No Post in that Id: " + id);
@@ -103,7 +110,7 @@ public class PostService {
         if (optionalPost.isPresent()) {
             Post post = optionalPost.get();
             User user = jwtService.extractUserFromToken(httpHeaders);
-            likeRepository.existsByUserAndPost(user, post);
+//            likeRepository.existsByUserAndPost(user, post);
 
             if (likeRepository.existsByUserAndPost(user, post)) {
                 throw new ForbiddenException("You can't add more than one like");

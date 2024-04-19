@@ -1,7 +1,12 @@
 Salim section:
-    . delete likes when deleting the post
+    . delete all try & catch
+    . update post
     . pagination to the posts
-    . cloudinary
+    . with sami:
+        . cloudinary
+        . check the role based
+        . seeder
+
 
 
 Joseph section:

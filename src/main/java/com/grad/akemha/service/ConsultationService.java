@@ -113,9 +113,9 @@ public class ConsultationService {
             images = request.getFiles().stream()
                     .map(file -> {
                         Image image = new Image();
-//                        image.setImageUrl(cloudinaryService.uploadFile(file, "folder_1")); //TODO
+                        image.setImageUrl(cloudinaryService.uploadFile(file, "Consultations", beneficiaryId.toString()));
                         if (image.getImageUrl() == null) {
-                            throw new UserNotFoundException("Image upload failed");
+                            throw new UserNotFoundException("Image upload failed"); //TODO
                         }
                         return imageRepository.save(image);
                     })

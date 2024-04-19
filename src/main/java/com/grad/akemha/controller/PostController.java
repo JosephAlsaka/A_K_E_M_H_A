@@ -2,6 +2,7 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.post.PostDetailsResponse;
+import com.grad.akemha.dto.post.PostRequest;
 import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.entity.Post;
 import com.grad.akemha.exception.ForbiddenException;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -62,13 +64,12 @@ public class PostController {
     }
 
     //    @PreAuthorize("hasRole('DOCTOR')")
-    @PostMapping()
-    public ResponseEntity<BaseResponse<PostResponse>> addPost(@RequestParam String text,
-                                                              @RequestParam String imageUrl,
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BaseResponse<PostResponse>> addPost(@ModelAttribute PostRequest postRequest,
                                                               @RequestHeader HttpHeaders httpHeaders
     ) {
 //        try {
-        PostResponse response = postService.createPost(text, imageUrl, httpHeaders);
+        PostResponse response = postService.createPost(postRequest, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.CREATED.value(), "Post created successfully", response));
 //        } catch (Exception e) {

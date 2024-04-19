@@ -27,7 +27,7 @@ public class ImageService {
             }
             Image image = new Image();
 //            image.setName(imageModel.getName());
-            image.setImageUrl(cloudinaryService.uploadFile(imageModel.getFile(), "folder_1"));
+            image.setImageUrl(cloudinaryService.uploadFile(imageModel.getFile(), "folder_1", "5"));
             if (image.getImageUrl() == null) {
                 return ResponseEntity.badRequest().build();
             }

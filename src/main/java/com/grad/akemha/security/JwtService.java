@@ -66,6 +66,15 @@ public class JwtService {
         }
     }
 
+    public String extractUserId(HttpHeaders httpHeaders) { //when we will use this method? when we receive the token from the client when client makes a request to the server and through this token we get the user name
+        // Assuming your token is in the "Authorization" header
+        String token = httpHeaders.getFirst("Authorization");
+        String jwt = token.replace("Bearer ", "");
+        var id = extractAllClaims(jwt).get("id");
+        return String.valueOf(id);
+    }
+
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);

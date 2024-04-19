@@ -3,6 +3,7 @@ package com.grad.akemha.service;
 import com.grad.akemha.dto.comment.CommentResponse;
 import com.grad.akemha.dto.post.DoctorResponse;
 import com.grad.akemha.dto.post.PostDetailsResponse;
+import com.grad.akemha.dto.post.PostRequest;
 import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.entity.Comment;
 import com.grad.akemha.entity.Like;
@@ -13,7 +14,9 @@ import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.LikeRepository;
 import com.grad.akemha.repository.PostRepository;
 import com.grad.akemha.security.JwtService;
+import com.grad.akemha.service.cloudinary.CloudinaryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,7 @@ public class PostService {
     private final JwtService jwtService;
     private final LikeRepository likeRepository;
     private final CommentService commentService;
+    private final CloudinaryService cloudinaryService;
 
     // Read
     public PostDetailsResponse getPostById(int id) {
@@ -57,14 +61,12 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    // Create TODO
-    public PostResponse createPost(String text,
-                                   String imageUrl,
+    public PostResponse createPost(PostRequest postRequest,
                                    HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
         Post post = new Post();
-        post.setText(text);
-        post.setImageUrl(imageUrl);
+        post.setText(postRequest.getDescription());
+        post.setImageUrl(cloudinaryService.uploadFile(postRequest.getImage(), "Posts", user.getId().toString())); // todo
         post.setUser(user);
         post.setLikes(new ArrayList<>());
         post.setComments(new ArrayList<>());

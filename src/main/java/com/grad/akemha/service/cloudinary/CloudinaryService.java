@@ -15,15 +15,19 @@ public class CloudinaryService { //for converting the image into URL
     @Resource
     private Cloudinary cloudinary;
 
-    public String uploadFile(MultipartFile file, String folderName) {
-        try{
+    public String uploadFile(MultipartFile file, String folderName, String userID) {
+        try {
+            String imageName = System.currentTimeMillis() + "-" + userID;
             HashMap<Object, Object> options = new HashMap<>();
             options.put("folder", folderName);
+
+            //to change the name
+            options.put("public_id", imageName);
             Map uploadedFile = cloudinary.uploader().upload(file.getBytes(), options);
             String publicId = (String) uploadedFile.get("public_id");
             return cloudinary.url().secure(true).generate(publicId);
 
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }

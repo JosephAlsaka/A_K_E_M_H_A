@@ -30,4 +30,14 @@ import java.util.Map;
                 return null;
             }
         }
+
+        @PostMapping()
+        public ResponseEntity<Map> destroy() {
+            try {
+                return imageService.destroyImage("sa", "mi");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
     }

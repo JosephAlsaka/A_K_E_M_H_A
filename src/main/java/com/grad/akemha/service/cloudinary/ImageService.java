@@ -37,7 +37,15 @@ public class ImageService {
             e.printStackTrace();
             return null;
         }
+    }
 
-
+    public ResponseEntity<Map> destroyImage(String folderName,String publicId) {
+        try {
+            cloudinaryService.destroyFile("folder_1", "folder_1/aae6ykjms2hgffbkl2gz");
+            return ResponseEntity.ok().body(Map.of("process", "destroy"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

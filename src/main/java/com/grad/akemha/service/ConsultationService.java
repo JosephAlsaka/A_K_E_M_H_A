@@ -115,7 +115,7 @@ public class ConsultationService {
                         Image image = new Image();
                         image.setImageUrl(cloudinaryService.uploadFile(file, "Consultations", beneficiaryId.toString()));
                         if (image.getImageUrl() == null) {
-                            throw new UserNotFoundException("Image upload failed"); //TODO
+                            throw new UserNotFoundException("Image upload failed"); //TODO change the Exception
                         }
                         return imageRepository.save(image);
                     })

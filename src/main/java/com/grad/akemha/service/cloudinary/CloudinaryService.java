@@ -35,14 +35,14 @@ public class CloudinaryService { //for converting the image into URL
         }
     }
 
-    public String destroyFile(String publicId) {
-        try{
+    public void destroyFile(String publicId) {
+        try {
             //        Deleting an image with the public ID of sample:
             Map uploadedFile = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            return null;
-        }catch (IOException e){
+            System.out.println("DELETED SUCCESSFULLY FROM CLOUDINARY");
+        } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            System.out.println("DIDN'T DELETE FROM CLOUDINARY");
         }
 
     }

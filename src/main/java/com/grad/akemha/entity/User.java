@@ -67,7 +67,10 @@ public class User implements UserDetails {
     @Column(name = "location", nullable = true)
     private String location;
 
-    @JsonIgnore
+    @Column(name = "opening_times", nullable = true)
+    private String openingTimes;
+
+//    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "specialization_id")
     private Specialization specialization;

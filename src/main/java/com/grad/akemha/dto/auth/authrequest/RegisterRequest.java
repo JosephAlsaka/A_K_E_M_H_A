@@ -1,8 +1,7 @@
-package com.grad.akemha.dto.auth.authrequest;
+package com.grad.akemha.dto.auth.authRequest;
 
 
 import com.grad.akemha.entity.enums.Role;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

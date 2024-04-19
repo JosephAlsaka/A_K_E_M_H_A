@@ -1,4 +1,4 @@
-package com.grad.akemha.dto.auth.authresponse;
+package com.grad.akemha.dto.auth.authResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

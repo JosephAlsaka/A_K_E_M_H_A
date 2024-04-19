@@ -1,8 +1,8 @@
 package com.grad.akemha.service;
 
-import com.grad.akemha.dto.auth.authrequest.LoginRequest;
-import com.grad.akemha.dto.auth.authrequest.RegisterRequest;
-import com.grad.akemha.dto.auth.authresponse.AuthResponse;
+import com.grad.akemha.dto.auth.authRequest.LoginRequest;
+import com.grad.akemha.dto.auth.authRequest.RegisterRequest;
+import com.grad.akemha.dto.auth.authResponse.AuthResponse;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;

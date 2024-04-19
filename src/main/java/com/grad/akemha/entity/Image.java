@@ -20,4 +20,7 @@ public class Image {
 //    private Long user_id;
     @Column(name = "image_url")
     private String imageUrl;
+
+    @Column(name = "name_image")
+    private String name;
 }

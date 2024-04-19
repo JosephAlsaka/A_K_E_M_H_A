@@ -4,6 +4,7 @@ import com.grad.akemha.entity.User;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -37,16 +38,13 @@ public class JwtService {
         return claims.getSubject();
     }
 
-//    public User extractUser(HttpHeaders headers) { //TODO check if i need this method // note: i used it in controller to get the User user from db
-//
-//        String token = headers.get("Authorization").get(0);
-//        String jwt = token.replace("Bearer ", "");
-//
-//        Claims idString = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwt).getBody();
-//        String id = String.valueOf(idString.get("id"));
-//        User user = userRepository.findUserById(Long.parseLong(id));
-//
-//        return user;
+//        public String getId(String token){ //when we will use this method? when we receive the token from the client when client makes a request to the server and through this token we get the user name
+//        String claims = Jwts.parser()
+//                .setSigningKey(getSignInKey())
+//                .build()
+//                .parseClaimsJws(token)
+//                .getBody().getId();
+//        return claims;
 //    }
 
     public User extractUserFromToken(HttpHeaders httpHeaders) {
@@ -96,7 +94,7 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = getIdentifier(token); //TODO: check the difference with salim
+        final String username = getIdentifier(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
-public class ImageService {
+public class ImageService { //Note: this class service is only for testtttt
     @Autowired
     private CloudinaryService cloudinaryService;
     @Autowired
@@ -39,9 +39,9 @@ public class ImageService {
         }
     }
 
-    public ResponseEntity<Map> destroyImage(String folderName,String publicId) {
+    public ResponseEntity<Map> destroyImage(String publicId) {
         try {
-            cloudinaryService.destroyFile("folder_1", "folder_1/aae6ykjms2hgffbkl2gz");
+            cloudinaryService.destroyFile("folder_1/1713540416272-5");
             return ResponseEntity.ok().body(Map.of("process", "destroy"));
         } catch (Exception e) {
             e.printStackTrace();

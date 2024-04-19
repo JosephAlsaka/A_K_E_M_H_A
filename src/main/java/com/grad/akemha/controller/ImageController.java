@@ -34,7 +34,7 @@ import java.util.Map;
         @PostMapping()
         public ResponseEntity<Map> destroy() {
             try {
-                return imageService.destroyImage("sa", "mi");
+                return imageService.destroyImage("mi");
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

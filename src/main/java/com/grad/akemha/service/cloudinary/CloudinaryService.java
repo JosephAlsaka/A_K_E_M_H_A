@@ -35,12 +35,10 @@ public class CloudinaryService { //for converting the image into URL
         }
     }
 
-    public String destroyFile(String folderName, String publicId) {
+    public String destroyFile(String publicId) {
         try{
-//            HashMap<Object, Object> options = new HashMap<>();
-//            options.put("folder", folderName);
-            Map uploadedFile = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
             //        Deleting an image with the public ID of sample:
+            Map uploadedFile = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
             return null;
         }catch (IOException e){
             e.printStackTrace();

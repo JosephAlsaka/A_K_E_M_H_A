@@ -16,13 +16,15 @@ import com.grad.akemha.repository.PostRepository;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,40 +35,30 @@ public class PostService {
     private final CommentService commentService;
     private final CloudinaryService cloudinaryService;
 
-    // Read
-    public PostDetailsResponse getPostById(int id) {
-        Optional<Post> optionalPost = postRepository.findById((long) id);
-
-        if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            List<Comment> comments = commentService.getAllComments(id);
-            List<CommentResponse> response = comments.stream().map(CommentResponse::new).toList();
-            return PostDetailsResponse
-                    .builder()
-                    .id(post.getId())
-                    .doctor(new DoctorResponse(post.getUser()))
-                    .imageUrl(post.getImageUrl())
-                    .description(post.getText())
-                    .likesCount(post.getLikes().size())
-                    .commentsCount(post.getComments().size())
-                    .comments(response)
-                    .build();
-        } else {
-            throw new NotFoundException("No Post in that Id: " + id);
-        }
+    public List<Post> getAllPosts(int page) {
+        // this page size indicates of number of data retrieved
+        // TODO:  change this number to be 10
+        Pageable pageable = PageRequest.of(page, 2);
+        Page<Post> pageUser = postRepository.findAll(pageable);
+        return pageUser.getContent();
     }
 
-    //TODO: manage pagination
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
-    }
-
-    public PostResponse createPost(PostRequest postRequest,
+    // Create
+    public PostResponse createPost(@NotNull PostRequest postRequest,
                                    HttpHeaders httpHeaders) {
+
+        if (postRequest.getDescription() == null) {
+            throw new ForbiddenException("Description Data is Null");
+        }
+        if (postRequest.getImage() == null) {
+            throw new ForbiddenException("Image Data is Null");
+        }
         User user = jwtService.extractUserFromToken(httpHeaders);
+        Map<String, String> cloudinaryMap = cloudinaryService.uploadOneFile(postRequest.getImage(), "Posts", user.getId().toString());
         Post post = new Post();
-        post.setText(postRequest.getDescription());
-        post.setImageUrl(cloudinaryService.uploadFile(postRequest.getImage(), "Posts", user.getId().toString())); // todo
+        post.setDescription(postRequest.getDescription());
+        post.setImageUrl(cloudinaryMap.get("image_url"));
+        post.setImagePublicId(cloudinaryMap.get("public_id"));
         post.setUser(user);
         post.setLikes(new ArrayList<>());
         post.setComments(new ArrayList<>());
@@ -76,13 +68,59 @@ public class PostService {
                 .id(post.getId())
                 .doctor(new DoctorResponse(post.getUser()))
                 .imageUrl(post.getImageUrl())
-                .description(post.getText())
+                .description(post.getDescription())
                 .likesCount(post.getLikes().size())
                 .commentsCount(post.getComments().size())
                 .build();
     }
 
-    // Update TODO
+    // Update
+    public PostResponse updatePost(int id,
+                                   MultipartFile image,
+                                   String description,
+                                   HttpHeaders httpHeaders) {
+        if (description == null
+                && image == null) {
+            throw new NotFoundException("No Data have been entered");
+        }
+
+        Optional<Post> optionalPost = postRepository.findById((long) id);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            String userId = jwtService.extractUserId(httpHeaders);
+
+            if (description != null
+                    && !Objects.equals(description, post.getDescription())) {
+                post.setDescription(description);
+            }
+
+
+            if (image != null) {
+                System.out.println("ENTERED ?HERE");
+                // deleting the image from cloudinary
+                cloudinaryService.destroyOneFile(post.getImagePublicId());
+                // setting the new image file, url and public id
+                Map<String, String> cloudinaryMap = cloudinaryService.uploadOneFile(image, "Posts", userId);
+                post.setImageUrl(cloudinaryMap.get("image_url"));
+                post.setImagePublicId(cloudinaryMap.get("public_id"));
+            }
+
+            postRepository.save(post);
+
+            return PostResponse
+                    .builder()
+                    .id(post.getId())
+                    .doctor(new DoctorResponse(post.getUser()))
+                    .imageUrl(post.getImageUrl())
+                    .description(post.getDescription())
+                    .likesCount(post.getLikes().size())
+                    .commentsCount(post.getComments().size())
+                    .build();
+        } else {
+            throw new NotFoundException("No Post with That id: " + id + " was found");
+        }
+
+    }
 
     // Delete
     public PostResponse deletePost(int id) {
@@ -90,13 +128,14 @@ public class PostService {
 
         if (optionalPost.isPresent()) {
             Post post = optionalPost.get();
+            cloudinaryService.destroyOneFile(post.getImagePublicId());
             postRepository.deleteById((long) id);
             return PostResponse
                     .builder()
                     .id(post.getId())
                     .doctor(new DoctorResponse(post.getUser()))
                     .imageUrl(post.getImageUrl())
-                    .description(post.getText())
+                    .description(post.getDescription())
                     .likesCount(post.getLikes().size())
                     .commentsCount(post.getComments().size())
                     .build();
@@ -128,7 +167,7 @@ public class PostService {
                     .id(post.getId())
                     .doctor(new DoctorResponse(post.getUser()))
                     .imageUrl(post.getImageUrl())
-                    .description(post.getText())
+                    .description(post.getDescription())
                     .likesCount(post.getLikes().size())
                     .commentsCount(post.getComments().size())
                     .build();
@@ -160,7 +199,7 @@ public class PostService {
                     .id(post.getId())
                     .doctor(new DoctorResponse(post.getUser()))
                     .imageUrl(post.getImageUrl())
-                    .description(post.getText())
+                    .description(post.getDescription())
                     .likesCount(post.getLikes().size())
                     .commentsCount(post.getComments().size())
                     .build();

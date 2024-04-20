@@ -69,27 +69,4 @@ public class CommentController {
                 (HttpStatus.OK.value(), "Comment deleted successfully", response));
     }
 
-
-//    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
-    // Read not necessary
-//    @GetMapping("/{id}")
-//    public ResponseEntity<BaseResponse<CommentResponse>> getCommentById(
-//            @PathVariable int id) {
-//        CommentResponse response = commentService.getCommentById(id);
-//
-//        return ResponseEntity.ok().body(new BaseResponse<>
-//                (HttpStatus.OK.value(), "Comment Found successfully", response));
-//    }
-
-    // also not necessary because when getting one post its comments also gets retrieved
-//    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
-//    @GetMapping("/all/{postId}")
-//    public ResponseEntity<BaseResponse<List<CommentResponse>>> getAllCommentsForOnePost(@PathVariable int postId) {
-//      List<Comment> comments = commentService.getAllComments(postId);
-//        List<CommentResponse> response = comments.stream().map(CommentResponse::new).toList();
-//
-//        return ResponseEntity.ok().body(new BaseResponse<>
-//                (HttpStatus.OK.value(), "All Comments", response));
-//    }
-
 }

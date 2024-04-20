@@ -5,6 +5,7 @@ import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRe
 import com.grad.akemha.dto.consultation.consultationRequest.ConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.entity.Consultation;
+import com.grad.akemha.entity.enums.ConsultationType;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.ConsultationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -75,10 +77,28 @@ public class ConsultationController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BaseResponse<Consultation>> postConsultation(@ModelAttribute ConsultationRequest request, @RequestHeader HttpHeaders httpHeaders) {
+    public ResponseEntity<BaseResponse<Consultation>> postConsultation(
+//            @RequestPart("request") ConsultationRequest request,
+//            @RequestPart(value = "file", required = false) List<MultipartFile> files,
+            @RequestParam(value = "title", required = true) String title,
+            @RequestParam(value = "consultationText", required = true) String consultationText,
+            @RequestParam(value = "specializationId", required = true) Long specializationId,
+            @RequestParam(value = "consultationType", required = true) ConsultationType consultationType,
+            @RequestParam(value = "files", required = false) List<MultipartFile> files,
+            @RequestHeader HttpHeaders httpHeaders) {
                 try {
             Long beneficiaryId = Long.parseLong(jwtService.extractUserId(httpHeaders));
             System.out.println("Converted Long value: " + beneficiaryId);
+            ConsultationRequest request = new ConsultationRequest();
+            request.setTitle(title);
+            request.setConsultationText(consultationText);
+            request.setSpecializationId(specializationId);
+            request.setConsultationType(consultationType);
+                    // Merge the files into the request
+                    if (files != null && !files.isEmpty()) {
+                        System.out.println("sami");
+                        request.setFiles(files);
+                    }
             Consultation response = consultationService.saveConsultation(request, beneficiaryId);
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.OK.value(), "Consultation added successfully", null));

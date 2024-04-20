@@ -5,6 +5,7 @@ import com.grad.akemha.entity.enums.ConsultationType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @ToString
@@ -42,7 +43,13 @@ public class Consultation {
     @JoinColumn(name = "specialization_id")
     private Specialization specialization;
 
-//    private User doctor_id;
+    @Column(name = "create_time", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime;
+
+    @Column(name = "update_answer_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updateAnswerTime;
 
     @ManyToOne
     @JoinColumn(name = "beneficiary_id",nullable = false)

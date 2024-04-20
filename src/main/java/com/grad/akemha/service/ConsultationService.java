@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,7 +106,7 @@ public class ConsultationService {
     public Consultation saveConsultation(ConsultationRequest request, Long beneficiaryId){
         User beneficiary = userRepository.findById(beneficiaryId).orElseThrow();
         Specialization specialization = specializationRepository.findById(request.getSpecializationId()).orElseThrow();
-        System.out.println("  sss  " + request.getFiles());
+//        System.out.println("  sss  " + request.getFiles());
 
         // Upload and save multiple images
         List<Image> images = new ArrayList<>();
@@ -130,7 +131,7 @@ public class ConsultationService {
                 .beneficiary(beneficiary)
                 .consultationType(request.getConsultationType())
                 .images(images)
-//                .img(request.getImg())  //TODO: add MULTIPLE imgS
+                .createTime(new Date())
                 .build();
         consultationRepository.save(consultation);
         return consultation;

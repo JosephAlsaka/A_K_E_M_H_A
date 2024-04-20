@@ -16,6 +16,7 @@ public class CloudinaryService { //for converting the image into URL
     @Resource
     private Cloudinary cloudinary;
 
+    // FOR SAMI TO USE IT IN CONSULTATIONS
     public String uploadFile(MultipartFile file, String folderName, String userID) {
         try {
             String imageName = System.currentTimeMillis() + "-" + userID;
@@ -35,14 +36,50 @@ public class CloudinaryService { //for converting the image into URL
         }
     }
 
-    public void destroyFile(String publicId) {
+    public String destroyFile(String publicId) {
         try {
             //        Deleting an image with the public ID of sample:
             Map uploadedFile = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            System.out.println("DELETED SUCCESSFULLY FROM CLOUDINARY");
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("DIDN'T DELETE FROM CLOUDINARY");
+            return null;
+        }
+
+    }
+
+
+    // FOR SALIMO TO USE IT IN POSTS
+    public Map<String, String> uploadOneFile(MultipartFile file, String folderName, String userID) {
+        try {
+            String imageName = System.currentTimeMillis() + "-" + userID;
+            HashMap<Object, Object> options = new HashMap<>();
+
+            options.put("folder", folderName);
+            //to change the name
+            options.put("public_id", imageName);
+
+            Map uploadedFile = cloudinary.uploader().upload(file.getBytes(), options);
+            String publicId = (String) uploadedFile.get("public_id");
+
+            Map<String, String> returnedMap = new HashMap<>();
+            returnedMap.put("public_id", publicId);
+            returnedMap.put("image_url", cloudinary.url().secure(true).generate(publicId));
+
+            return returnedMap;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void destroyOneFile(String publicId) {
+        try {
+            //        Deleting an image with the public ID of sample:
+            Map uploadedFile = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }

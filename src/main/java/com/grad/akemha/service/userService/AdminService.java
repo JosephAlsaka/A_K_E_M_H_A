@@ -1,6 +1,6 @@
 package com.grad.akemha.service.userService;
 
-import com.grad.akemha.dto.auth.doctor.AddDoctorRequest;
+import com.grad.akemha.dto.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Role;

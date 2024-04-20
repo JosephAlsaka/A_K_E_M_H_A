@@ -17,7 +17,7 @@ public class MedicalDevice {
     private Long id;
 
     @Column
-    private Long count;
+    private Integer count;
 
     @Column(nullable = false, unique = true)
     private String name;

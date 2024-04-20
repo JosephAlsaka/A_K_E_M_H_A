@@ -50,4 +50,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 (new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
     }
 
+
+    @ExceptionHandler(DeviceAlreadyExistsException.class)
+    public ResponseEntity<ErrorMessage> handleDeviceAlreadyExistsException(DeviceAlreadyExistsException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_ACCEPTABLE, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorMessage);
+    }
 }

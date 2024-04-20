@@ -124,4 +124,30 @@ public class ConsultationController {
                     .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
         }
     }
+
+
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @GetMapping("/PersonalNullConsultations")
+    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getPersonalNullConsultations(@RequestHeader HttpHeaders httpHeaders) { //P.11
+        List<ConsultationRes> response = consultationService.getPersonalNullConsultations(httpHeaders);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @GetMapping("/PersonalAnsweredConsultations")
+    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getPersonalAnsweredConsultations(@RequestHeader HttpHeaders httpHeaders) { //P.11
+        List<ConsultationRes> response = consultationService.getPersonalAnsweredConsultations(httpHeaders);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+    }
+
+    @PreAuthorize("hasRole('DOCTOR')")
+    @GetMapping("/PendingConsultationsForDoctor")
+    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getPendingConsultationsForDoctor(@RequestHeader HttpHeaders httpHeaders) { // P.12
+        System.out.println("tesssst");
+        List<ConsultationRes> response = consultationService.getPendingConsultationsForDoctor(httpHeaders);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+    }
 }

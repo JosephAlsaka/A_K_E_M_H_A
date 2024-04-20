@@ -1,6 +1,5 @@
 package com.grad.akemha.service;
 
-import com.cloudinary.api.exceptions.BadRequest;
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationRequest.ConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
@@ -14,15 +13,16 @@ import com.grad.akemha.repository.ConsultationRepository;
 import com.grad.akemha.repository.ImageRepository;
 import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
+import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,9 +42,11 @@ public class ConsultationService {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private JwtService jwtService;
+
     public List<ConsultationRes> getAllConsultations() {
         List<Consultation> consultationList = consultationRepository.findAll();
-//        System.out.println("listtttttttttt ********************************** " + consultationList); // this line caused stackOverFlow in memory !!!!!!
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }
@@ -77,62 +79,24 @@ public class ConsultationService {
         return consultationResponseList;
     }
 
-//    public Consultation saveConsultation(ConsultationRequest request, Long beneficiaryId){
-//        User beneficiary = userRepository.findById(beneficiaryId).orElseThrow();
-//        Specialization specialization = specializationRepository.findById(request.getSpecializationId()).orElseThrow();
-//
-//        Image image = new Image();
-////            image.setName(imageModel.getName());
-//        image.setImageUrl(cloudinaryService.uploadFile(request.getFile(), "folder_1"));
-//        if (image.getImageUrl() == null) {
-//            throw new UserNotFoundException("just a test");
-//        }
-//        var sami = imageRepository.save(image);
-//
-//        Consultation consultation = Consultation.builder()
-//                .title(request.getTitle())
-//                .consultationText(request.getConsultationText())
-//                .specialization(specialization)
-//                .consultationStatus(ConsultationStatus.ACTIVE)
-//                .beneficiary(beneficiary)
-//                .consultationType(request.getConsultationType())
-//                .images(Collections.singletonList(sami))
-////                .img(request.getImg())  //TODO: add MULTIPLE imgS
-//                .build();
-//        consultationRepository.save(consultation);
-//        return consultation;
-//    }
-
-    public Consultation saveConsultation(ConsultationRequest request, Long beneficiaryId){
+    public Consultation saveConsultation(ConsultationRequest request, Long beneficiaryId) {
         User beneficiary = userRepository.findById(beneficiaryId).orElseThrow();
         Specialization specialization = specializationRepository.findById(request.getSpecializationId()).orElseThrow();
-//        System.out.println("  sss  " + request.getFiles());
 
         // Upload and save multiple images
         List<Image> images = new ArrayList<>();
         if (request.getFiles() != null && !request.getFiles().isEmpty()) {
-            images = request.getFiles().stream()
-                    .map(file -> {
-                        Image image = new Image();
-                        image.setImageUrl(cloudinaryService.uploadFile(file, "Consultations", beneficiaryId.toString()));
-                        if (image.getImageUrl() == null) {
-                            throw new UserNotFoundException("Image upload failed"); //TODO change the Exception
-                        }
-                        return imageRepository.save(image);
-                    })
-                    .collect(Collectors.toList());
+            images = request.getFiles().stream().map(file -> {
+                Image image = new Image();
+                image.setImageUrl(cloudinaryService.uploadFile(file, "Consultations", beneficiaryId.toString()));
+                if (image.getImageUrl() == null) {
+                    throw new UserNotFoundException("Image upload failed"); //TODO change the Exception
+                }
+                return imageRepository.save(image);
+            }).collect(Collectors.toList());
         }
 
-        Consultation consultation = Consultation.builder()
-                .title(request.getTitle())
-                .consultationText(request.getConsultationText())
-                .specialization(specialization)
-                .consultationStatus(ConsultationStatus.ACTIVE)
-                .beneficiary(beneficiary)
-                .consultationType(request.getConsultationType())
-                .images(images)
-                .createTime(new Date())
-                .build();
+        Consultation consultation = Consultation.builder().title(request.getTitle()).consultationText(request.getConsultationText()).specialization(specialization).consultationStatus(ConsultationStatus.NULL).beneficiary(beneficiary).consultationType(request.getConsultationType()).images(images).createTime(new Date()).build();
         consultationRepository.save(consultation);
         return consultation;
     }
@@ -149,6 +113,31 @@ public class ConsultationService {
 
     public List<ConsultationRes> getAllAnsweredConsultations() {
         List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNull();
+        List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+        return consultationResponseList;
+    }
+
+    public List<ConsultationRes> getPersonalNullConsultations(HttpHeaders httpHeaders) {
+        Long beneficiaryId = Long.parseLong(jwtService.extractUserId(httpHeaders));
+        List<Consultation> consultationList = consultationRepository.findByBeneficiaryIdAndConsultationStatus(beneficiaryId, ConsultationStatus.NULL);
+        List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+        return consultationResponseList;
+    }
+
+    public List<ConsultationRes> getPersonalAnsweredConsultations(HttpHeaders httpHeaders) {
+        Long beneficiaryId = Long.parseLong(jwtService.extractUserId(httpHeaders));
+        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndBeneficiaryId(beneficiaryId);
+        List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+        return consultationResponseList;
+    }
+
+    public List<ConsultationRes> getPendingConsultationsForDoctor(HttpHeaders httpHeaders) { //الاستشارات يلي بيقدر يجاوب عليهاالدكتور
+        Long doctorId = Long.parseLong(jwtService.extractUserId(httpHeaders));
+        User doctor = userRepository.findById(doctorId).orElseThrow();
+        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNullAndSpecializationId(doctor.getSpecialization().getId());
+        //for other: get the other and then merge the two consultations list
+//        List<Consultation> consultationListTwo = consultationRepository.findAllByConsultationAnswerIsNullAndSpecializationId();
+
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }

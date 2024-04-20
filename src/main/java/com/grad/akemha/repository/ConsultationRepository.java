@@ -2,6 +2,7 @@ package com.grad.akemha.repository;
 
 import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.Specialization;
+import com.grad.akemha.entity.enums.ConsultationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -19,8 +20,12 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
 
     List<Consultation> findAllByConsultationAnswerIsNotNullAndSpecializationId(Long specializationId);
 
-    List<Consultation> findAllBySpecialization_Id(Optional<Specialization> specialization);
-
     List<Consultation> findBySpecializationId(Long specializationId);
+
+    List<Consultation> findByBeneficiaryIdAndConsultationStatus(Long beneficiaryId, ConsultationStatus consultationStatus);
+
+    List<Consultation> findAllByConsultationAnswerIsNotNullAndBeneficiaryId(Long beneficiaryId);
+
+    List<Consultation> findAllByConsultationAnswerIsNullAndSpecializationId(Long specializationId);
 
 }

@@ -17,7 +17,7 @@ public class Comment {
     private Long id;
 
     @Column(nullable = false)
-    private String text;
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

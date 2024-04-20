@@ -19,6 +19,6 @@ public class CommentResponse {
     public CommentResponse(Comment comment) {
         this.id = comment.getId();
         this.doctor = new DoctorResponse(comment.getUser());
-        this.description = comment.getText();
+        this.description = comment.getDescription();
     }
 }

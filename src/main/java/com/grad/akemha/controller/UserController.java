@@ -1,0 +1,66 @@
+package com.grad.akemha.controller;
+
+import com.grad.akemha.dto.BaseResponse;
+import com.grad.akemha.entity.User;
+import com.grad.akemha.entity.enums.Gender;
+import com.grad.akemha.service.userService.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+
+@RestController
+@RequestMapping("/api/user")
+public class UserController {
+
+    @Autowired
+    private UserService beneficiaryService;
+
+//
+//    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+//    @GetMapping()
+//    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAllConsultations() { //ConsultationResponse
+//        List<ConsultationRes> response = consultationService.getAllConsultations();
+//        return ResponseEntity.ok()
+//                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+//    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
+    @PatchMapping(value = "/information/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only beneficiary
+    public ResponseEntity<BaseResponse<User>> editUserInformation(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "phoneNumber", required = false) String phoneNumber, @RequestParam(value = "password", required = false) String password, @RequestParam(value = "dob", required = false) LocalDate dob, @RequestParam(value = "profileImg", required = false) MultipartFile profileImg, @RequestParam(value = "gender", required = false) Gender gender, @RequestHeader HttpHeaders httpHeaders) {
+        try {
+            User response = beneficiaryService.editUserInformation(name, phoneNumber, password, dob, profileImg, gender, httpHeaders);
+            return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+            return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
+        }
+    }
+
+    @PreAuthorize("hasRole('DOCTOR')")
+    @PatchMapping(value = "/information/doctor/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only beneficiary
+    public ResponseEntity<BaseResponse<User>> editDoctorInformation(@RequestParam(value = "name", required = false) String name,
+                                                                    @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+                                                                    @RequestParam(value = "password", required = false) String password,
+                                                                    @RequestParam(value = "dob", required = false) LocalDate dob,
+                                                                    @RequestParam(value = "profileImg", required = false) MultipartFile profileImg,
+                                                                    @RequestParam(value = "gender", required = false) Gender gender,
+                                                                    @RequestParam(value = "description", required = false) String description,
+                                                                    @RequestParam(value = "location", required = false)   String location,
+                                                                    @RequestParam(value = "openingTimes", required = false) String openingTimes,
+                                                                    @RequestHeader HttpHeaders httpHeaders) {
+        try {
+            User response = beneficiaryService.editDoctorInformation(name, phoneNumber, password, dob, profileImg, gender,description,location,openingTimes, httpHeaders);
+            return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+            return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
+        }
+    }
+}

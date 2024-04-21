@@ -25,8 +25,6 @@ public class ConsultationController {
     @Autowired
     private ConsultationService consultationService;
 
-    @Autowired
-    private JwtService jwtService;
 
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping()

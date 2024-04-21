@@ -34,41 +34,41 @@ public class User implements UserDetails {
     //@NotNull(message = "Name cannot be null")
     @NotBlank(message = "Please add a user name")
     @Column(nullable = false)
-    private String name;
+    private String name; // for beneficiary and doctor
 
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = true, unique = true, name = "phone_number")
-    private String phoneNumber;
+    private String phoneNumber; // for beneficiary and doctor
 
     @Column(nullable = false)
-    private String password;
+    private String password; // for beneficiary and doctor
 
     //Creation Date
     @Column()
     private Timestamp creationDate;
 
     @Column(name = "dob", nullable = true)
-    private LocalDate dob;
+    private LocalDate dob; // for beneficiary and doctor
 
     @Column(name = "profile_image", nullable = true)
-    private String profileImage;
+    private String profileImage; // for beneficiary and doctor
 
     @Column(name = "is_active", nullable = true)
     private Boolean isActive = true;
 
     @Column(name = "description", nullable = true)
-    private String description;
+    private String description; // for doctor
 
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private Gender gender; // for beneficiary and doctor
 
     @Column(name = "location", nullable = true)
-    private String location;
+    private String location; // for doctor
 
     @Column(name = "opening_times", nullable = true)
-    private String openingTimes;
+    private String openingTimes; // for doctor
 
 //    @JsonIgnore
     @ManyToOne

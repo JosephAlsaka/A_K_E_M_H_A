@@ -50,4 +50,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 (new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
     }
 
+    @ExceptionHandler(CloudinaryException.class)
+    public ResponseEntity<ErrorResponse> handleCloudinaryException(CloudinaryException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body
+                (new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), ex.getMessage()));
+    }
+
 }

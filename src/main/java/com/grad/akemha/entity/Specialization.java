@@ -20,7 +20,7 @@ public class Specialization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "specialization_type",unique = true,nullable = false)
+    @Column(name = "specialization_type", unique = true, nullable = false)
     private String specializationType;
 
     @Column(name = "is_public")

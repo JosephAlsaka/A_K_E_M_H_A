@@ -43,7 +43,7 @@ public class AdminService {
         user.setGender(request.getGender());
         //check if the specialization not exist  create it and assign it to user
         Specialization specialization = specializationRepository.findBySpecializationType(request.getSpecialization());
-        System.out.println(specialization);
+//        System.out.println(specialization);
         if (specialization == null) {
             specialization = new Specialization();
             specialization.setSpecializationType(request.getSpecialization());

@@ -28,4 +28,8 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
 
     List<Consultation> findAllByConsultationAnswerIsNullAndSpecializationId(Long specializationId);
 
+    List<Consultation> findAllBySpecializationIsPublicTrue();
+    List<Consultation> findAllByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(Long specializationId);
+
+    List<Consultation> findAllByDoctorId(Long doctorId);
 }

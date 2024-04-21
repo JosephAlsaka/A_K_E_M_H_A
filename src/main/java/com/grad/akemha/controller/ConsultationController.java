@@ -69,7 +69,7 @@ public class ConsultationController {
 //    }
 
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
-    @GetMapping("/consultations")
+    @GetMapping("/keyword")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getConsultationsByKeyword(@RequestParam String keyword) {
         List<ConsultationRes> response = consultationService.findConsultationsByKeyword(keyword);
         return ResponseEntity.ok()
@@ -87,21 +87,9 @@ public class ConsultationController {
             @RequestParam(value = "files", required = false) List<MultipartFile> files,
             @RequestHeader HttpHeaders httpHeaders) {
                 try {
-            Long beneficiaryId = Long.parseLong(jwtService.extractUserId(httpHeaders));
-            System.out.println("Converted Long value: " + beneficiaryId);
-            ConsultationRequest request = new ConsultationRequest();
-            request.setTitle(title);
-            request.setConsultationText(consultationText);
-            request.setSpecializationId(specializationId);
-            request.setConsultationType(consultationType);
-                    // Merge the files into the request
-                    if (files != null && !files.isEmpty()) {
-                        System.out.println("sami");
-                        request.setFiles(files);
-                    }
-            Consultation response = consultationService.saveConsultation(request, beneficiaryId);
+            Consultation response = consultationService.postConsultation(httpHeaders, title, consultationText, specializationId, consultationType, files);
             return ResponseEntity.ok()
-                    .body(new BaseResponse<>(HttpStatus.OK.value(), "Consultation added successfully", null));
+                    .body(new BaseResponse<>(HttpStatus.OK.value(), "Consultation added successfully", response));
         } catch (NumberFormatException e) {
             System.out.println("Invalid input: " + e.getMessage());
             return ResponseEntity.ok()
@@ -113,9 +101,7 @@ public class ConsultationController {
     @PatchMapping("/")
     public ResponseEntity<BaseResponse<Consultation>> answerConsultation(@RequestBody AnswerConsultationRequest request, @RequestHeader HttpHeaders httpHeaders) {
         try {
-            Long doctorId = Long.parseLong(jwtService.extractUserId(httpHeaders));
-            System.out.println("Converted Long value: " + doctorId);
-            Consultation response = consultationService.answerConsultation(request, doctorId);
+            Consultation response = consultationService.answerConsultation(request, httpHeaders);
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", null));
         } catch (NumberFormatException e) {
@@ -145,8 +131,23 @@ public class ConsultationController {
     @PreAuthorize("hasRole('DOCTOR')")
     @GetMapping("/PendingConsultationsForDoctor")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getPendingConsultationsForDoctor(@RequestHeader HttpHeaders httpHeaders) { // P.12
-        System.out.println("tesssst");
         List<ConsultationRes> response = consultationService.getPendingConsultationsForDoctor(httpHeaders);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @GetMapping("/getBeneficiaryAnsweredConsultations/{beneficiaryId}")
+    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getBeneficiaryAnsweredConsultations(@RequestHeader HttpHeaders httpHeaders, @PathVariable Long beneficiaryId) { //P.13
+        List<ConsultationRes> response = consultationService.getBeneficiaryAnsweredConsultations(beneficiaryId);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @GetMapping("/getDoctorAnsweredConsultations")
+    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getDoctorAnsweredConsultations(@RequestHeader HttpHeaders httpHeaders) { //P.14
+        List<ConsultationRes> response = consultationService.getDoctorAnsweredConsultations(httpHeaders);
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }

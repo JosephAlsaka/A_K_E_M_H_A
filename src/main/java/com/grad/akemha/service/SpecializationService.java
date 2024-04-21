@@ -33,9 +33,7 @@ public class SpecializationService {
 
     public Specialization addSpecialization(SpecializationRequest request) {
         Specialization specialization = new Specialization();
-        if (request.isPublic() == true) {
-            specialization.setIsPublic(true);
-        }
+        specialization.setIsPublic(request.isPublic());
         specialization.setSpecializationType(request.specializationType());
         return specializationRepository.save(specialization);
     }

@@ -1,7 +1,6 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
-import com.grad.akemha.dto.post.PostDetailsResponse;
 import com.grad.akemha.dto.post.PostRequest;
 import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.entity.Post;
@@ -25,12 +24,24 @@ public class PostController {
 
     private final PostService postService;
 
+    // Read
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponse<PostResponse>> getPostById(
+            @PathVariable int id)  {
+        PostResponse response = postService.getPostById(id);
+
+        return ResponseEntity.ok().body(new BaseResponse<>
+                (HttpStatus.OK.value(), "Post Found successfully", response));
+
+    }
+
 
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping()
     public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
             // this page is for pagination //this may be an Integer instead of int
-            @RequestParam(name = "page",defaultValue = "0") int page
+            @RequestParam(name = "page", defaultValue = "0") int page
     ) {
         List<Post> posts = postService.getAllPosts(page);
         List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
@@ -58,9 +69,8 @@ public class PostController {
             @PathVariable int id,
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam(value = "description", required = false) String description,
-                    @RequestHeader HttpHeaders httpHeaders
+            @RequestHeader HttpHeaders httpHeaders
     ) {
-        System.out.println("****************************************************");
         PostResponse response = postService.updatePost(id, image, description, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Post updated successfully", response));

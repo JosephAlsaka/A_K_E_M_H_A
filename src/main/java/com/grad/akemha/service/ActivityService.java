@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,9 +49,8 @@ public class ActivityService {
 
 
     public List<Activity> getAllActivities(int page) {
-        // this page size indicates of number of data retrieved
-        // TODO:  change this number to be 10
-        Pageable pageable = PageRequest.of(page, 2);
+        // this page size indicates of number of data retrieved, // the descending to fetch the latest posts to older posts
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
         Page<Activity> activityPage = activityRepository.findAll(pageable);
         return activityPage.getContent();
     }

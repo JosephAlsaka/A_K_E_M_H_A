@@ -27,23 +27,10 @@ public class MedicalDeviceController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "devices", devices));
     }
 
-    @GetMapping("reservation")
-    public ResponseEntity<BaseResponse<List<DeviceReservation>>> getReservations(@PathVariable Long medicalDeviceId) {
-        //TODO
-        medicalDeviceService.getReservations(medicalDeviceId);
-        return null;
-    }
 
     @PostMapping()
     public ResponseEntity<BaseResponse<?>> addDevice(@ModelAttribute AddDeviceRequest request, @RequestHeader HttpHeaders httpHeaders) {
         medicalDeviceService.addDevice(request, httpHeaders);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device added successfully", null));
-    }
-
-
-    @PostMapping("reserve")
-    public ResponseEntity<BaseResponse<?>> reserveDevice(@RequestBody ReserveDeviceRequest request, @RequestHeader HttpHeaders httpHeaders) {
-        medicalDeviceService.reserveDevice(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device added successfully", null));
     }
 
@@ -52,4 +39,15 @@ public class MedicalDeviceController {
         medicalDeviceService.deleteDevice(medicalDeviceId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device deleted successfully", null));
     }
+
+    @GetMapping("/reservation/{medicalDeviceId}")
+    public ResponseEntity<BaseResponse<List<DeviceReservation>>> getReservations(@PathVariable Long medicalDeviceId) {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reservations", medicalDeviceService.getReservations(medicalDeviceId)));
+    }
+    @PostMapping("reserve")
+    public ResponseEntity<BaseResponse<?>> reserveDevice(@RequestBody ReserveDeviceRequest request, @RequestHeader HttpHeaders httpHeaders) {
+        medicalDeviceService.reserveDevice(request, httpHeaders);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device added successfully", null));
+    }
+
 }

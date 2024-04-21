@@ -4,6 +4,8 @@ import com.grad.akemha.entity.enums.DeviceReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @ToString
 @Setter
 @Getter
@@ -27,4 +29,15 @@ public class DeviceReservation {
 
     @Column()
     private DeviceReservationStatus status;
+
+    private LocalDateTime timestamp;
+
+    @PrePersist
+    private void setTimestamp() {
+        this.timestamp = LocalDateTime.now();
+        this.expirationTime = LocalDateTime.now().plusMinutes(1L);
+    }
+
+    private LocalDateTime expirationTime;
+
 }

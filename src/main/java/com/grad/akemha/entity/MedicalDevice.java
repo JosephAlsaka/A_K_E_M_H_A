@@ -1,9 +1,12 @@
 package com.grad.akemha.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-@ToString
+import java.util.List;
+
+//@ToString
 @Setter
 @Getter
 @Builder
@@ -29,4 +32,8 @@ public class MedicalDevice {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
+    @JsonIgnore
+    @ToString.Exclude
+    @OneToMany(mappedBy = "medicalDevice", cascade = CascadeType.ALL)
+    private List<DeviceReservation> deviceReservations;
 }

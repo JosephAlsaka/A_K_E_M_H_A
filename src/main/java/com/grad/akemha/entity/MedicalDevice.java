@@ -19,7 +19,14 @@ public class MedicalDevice {
     @Column
     private Integer count;
 
+    @Column()
+    private Integer reservedCount;
+
     @Column(nullable = false, unique = true)
     private String name;
+
+
+    @Column(name = "image_url", nullable = false)
+    private String imageUrl;
 
 }

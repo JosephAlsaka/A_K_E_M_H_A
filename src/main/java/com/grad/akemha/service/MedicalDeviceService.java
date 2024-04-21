@@ -1,13 +1,19 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.medicalDevice.AddDeviceRequest;
+import com.grad.akemha.dto.medicalDevice.ReserveDeviceRequest;
+import com.grad.akemha.entity.DeviceReservation;
 import com.grad.akemha.entity.MedicalDevice;
 import com.grad.akemha.entity.User;
-import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.DeviceAlreadyExistsException;
-import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
+import com.grad.akemha.exception.DeviceNotFoundException;
+import com.grad.akemha.exception.DeviceReservationQuantityException;
+import com.grad.akemha.repository.DeviceReservationRepository;
 import com.grad.akemha.repository.MedicalDeviceRepository;
+import com.grad.akemha.security.JwtService;
+import com.grad.akemha.service.cloudinary.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +22,14 @@ import java.util.List;
 public class MedicalDeviceService {
     @Autowired
     private MedicalDeviceRepository medicalDeviceRepository;
+
+    @Autowired
+    private DeviceReservationRepository deviceReservationRepository;
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
+    @Autowired
+    private JwtService jwtService;
 
     public List<MedicalDevice> getDevices() {
         return medicalDeviceRepository.findAll();
@@ -26,17 +40,44 @@ public class MedicalDeviceService {
         return medicalDeviceRepository.findAll();
     }
 
-    public void addDevice(AddDeviceRequest request) {
+    public void addDevice(AddDeviceRequest request, HttpHeaders httpHeaders) {
         if (deviceAlreadyExists(request.getName())) {
             throw new DeviceAlreadyExistsException("Device already exists");
         }
+        User user = jwtService.extractUserFromToken(httpHeaders);
         MedicalDevice medicalDevice = new MedicalDevice();
         medicalDevice.setName(request.getName());
         medicalDevice.setCount(request.getCount());
+        medicalDevice.setReservedCount(0);
+        medicalDevice.setImageUrl(cloudinaryService.uploadFile(request.getImage(), "Devices", user.getId().toString()));
         medicalDeviceRepository.save(medicalDevice);
     }
 
     public boolean deviceAlreadyExists(String name) {
-        return medicalDeviceRepository.existByName(name);
+        return medicalDeviceRepository.existsByName(name);
+    }
+
+    public void reserveDevice(ReserveDeviceRequest request, HttpHeaders httpHeaders) {
+        MedicalDevice medicalDevice =medicalDeviceRepository.findById(request.getMedicalDeviceId()).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
+        int availableQuantity = medicalDevice.getCount() - medicalDevice.getReservedCount();
+        if (request.getQuantity() <= availableQuantity) {
+            int newReservedCount = medicalDevice.getReservedCount() + request.getQuantity();
+            medicalDevice.setReservedCount(newReservedCount);
+            User user = jwtService.extractUserFromToken(httpHeaders);
+
+            DeviceReservation reservation = DeviceReservation.builder()
+                    .user(user)
+                    .medicalDevice(medicalDevice)
+                    .build();
+            deviceReservationRepository.save(reservation);
+            medicalDeviceRepository.save(medicalDevice);
+        } else {
+            throw new DeviceReservationQuantityException("No enough devices available for reservation");
+        }
+    }
+
+    public void deleteDevice(Long medicalDeviceId) {
+        MedicalDevice medicalDevice = medicalDeviceRepository.findById(medicalDeviceId).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
+        medicalDeviceRepository.delete(medicalDevice);
     }
 }

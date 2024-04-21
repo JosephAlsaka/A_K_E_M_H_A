@@ -23,7 +23,7 @@ public class DeviceReservation {
 
     @ManyToOne
     @JoinColumn(name = "medical_device_id")
-    private MedicalDevice MedicalDevice;
+    private MedicalDevice medicalDevice;
 
     @Column()
     private DeviceReservationStatus status;

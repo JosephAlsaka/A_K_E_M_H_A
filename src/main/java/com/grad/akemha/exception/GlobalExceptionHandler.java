@@ -56,4 +56,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_ACCEPTABLE, exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorMessage);
     }
+
+
+    @ExceptionHandler(DeviceNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleDeviceNotFoundException(DeviceNotFoundException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_FOUND, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
+    @ExceptionHandler(DeviceReservationQuantityException.class)
+    public ResponseEntity<ErrorMessage> handleDeviceReservationQuantityException(DeviceReservationQuantityException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+    }
 }

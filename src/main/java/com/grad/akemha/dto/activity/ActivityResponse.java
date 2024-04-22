@@ -12,11 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ActivityResponse {
     private Long id;
-    private String imageUrl;
+    private String title;
     private String description;
+    private String imageUrl;
 
     public ActivityResponse(Activity activity) {
         this.id = activity.getId();
+        this.title = activity.getTitle();
         this.description = activity.getDescription();
         this.imageUrl = activity.getImageUrl();
     }

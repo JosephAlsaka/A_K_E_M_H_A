@@ -17,6 +17,9 @@ public class Activity {
     private Long id;
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private String description;
 
     @Column(name = "image_url", nullable = false)

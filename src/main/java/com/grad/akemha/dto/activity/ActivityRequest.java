@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class ActivityRequest {
     @NotNull
+    private String title;
+    @NotNull
     private String description;
     @NotNull
     private MultipartFile image;

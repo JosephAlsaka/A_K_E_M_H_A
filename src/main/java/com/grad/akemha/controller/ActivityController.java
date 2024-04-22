@@ -68,9 +68,10 @@ public class ActivityController {
             @PathVariable int id,
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "title", required = false) String title,
             @RequestHeader HttpHeaders httpHeaders
     ) {
-        ActivityResponse response = activityService.updateActivity(id, image, description, httpHeaders);
+        ActivityResponse response = activityService.updateActivity(id, image, description, title, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Activity updated successfully", response));
     }

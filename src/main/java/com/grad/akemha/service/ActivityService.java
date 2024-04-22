@@ -39,8 +39,9 @@ public class ActivityService {
             return ActivityResponse
                     .builder()
                     .id(activity.getId())
-                    .imageUrl(activity.getImageUrl())
+                    .title(activity.getTitle())
                     .description(activity.getDescription())
+                    .imageUrl(activity.getImageUrl())
                     .build();
         } else {
             throw new NotFoundException("No Activity in that Id: " + id + " was found");
@@ -68,6 +69,7 @@ public class ActivityService {
         User user = jwtService.extractUserFromToken(httpHeaders);
         Map<String, String> cloudinaryMap = cloudinaryService.uploadOneFile(activityRequest.getImage(), "Activity", user.getId().toString());
         Activity activity = new Activity();
+        activity.setTitle(activityRequest.getTitle());
         activity.setDescription(activityRequest.getDescription());
         activity.setImageUrl(cloudinaryMap.get("image_url"));
         activity.setImagePublicId(cloudinaryMap.get("public_id"));
@@ -75,8 +77,9 @@ public class ActivityService {
         return ActivityResponse
                 .builder()
                 .id(activity.getId())
-                .imageUrl(activity.getImageUrl())
+                .title(activity.getTitle())
                 .description(activity.getDescription())
+                .imageUrl(activity.getImageUrl())
                 .build();
     }
 
@@ -84,9 +87,11 @@ public class ActivityService {
     public ActivityResponse updateActivity(int id,
                                            MultipartFile image,
                                            String description,
+                                           String title,
                                            HttpHeaders httpHeaders) {
         if (description == null
-                && image == null) {
+                && image == null
+                && title == null) {
             throw new NotFoundException("No Data have been entered");
         }
 
@@ -100,6 +105,10 @@ public class ActivityService {
                 activity.setDescription(description);
             }
 
+            if (title != null
+                    && !Objects.equals(title, activity.getTitle())) {
+                activity.setTitle(title);
+            }
 
             if (image != null) {
                 // deleting the image from cloudinary
@@ -115,8 +124,9 @@ public class ActivityService {
             return ActivityResponse
                     .builder()
                     .id(activity.getId())
-                    .imageUrl(activity.getImageUrl())
+                    .title(activity.getTitle())
                     .description(activity.getDescription())
+                    .imageUrl(activity.getImageUrl())
                     .build();
         } else {
             throw new NotFoundException("No Activity with That id: " + id + " was found");
@@ -135,8 +145,9 @@ public class ActivityService {
             return ActivityResponse
                     .builder()
                     .id(activity.getId())
-                    .imageUrl(activity.getImageUrl())
+                    .title(activity.getTitle())
                     .description(activity.getDescription())
+                    .imageUrl(activity.getImageUrl())
                     .build();
         } else {
             throw new NotFoundException("No Activity in that id: " + id + " was found");

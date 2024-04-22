@@ -63,7 +63,54 @@
 //                (HttpStatus.OK.value(), "All Comments", response));
 //    }
 
-///
+// FIXME FROM POST SERVICE RELATED TO LIKE
+// this is working
+//    // to match the post id and user id to make
+//    // sure not adding more than one like by the same user
+//    public boolean isLikeExists(Like like) {
+//        Example<Like> likeExample = Example.of(like,
+//                ExampleMatcher.matchingAll().withIgnorePaths("id"));
+//        System.out.println(likeRepository.exists(likeExample));
+//        return likeRepository.exists(likeExample);
+//    }
+
+
+/*
+*
+*  // add like in the old way (it's Working )
+    public PostResponse addLike(int id, HttpHeaders httpHeaders) {
+        Optional<Post> optionalPost = postRepository.findById((long) id);
+
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            User user = jwtService.extractUserFromToken(httpHeaders);
+            Like like = new Like();
+            like.setPost(post);
+            like.setUser(user);
+            if (isLikeExists(like)) {
+                throw new ForbiddenException("You can't add more than one like");
+            } else {
+                likeRepository.save(like);
+            }
+
+            return PostResponse
+                    .builder()
+                    .id(post.getId())
+                    .doctor(new DoctorResponse(post.getUser()))
+                    .imageUrl(post.getImageUrl())
+                    .text(post.getText())
+                    .likesCount(post.getLikes().size())
+                    .commentsCount(post.getComments().size())
+                    .build();
+        } else {
+            throw new NotFoundException("No Post in that id: " + id);
+        }
+
+    }
+
+*
+*
+* */
 
 
 

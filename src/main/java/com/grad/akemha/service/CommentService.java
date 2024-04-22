@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +50,7 @@ public class CommentService {
     public List<Comment> getAllCommentsOfSpecificPost(int postId, int page) {
         Optional<Post> optionalPost = postRepository.findById((long) postId);
         if (optionalPost.isPresent()) {
-            Pageable pageable = PageRequest.of(page, 10);
+            Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
             Page<Comment> commentPage = commentRepository.findAllByPost(optionalPost.get(), pageable);
 
             return commentPage.getContent();

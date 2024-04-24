@@ -2,7 +2,6 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.activity.ActivityRequest;
 import com.grad.akemha.dto.activity.ActivityResponse;
-import com.grad.akemha.dto.post.DoctorResponse;
 import com.grad.akemha.entity.Activity;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.exception.ForbiddenException;

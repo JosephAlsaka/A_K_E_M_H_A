@@ -59,7 +59,7 @@ public class JwtService {
         if (optionalUser.isPresent()) {
             return optionalUser.get();
         } else {
-            throw new NotFoundException("Something Went Wrong When getting the user id");
+            throw new NotFoundException("Something Went Wrong When getting the User");
         }
     }
 

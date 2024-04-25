@@ -3,13 +3,10 @@ package com.grad.akemha.controller;
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.specializationDTO.SpecializationRequest;
 import com.grad.akemha.entity.Specialization;
-import com.grad.akemha.entity.User;
-import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.service.SpecializationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

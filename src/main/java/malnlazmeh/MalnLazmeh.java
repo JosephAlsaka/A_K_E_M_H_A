@@ -113,4 +113,9 @@
 * */
 
 
+// FIXME FROM MEDICAL RECORD REPOSITORY
+// @Query("SELECT mr FROM MedicalRecord mr WHERE mr.user = :user ORDER BY mr.createTime DESC")
+// Optional<MedicalRecord> findLastMedicalRecordByUser(@Param("user") User user, Pageable pageable);
+
+
 

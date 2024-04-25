@@ -4,6 +4,7 @@ import com.grad.akemha.entity.enums.BloodType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @ToString
@@ -44,11 +45,17 @@ public class MedicalRecord {
     @Column(name = "covid_vaccine")
     private Boolean covidVaccine;
 
+    @Enumerated(EnumType.STRING)
     @Column
     private BloodType bloodType;
 
-    @OneToMany(mappedBy = "medicalRecord")
-    private List<AdditionalRecordInfo> additionalRecordInfos;
 
+    @Column(name = "create_time", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime; // for beneficiary and doctor
+
+
+    @OneToMany(mappedBy = "medicalRecord", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AdditionalRecordInfo> additionalRecordInfo;
 
 }

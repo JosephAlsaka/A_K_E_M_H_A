@@ -1,9 +1,10 @@
 package com.grad.akemha.entity;
 
+import com.grad.akemha.entity.enums.AdditionalInfoType;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.util.Date;
 
 @ToString
 @Setter
@@ -18,13 +19,26 @@ public class AdditionalRecordInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "additionalRecordInfo")
-    private List<AdditionalRecordDetails> additionalRecordDetailsList;
-
     @Column
     private String name;
 
+    @Column
+    private String description;
+
+
+    @Enumerated(EnumType.STRING)
+    private AdditionalInfoType type;
+
+    @Column(name = "create_time", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime;
+
+
     @ManyToOne()
-    @JoinColumn(name = "additional_record_id")
+    @JoinColumn(name = "medical_record_id")
     private MedicalRecord medicalRecord;
 }
+
+
+//    @OneToMany(mappedBy = "additionalRecordInfo")
+//    private List<AdditionalRecordDetails> additionalRecordDetailsList;

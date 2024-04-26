@@ -1,4 +1,5 @@
 package com.grad.akemha.controller;
+
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.auth.authRequest.LoginRequest;
 import com.grad.akemha.dto.auth.authRequest.RegisterRequest;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -24,20 +27,21 @@ public class AuthController {
 
     private final AuthenticationService authService;
 
+
+    //FIXME fix the return type
     @PostMapping("/register")
-    public ResponseEntity<BaseResponse<AuthResponse>> register(
+    public ResponseEntity<BaseResponse<String>> register(
             @Valid @RequestBody RegisterRequest request
-    ) {
-        AuthResponse response = authService.register(request);
-//        try {
-        return ResponseEntity.ok()
-                .body(new BaseResponse<>(HttpStatus.OK.value(), "User registered successfully", response));
-//        } catch (Exception e) {
-//            System.out.println("============================ in catch");
-//
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                    .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "email is taken",null));
-//        }
+    ) throws IOException {
+        try {
+            String response = authService.register(request);
+            return ResponseEntity.ok()
+                    .body(new BaseResponse<>(HttpStatus.OK.value(), "User registered successfully", response));
+        } catch (IOException e) {
+            System.out.println("============================ in catch");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new BaseResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), null));
+        }
     }
 
     @PostMapping("/login")

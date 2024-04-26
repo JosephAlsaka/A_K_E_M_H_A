@@ -118,4 +118,55 @@
 // Optional<MedicalRecord> findLastMedicalRecordByUser(@Param("user") User user, Pageable pageable);
 
 
+// FIXME for scheduling
+// for scheduling:
+//Every 5 Minutes:
+//        "0 */5 * * * *": This expression means the task will run every 5 minutes. The */5 in the minutes field specifies that the task should run every 5 minutes.
+//Every Hour:
+//        "0 0 * * * *": This expression means the task will run at the beginning of every hour. The 0 in the minutes and seconds fields ensures it starts at the exact beginning of each hour.
+//Every Day at Midnight:
+//        "0 0 0 * * *": This expression means the task will run at midnight every day. The three 0 values in the hours, minutes, and seconds fields ensure it runs precisely at midnight.
+//Every Sunday at Midnight:
+//        "0 0 0 * * SUN": This expression means the task will run at midnight every Sunday. The SUN in the day-of-week field specifies Sunday.
+//Every Weekday at Noon:
+//        "0 0 12 ? * MON-FRI": This expression means the task will run at noon (12:00 PM) every weekday (Monday to Friday). The MON-FRI in the day-of-week field specifies weekdays.
+//Every Last Day of the Month at Midnight:
+//        "0 0 0 L * ?": This expression means the task will run at midnight on the last day of every month. The L in the day-of-month field represents the last day of the month.
+//Every 3 hours:
+//         0 0 */3 * * *
+//NOTE:
+//     Seconds (*):
+//     Indicates every second of the minute (0-59).
+//     Minutes (*):
+//     Indicates every minute of the hour (0-59).
+//     Hours (*):
+//     Indicates every hour of the day (0-23).
+//     Day of Month (*):
+//     Indicates every day of the month (1-31).
+//     Month (*):
+//     Indicates every month of the year (1-12 or JAN-DEC).
+//     Day of Week (*):
+//     Indicates every day of the week (0-7 or SUN-SAT, where 0 and 7 represent Sunday).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

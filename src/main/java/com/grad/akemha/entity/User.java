@@ -1,6 +1,5 @@
 package com.grad.akemha.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.entity.enums.Role;
 import jakarta.persistence.*;
@@ -12,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,8 +44,8 @@ public class User implements UserDetails {
     private String password; // for beneficiary and doctor
 
     //Creation Date
-    @Column()
-    private Timestamp creationDate;
+    @Column(name = "creation_date")
+    private LocalDateTime creationDate;
 
     @Column(name = "dob", nullable = true)
     private LocalDate dob; // for beneficiary and doctor
@@ -68,11 +68,18 @@ public class User implements UserDetails {
     @Column(name = "opening_times", nullable = true)
     private String openingTimes; // for doctor
 
-//    @JsonIgnore
+    // to make sure this account is verified
+    @Column(name = "is_verified", nullable = false)
+    private boolean isVerified;
+
+
+    //    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "specialization_id")
     private Specialization specialization;
 
+
+    //TODO: why role can be nullable
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
     private Role role;

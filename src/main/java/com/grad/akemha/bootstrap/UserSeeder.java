@@ -10,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Optional;
 
 // this class works on application run
@@ -42,6 +41,7 @@ public class UserSeeder implements ApplicationListener<ContextRefreshedEvent> {
                         .password(passwordEncoder.encode("123"))
                         .role(Role.USER)
                         .isActive(true)
+                        .isVerified(true)
                         .build(),
                 User.builder()
                         .dob(LocalDate.of(2001, 2, 2))
@@ -52,6 +52,7 @@ public class UserSeeder implements ApplicationListener<ContextRefreshedEvent> {
                         .password(passwordEncoder.encode("123"))
                         .role(Role.DOCTOR)
                         .isActive(true)
+                        .isVerified(true)
                         .build(),
                 User.builder()
                         .dob(LocalDate.of(2001, 2, 2))
@@ -62,6 +63,7 @@ public class UserSeeder implements ApplicationListener<ContextRefreshedEvent> {
                         .password(passwordEncoder.encode("123"))
                         .role(Role.OWNER)
                         .isActive(true)
+                        .isVerified(true)
                         .build()
         };
 

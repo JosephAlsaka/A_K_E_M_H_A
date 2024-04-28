@@ -20,23 +20,20 @@ public class AccountCleanupTask {
     @Autowired
     private VerificationCodeRepository verificationCodeRepository;
 
-    // Define the time interval for running the cleanup task (e.g., every minute)
-    @Scheduled(cron = "*/25 * * * * *") // Runs every minute
+    // Define the time interval for running the cleanup task (e.g., every 24 hours)
+    @Scheduled(cron = "0 0 0 * * *")  // Runs at midnight every day
     public void cleanupUnverifiedAccounts() {
-        // Define the time limit for account verification (e.g., 1 minute ago)
-        LocalDateTime verificationTimeLimit = LocalDateTime.now().minusMinutes(1);
+        // Define the time limit for account verification (e.g., 24 hours ago)
+        LocalDateTime verificationTimeLimit = LocalDateTime.now().minusHours(24);
 
         // Retrieve unverified accounts registered before the verification time limit
         List<User> unverifiedAccounts = userRepository.findUnverifiedAccountsCreatedBefore(verificationTimeLimit);
 
         // Delete unverified accounts from the database
         for (User user : unverifiedAccounts) {
-            System.out.println(user.getId());
             // Delete verification code if exists for the user
             verificationCodeRepository.deleteByUser(user);
-
             userRepository.delete(user);
-            System.out.println("DELETEDDD");
         }
     }
 }

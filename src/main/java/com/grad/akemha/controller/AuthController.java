@@ -4,6 +4,7 @@ import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.auth.authRequest.LoginRequest;
 import com.grad.akemha.dto.auth.authRequest.RegisterRequest;
 import com.grad.akemha.dto.auth.authResponse.AuthResponse;
+import com.grad.akemha.dto.auth.authrequest.VerificationRequest;
 import com.grad.akemha.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +28,6 @@ public class AuthController {
 
     private final AuthenticationService authService;
 
-
-    //FIXME fix the return type
     @PostMapping("/register")
     public ResponseEntity<BaseResponse<String>> register(
             @Valid @RequestBody RegisterRequest request
@@ -63,4 +62,12 @@ public class AuthController {
 //    }
     }
 
+    @PostMapping("/verify_account")
+    public ResponseEntity<BaseResponse<AuthResponse>> verifyAccount(
+            @RequestBody VerificationRequest verificationRequest
+    ) throws Exception {
+        AuthResponse response = authService.verifyAccount(verificationRequest);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "User Verified successfully", response));
+    }
 }

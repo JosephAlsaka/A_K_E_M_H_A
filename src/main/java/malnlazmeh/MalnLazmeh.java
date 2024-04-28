@@ -151,6 +151,38 @@
 
 
 
+//FIXME this was the register function in AuthService
+/*
+    public AuthResponse register(RegisterRequest request)
+//            throws RegistrationException
+    {
+        if (userAlreadyExists(request.getEmail())) {
+            throw new EmailAlreadyExistsException("User already exists");
+        }
+
+        var user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .phoneNumber(request.getPhoneNumber())
+                .dob(request.getDob())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .isActive(true)
+                .build();
+
+        userRepository.save(user);
+
+        var jwtToken = jwtService.generateToken(user);
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .userEmail(user.getEmail())
+                .build();
+    }
+
+    private boolean userAlreadyExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+*/
 
 
 

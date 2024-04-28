@@ -20,9 +20,7 @@ public class VerificationCodeCleanupTask {
         LocalDateTime currentTime = LocalDateTime.now();
         Iterable<VerificationCode> expiredCodes = verificationCodeRepository.findByExpiryTimeBefore(currentTime);
 
-
         // Delete expired verification codes
         verificationCodeRepository.deleteAll(expiredCodes);
-        // deleted successfully
     }
 }

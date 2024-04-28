@@ -70,7 +70,7 @@ public class User implements UserDetails {
 
     // to make sure this account is verified
     @Column(name = "is_verified", nullable = false)
-    private boolean isVerified;
+    private Boolean isVerified;
 
 
     //    @JsonIgnore

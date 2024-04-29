@@ -1,5 +1,8 @@
 package com.grad.akemha.component;
 
+import com.grad.akemha.entity.DeviceReservation;
+import com.grad.akemha.entity.MedicalDevice;
+import com.grad.akemha.entity.enums.DeviceReservationStatus;
 import com.grad.akemha.repository.DeviceReservationRepository;
 import com.grad.akemha.repository.MedicalDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,23 +15,22 @@ import java.util.List;
 @Component
 public class ReservationStatusUpdater {
 
-    //    @Autowired
-//    private MedicalDeviceRepository medicalDeviceRepository;
+    @Autowired
+    private MedicalDeviceRepository medicalDeviceRepository;
     @Autowired
     private DeviceReservationRepository deviceReservationRepository;
 
-//    @Scheduled(fixedDelay = 1000) // Runs every second, you can adjust the value according to your needs
-//    public void updateCheckOutStatus() {
-//        LocalDateTime currentTime = LocalDateTime.now();
-//        List<ReservationHistory> expiredReservations = deviceReservationRepository.findByExpirationTimeBeforeAndCheckOutStatusIsNull(
-//                currentTime);
-//        for (ReservationHistory reservation : expiredReservations) {
-//            reservation.setCheckOutStatus(CheckOutStatus.TIMER_END);
-//            reservation.setCheckOutEndTime(currentTime);
-//            reservationHistoryRepository.save(reservation);
-//            TextFile textFile = reservation.getTextFile();
-//            textFile.setReservationStatus(ReservationStatus.FREE);
-//            textFileRepository.save(textFile);
-//        }
-//    }
+    @Scheduled(fixedDelay = 1000)
+    public void updateCheckOutStatus() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        List<DeviceReservation> deviceReservations = deviceReservationRepository.findByExpirationTimeBeforeAndStatusIsNull(
+                currentTime);
+        for (DeviceReservation reservation : deviceReservations) {
+            reservation.setStatus(DeviceReservationStatus.PENDING);
+            deviceReservationRepository.save(reservation);
+            MedicalDevice medicalDevice = reservation.getMedicalDevice();
+            medicalDevice.setReservedCount(medicalDevice.getReservedCount() - 1);
+            medicalDeviceRepository.save(medicalDevice);
+        }
+    }
 }

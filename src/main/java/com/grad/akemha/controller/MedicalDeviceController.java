@@ -47,7 +47,7 @@ public class MedicalDeviceController {
     @PostMapping("reserve")
     public ResponseEntity<BaseResponse<?>> reserveDevice(@RequestBody ReserveDeviceRequest request, @RequestHeader HttpHeaders httpHeaders) {
         medicalDeviceService.reserveDevice(request, httpHeaders);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device added successfully", null));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reserved successfully", null));
     }
 
 }

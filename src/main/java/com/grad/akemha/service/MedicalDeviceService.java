@@ -5,6 +5,7 @@ import com.grad.akemha.dto.medicalDevice.ReserveDeviceRequest;
 import com.grad.akemha.entity.DeviceReservation;
 import com.grad.akemha.entity.MedicalDevice;
 import com.grad.akemha.entity.User;
+import com.grad.akemha.entity.enums.DeviceReservationStatus;
 import com.grad.akemha.exception.DeviceAlreadyExistsException;
 import com.grad.akemha.exception.DeviceNotFoundException;
 import com.grad.akemha.exception.DeviceReservationNoQuantityException;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -37,7 +39,7 @@ public class MedicalDeviceService {
     }
 
     public List<DeviceReservation> getReservations(Long medicalDeviceId) {
-        MedicalDevice medicalDevice =medicalDeviceRepository.findById(medicalDeviceId).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
+        MedicalDevice medicalDevice = medicalDeviceRepository.findById(medicalDeviceId).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
         return medicalDevice.getDeviceReservations();
     }
 
@@ -59,16 +61,20 @@ public class MedicalDeviceService {
     }
 
     public void reserveDevice(ReserveDeviceRequest request, HttpHeaders httpHeaders) {
-        //TODO  add Constraint  to not reserve more than one time (when the status is taken or pending)
         //TODO remove the reservation automatically
-        MedicalDevice medicalDevice =medicalDeviceRepository.findById(request.getMedicalDeviceId()).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
-        if(request.getQuantity()>2)
+        User user = jwtService.extractUserFromToken(httpHeaders);
+        boolean hasMoreThanTwoReservedRecords = deviceReservationRepository.countByUserAndStatus(user, null) >= 2;
+        if(hasMoreThanTwoReservedRecords)
+        {
+            throw new DeviceReservationQuantityException("You cannot reserve more than two device");
+        }
+        MedicalDevice medicalDevice = medicalDeviceRepository.findById(request.getMedicalDeviceId()).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
+        if (request.getQuantity() > 2)
             throw new DeviceReservationQuantityException("You cannot reserve more than two of the same device");
         int availableQuantity = medicalDevice.getCount() - medicalDevice.getReservedCount();
         if (request.getQuantity() <= availableQuantity) {
             int newReservedCount = medicalDevice.getReservedCount() + request.getQuantity();
             medicalDevice.setReservedCount(newReservedCount);
-            User user = jwtService.extractUserFromToken(httpHeaders);
             DeviceReservation reservation = DeviceReservation.builder()
                     .user(user)
                     .medicalDevice(medicalDevice)

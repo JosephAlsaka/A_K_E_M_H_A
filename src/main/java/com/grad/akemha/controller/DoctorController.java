@@ -3,7 +3,7 @@ package com.grad.akemha.controller;
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.User;
-import com.grad.akemha.service.userService.DoctorService;
+import com.grad.akemha.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

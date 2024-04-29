@@ -1,4 +1,4 @@
-package com.grad.akemha.service.userService;
+package com.grad.akemha.service;
 
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.Specialization;

@@ -27,17 +27,15 @@ public class DeviceReservation {
     @JoinColumn(name = "medical_device_id")
     private MedicalDevice medicalDevice;
 
+    @Enumerated(EnumType.STRING)
     @Column()
     private DeviceReservationStatus status;
-
     private LocalDateTime timestamp;
+    private LocalDateTime expirationTime;
 
     @PrePersist
     private void setTimestamp() {
         this.timestamp = LocalDateTime.now();
-        this.expirationTime = LocalDateTime.now().plusMinutes(1L);
+        this.expirationTime = LocalDateTime.now().plusDays(1L);
     }
-
-    private LocalDateTime expirationTime;
-
 }

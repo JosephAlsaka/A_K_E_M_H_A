@@ -2,8 +2,8 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.auth.authRequest.LoginRequest;
 import com.grad.akemha.dto.auth.authRequest.RegisterRequest;
-import com.grad.akemha.dto.auth.authResponse.AuthResponse;
 import com.grad.akemha.dto.auth.authrequest.VerificationRequest;
+import com.grad.akemha.dto.auth.authresponse.AuthResponse;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.VerificationCode;
 import com.grad.akemha.exception.ForbiddenException;
@@ -48,7 +48,7 @@ public class AuthenticationService {
         // after I save the user I send him the code
         whatsAppService.sendVerificationCode(user);
 
-        return "Check your WhatsApp messages";
+        return user.getId().toString();
     }
 
     private boolean userAlreadyExists(String email) {
@@ -65,7 +65,10 @@ public class AuthenticationService {
                 throw new ForbiddenException("The User is not verified");
             }
             var jwtToken = jwtService.generateToken(user);
-            return AuthResponse.builder().token(jwtToken).userEmail(user.getEmail()).build();
+            return AuthResponse.builder().token(jwtToken)
+                    .id(user.getId())
+                    .userEmail(user.getEmail())
+                    .build();
             //another way
 ////        final AuthResponse authResponseModel;
 ////        authResponseModel = new AuthResponseModel(
@@ -93,6 +96,7 @@ public class AuthenticationService {
                 var jwtToken = jwtService.generateToken(user);
                 return AuthResponse.builder()
                         .token(jwtToken)
+                        .id(user.getId())
                         .userEmail(user.getEmail())
                         .build();
             } else {

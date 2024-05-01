@@ -3,7 +3,7 @@ package com.grad.akemha.controller;
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.auth.authRequest.LoginRequest;
 import com.grad.akemha.dto.auth.authRequest.RegisterRequest;
-import com.grad.akemha.dto.auth.authResponse.AuthResponse;
+import com.grad.akemha.dto.auth.authresponse.AuthResponse;
 import com.grad.akemha.dto.auth.authrequest.VerificationRequest;
 import com.grad.akemha.service.AuthenticationService;
 import jakarta.validation.Valid;

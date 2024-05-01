@@ -18,7 +18,7 @@ import java.util.Random;
 @Service
 public class WhatsAppService {
 
-    private static final String BASE_URL = "https://api.ultramsg.com/instance84323/messages/chat";
+    private static final String BASE_URL = "https://api.ultramsg.com/instance84730/messages/chat";
     private static final Random RANDOM = new Random();
     private final OkHttpClient client = new OkHttpClient();
 
@@ -33,7 +33,7 @@ public class WhatsAppService {
         String code = generateVerificationCode();
 
         RequestBody body = new FormBody.Builder()
-                .add("token", "2yauqhb7db2b6zod")
+                .add("token", "6etg7c2xxcpdaxan")
                 .add("to", user.getPhoneNumber())
                 .add("body", "Your Akemha Code:\n" + code)
                 .build();

@@ -1,4 +1,4 @@
-package com.grad.akemha.dto.auth.authresponse;
+package com.grad.akemha.dto.auth.authrequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthResponse {
-    private Long id;
-    private String token;
-    private String userEmail;
+public class VerificationRequest {
+    private Long userId;
+    private String code;
 }

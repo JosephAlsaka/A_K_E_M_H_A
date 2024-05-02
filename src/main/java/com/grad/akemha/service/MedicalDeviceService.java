@@ -95,6 +95,10 @@ public class MedicalDeviceService {
         if (!deviceReservation.getUser().equals(user)) {
             throw new ReservationUnauthorizedException("You are not authorized to delete this reservation");
         }
+        if(deviceReservation.getStatus()!=null)
+        {
+            throw new ReservationDeleteException("Can't delete ended reservation");
+        }
         MedicalDevice medicalDevice = deviceReservation.getMedicalDevice();
         medicalDevice.setReservedCount(medicalDevice.getReservedCount()-1);
         deviceReservationRepository.delete(deviceReservation);

@@ -81,4 +81,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.UNAUTHORIZED , exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
     }
+
+    @ExceptionHandler(ReservationDeleteException.class)
+    public ResponseEntity<ErrorMessage> handleReservationDeleteException(ReservationDeleteException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.FORBIDDEN , exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorMessage);
+    }
 }

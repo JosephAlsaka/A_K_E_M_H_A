@@ -29,7 +29,7 @@ public class MedicalDevice {
     private String name;
 
 
-    @Column(name = "image_url", nullable = false)
+    @Column(name = "image_url", nullable = true)
     private String imageUrl;
 
     @JsonIgnore

@@ -75,4 +75,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY , exception.getMessage());
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorMessage);
     }
+
+    @ExceptionHandler(ReservationUnauthorizedException.class)
+    public ResponseEntity<ErrorMessage> handleReservationUnauthorizedException(DeviceReservationQuantityException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.UNAUTHORIZED , exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
+    }
 }

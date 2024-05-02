@@ -49,5 +49,10 @@ public class MedicalDeviceController {
         medicalDeviceService.reserveDevice(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reserved successfully", null));
     }
+    @DeleteMapping("reserve/{deviceReservationId}")
+    public ResponseEntity<BaseResponse<?>> deleteDeviceReservation(@PathVariable Long deviceReservationId, @RequestHeader HttpHeaders httpHeaders) {
+        medicalDeviceService.deleteDeviceReservation(deviceReservationId,httpHeaders);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reservation canceled successfully", null));
+    }
 
 }

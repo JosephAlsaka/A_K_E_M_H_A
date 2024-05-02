@@ -6,10 +6,7 @@ import com.grad.akemha.entity.DeviceReservation;
 import com.grad.akemha.entity.MedicalDevice;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.DeviceReservationStatus;
-import com.grad.akemha.exception.DeviceAlreadyExistsException;
-import com.grad.akemha.exception.DeviceNotFoundException;
-import com.grad.akemha.exception.DeviceReservationNoQuantityException;
-import com.grad.akemha.exception.DeviceReservationQuantityException;
+import com.grad.akemha.exception.*;
 import com.grad.akemha.repository.DeviceReservationRepository;
 import com.grad.akemha.repository.MedicalDeviceRepository;
 import com.grad.akemha.security.JwtService;
@@ -52,7 +49,9 @@ public class MedicalDeviceService {
         medicalDevice.setName(request.getName());
         medicalDevice.setCount(request.getCount());
         medicalDevice.setReservedCount(0);
-        medicalDevice.setImageUrl(cloudinaryService.uploadFile(request.getImage(), "Devices", user.getId().toString()));
+        if (request.getImage() != null) {
+            medicalDevice.setImageUrl(cloudinaryService.uploadFile(request.getImage(), "Devices", user.getId().toString()));
+        }
         medicalDeviceRepository.save(medicalDevice);
     }
 
@@ -64,8 +63,7 @@ public class MedicalDeviceService {
         //TODO remove the reservation automatically
         User user = jwtService.extractUserFromToken(httpHeaders);
         boolean hasMoreThanTwoReservedRecords = deviceReservationRepository.countByUserAndStatus(user, null) >= 2;
-        if(hasMoreThanTwoReservedRecords)
-        {
+        if (hasMoreThanTwoReservedRecords) {
             throw new DeviceReservationQuantityException("You cannot reserve more than two device");
         }
         MedicalDevice medicalDevice = medicalDeviceRepository.findById(request.getMedicalDeviceId()).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
@@ -89,5 +87,16 @@ public class MedicalDeviceService {
     public void deleteDevice(Long medicalDeviceId) {
         MedicalDevice medicalDevice = medicalDeviceRepository.findById(medicalDeviceId).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
         medicalDeviceRepository.delete(medicalDevice);
+    }
+
+    public void deleteDeviceReservation(Long deviceReservationId,HttpHeaders httpHeaders) {
+        DeviceReservation deviceReservation = deviceReservationRepository.findById(deviceReservationId).orElseThrow(() -> new DeviceNotFoundException("Device reservation not found"));
+        User user = jwtService.extractUserFromToken(httpHeaders);
+        if (!deviceReservation.getUser().equals(user)) {
+            throw new ReservationUnauthorizedException("You are not authorized to delete this reservation");
+        }
+        MedicalDevice medicalDevice = deviceReservation.getMedicalDevice();
+        medicalDevice.setReservedCount(medicalDevice.getReservedCount()-1);
+        deviceReservationRepository.delete(deviceReservation);
     }
 }

@@ -32,7 +32,7 @@ public class User implements UserDetails {
     private Long id;
 
     //@NotNull(message = "Name cannot be null")
-    @NotBlank(message = "Please add a user name")
+    @NotBlank(message = "Please add a name")
     @Column(nullable = false)
     private String name; // for beneficiary and doctor
 

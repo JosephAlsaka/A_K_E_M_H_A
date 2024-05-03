@@ -2,6 +2,7 @@ package com.grad.akemha.dto.auth.authRequest;
 
 
 import com.grad.akemha.entity.enums.Role;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,8 @@ import java.time.LocalDate;
 public class RegisterRequest {
 
 //    @NotBlank(message = "Please add a user name")
-    @NotNull(message = "Name cannot be null")
+
+    @NotBlank(message = "Please add a name")
     private String name;
     private String email;
     private String phoneNumber;

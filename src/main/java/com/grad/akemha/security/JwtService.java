@@ -59,7 +59,7 @@ public class JwtService {
         if (optionalUser.isPresent()) {
             return optionalUser.get();
         } else {
-            throw new NotFoundException("Something Went Wrong When getting the user id");
+            throw new NotFoundException("Something Went Wrong When getting the User");
         }
     }
 
@@ -116,7 +116,7 @@ public class JwtService {
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
-                .verifyWith(getSignInKey()) //TODO: is this should be public key or private?
+                .verifyWith(getSignInKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

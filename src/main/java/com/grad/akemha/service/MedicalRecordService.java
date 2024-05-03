@@ -9,7 +9,9 @@ import com.grad.akemha.entity.MedicalRecord;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.MedicalRecordRepository;
+import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.security.JwtService;
+import com.grad.akemha.service.userService.UserService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +27,8 @@ import java.util.Optional;
 public class MedicalRecordService {
     private final MedicalRecordRepository medicalRecordRepository;
     private final JwtService jwtService;
+
+    private final UserRepository userRepository;
 
 
     // Read
@@ -120,4 +124,31 @@ public class MedicalRecordService {
         return list;
     }
 
+    public MedicalRecordResponse getMedicalRecordByUserId(Long id) {
+        // finding the user to get it's medical record
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("beneficiary Id: " + id + " is not found"));
+//        Optional<MedicalRecord> optionalMedicalRecord = medicalRecordRepository.findLastMedicalRecordByUser(user, PageRequest.of(0, 1));
+        Optional<MedicalRecord> optionalMedicalRecord = medicalRecordRepository.findFirstByUserOrderByCreateTimeDesc(user);
+        if (optionalMedicalRecord.isPresent()) {
+            MedicalRecord medicalRecord = optionalMedicalRecord.get();
+            // getting the additional record info as a AdditionalRecordInfoResponse object
+            List<AdditionalRecordInfoResponse> additionalRecordInfoDataList = medicalRecord.getAdditionalRecordInfo().stream().map(AdditionalRecordInfoResponse::new).toList();
+            return MedicalRecordResponse
+                    .builder()
+                    .id(medicalRecord.getId())
+                    .coffee(medicalRecord.getCoffee())
+                    .alcohol(medicalRecord.getAlcohol())
+                    .married(medicalRecord.getMarried())
+                    .smoker(medicalRecord.getSmoker())
+                    .covidVaccine(medicalRecord.getCovidVaccine())
+                    .height(medicalRecord.getHeight())
+                    .weight(medicalRecord.getWeight())
+                    .bloodType(medicalRecord.getBloodType())
+                    .createTime(medicalRecord.getCreateTime())
+                    .additionalRecordInfoResponse(additionalRecordInfoDataList)
+                    .build();
+        } else {
+            throw new NotFoundException("Medical Record is Not Found");
+        }
+    }
 }

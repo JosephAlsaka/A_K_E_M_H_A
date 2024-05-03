@@ -52,4 +52,14 @@ public class MedicalRecordController {
                 (HttpStatus.CREATED.value(), "Medical Record created successfully", response));
     }
 
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
+    @GetMapping("{id}")
+    public ResponseEntity<BaseResponse<MedicalRecordResponse>> getMedicalRecordByUserId(
+            @PathVariable Long id) {
+        MedicalRecordResponse response = medicalRecordService.getMedicalRecordByUserId(id);
+
+        return ResponseEntity.ok().body(new BaseResponse<>
+                (HttpStatus.OK.value(), "Medical Record Found successfully", response));
+    }
+
 }

@@ -33,6 +33,10 @@ public class DeviceReservation {
     private LocalDateTime timestamp;
     private LocalDateTime expirationTime;
 
+    private LocalDateTime takeTime;
+
+    private LocalDateTime rewindTime;
+
     @PrePersist
     private void setTimestamp() {
         this.timestamp = LocalDateTime.now();

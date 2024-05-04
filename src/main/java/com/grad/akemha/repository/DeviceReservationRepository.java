@@ -15,6 +15,8 @@ public interface DeviceReservationRepository extends JpaRepository<DeviceReserva
 
     List<DeviceReservation> findByExpirationTimeBeforeAndStatusIsNull(LocalDateTime currentTime);
 
+    List<DeviceReservation> findByUserAndStatusIn(User user, List<DeviceReservationStatus> statuses);
+
 
 
 }

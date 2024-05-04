@@ -15,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 @Service
 public class MedicalDeviceService {
@@ -37,7 +40,14 @@ public class MedicalDeviceService {
 
     public List<DeviceReservation> getReservations(Long medicalDeviceId) {
         MedicalDevice medicalDevice = medicalDeviceRepository.findById(medicalDeviceId).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
-        return medicalDevice.getDeviceReservations();
+        List<DeviceReservation> reservations = medicalDevice.getDeviceReservations();
+        Collections.sort(reservations, Comparator.comparing(DeviceReservation::getId).reversed());
+        return reservations;
+    }
+
+    public List<DeviceReservation> getUserReservations(HttpHeaders httpHeaders) {
+        User user = jwtService.extractUserFromToken(httpHeaders);
+        return deviceReservationRepository.findByUserAndStatusIn(user, Arrays.asList(null, DeviceReservationStatus.TAKEN));
     }
 
     public void addDevice(AddDeviceRequest request, HttpHeaders httpHeaders) {
@@ -89,18 +99,37 @@ public class MedicalDeviceService {
         medicalDeviceRepository.delete(medicalDevice);
     }
 
-    public void deleteDeviceReservation(Long deviceReservationId,HttpHeaders httpHeaders) {
+    public void deleteDeviceReservation(Long deviceReservationId, HttpHeaders httpHeaders) {
         DeviceReservation deviceReservation = deviceReservationRepository.findById(deviceReservationId).orElseThrow(() -> new DeviceNotFoundException("Device reservation not found"));
         User user = jwtService.extractUserFromToken(httpHeaders);
         if (!deviceReservation.getUser().equals(user)) {
             throw new ReservationUnauthorizedException("You are not authorized to delete this reservation");
         }
-        if(deviceReservation.getStatus()!=null)
-        {
+        if (deviceReservation.getStatus() != null) {
             throw new ReservationDeleteException("Can't delete ended reservation");
         }
-        MedicalDevice medicalDevice = deviceReservation.getMedicalDevice();
-        medicalDevice.setReservedCount(medicalDevice.getReservedCount()-1);
+        deviceReservation.getMedicalDevice().setReservedCount(deviceReservation.getMedicalDevice().getReservedCount() - 1);
         deviceReservationRepository.delete(deviceReservation);
+    }
+
+    public void deviceDelivery(Long deviceReservationId) {
+        DeviceReservation deviceReservation = deviceReservationRepository.findById(deviceReservationId).orElseThrow(() -> new DeviceNotFoundException("Device reservation not found"));
+        if (deviceReservation.getStatus() != null) {
+            throw new ReservationDeleteException("Can't delivery device for ended or pending or taken reservation");
+        }
+        deviceReservation.setStatus(DeviceReservationStatus.TAKEN);
+        deviceReservation.setTakeTime(LocalDateTime.now());
+        deviceReservationRepository.save(deviceReservation);
+    }
+
+    public void deviceRewind(Long deviceReservationId) {
+        DeviceReservation deviceReservation = deviceReservationRepository.findById(deviceReservationId).orElseThrow(() -> new DeviceNotFoundException("Device reservation not found"));
+        if (deviceReservation.getStatus() != DeviceReservationStatus.TAKEN) {
+            throw new ReservationDeleteException("Can't rewind device for ended or pending reservation");
+        }
+        deviceReservation.setStatus(DeviceReservationStatus.END);
+        deviceReservation.setRewindTime(LocalDateTime.now());
+        deviceReservation.getMedicalDevice().setReservedCount(deviceReservation.getMedicalDevice().getReservedCount() - 1);
+        deviceReservationRepository.save(deviceReservation);
     }
 }

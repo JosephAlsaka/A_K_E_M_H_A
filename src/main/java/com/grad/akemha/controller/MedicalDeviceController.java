@@ -1,4 +1,5 @@
 package com.grad.akemha.controller;
+
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.medicalDevice.AddDeviceRequest;
 import com.grad.akemha.dto.medicalDevice.ReserveDeviceRequest;
@@ -44,15 +45,34 @@ public class MedicalDeviceController {
     public ResponseEntity<BaseResponse<List<DeviceReservation>>> getReservations(@PathVariable Long medicalDeviceId) {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reservations", medicalDeviceService.getReservations(medicalDeviceId)));
     }
+
+
+    @GetMapping("/user")
+    public ResponseEntity<BaseResponse<List<DeviceReservation>>> getUserReservations(@RequestHeader HttpHeaders httpHeaders) {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), " user device reservations", medicalDeviceService.getUserReservations(httpHeaders)));
+    }
+
     @PostMapping("reserve")
     public ResponseEntity<BaseResponse<?>> reserveDevice(@RequestBody ReserveDeviceRequest request, @RequestHeader HttpHeaders httpHeaders) {
         medicalDeviceService.reserveDevice(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reserved successfully", null));
     }
+
     @DeleteMapping("reserve/{deviceReservationId}")
     public ResponseEntity<BaseResponse<?>> deleteDeviceReservation(@PathVariable Long deviceReservationId, @RequestHeader HttpHeaders httpHeaders) {
-        medicalDeviceService.deleteDeviceReservation(deviceReservationId,httpHeaders);
+        medicalDeviceService.deleteDeviceReservation(deviceReservationId, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reservation canceled successfully", null));
+    }
+    @PostMapping("delivery/{deviceReservationId}")
+    public ResponseEntity<BaseResponse<String>> deviceDelivery(@PathVariable Long deviceReservationId) {
+        medicalDeviceService.deviceDelivery(deviceReservationId);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device delivered successfully", null));
+    }
+
+    @PostMapping("rewind/{deviceReservationId}")
+    public ResponseEntity<BaseResponse<String>> deviceRewind(@PathVariable Long deviceReservationId) {
+        medicalDeviceService.deviceRewind(deviceReservationId);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device rewind successfully", null));
     }
 
 }

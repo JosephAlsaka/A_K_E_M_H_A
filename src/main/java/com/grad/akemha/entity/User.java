@@ -1,6 +1,5 @@
 package com.grad.akemha.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.entity.enums.Role;
 import jakarta.persistence.*;
@@ -12,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,56 +25,61 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 public class User implements UserDetails {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     //@NotNull(message = "Name cannot be null")
-    @NotBlank(message = "Please add a user name")
+    @NotBlank(message = "Please add a name")
     @Column(nullable = false)
-    private String name;
+    private String name; // for beneficiary and doctor
 
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = true, unique = true, name = "phone_number")
-    private String phoneNumber;
+    private String phoneNumber; // for beneficiary and doctor
 
     @Column(nullable = false)
-    private String password;
+    private String password; // for beneficiary and doctor
 
     //Creation Date
-    @Column()
-    private Timestamp creationDate;
+    @Column(name = "creation_date")
+    private LocalDateTime creationDate;
 
     @Column(name = "dob", nullable = true)
-    private LocalDate dob;
+    private LocalDate dob; // for beneficiary and doctor
 
     @Column(name = "profile_image", nullable = true)
-    private String profileImage;
+    private String profileImage; // for beneficiary and doctor
 
     @Column(name = "is_active", nullable = true)
     private Boolean isActive = true;
 
     @Column(name = "description", nullable = true)
-    private String description;
+    private String description; // for doctor
 
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private Gender gender; // for beneficiary and doctor
 
     @Column(name = "location", nullable = true)
-    private String location;
+    private String location; // for doctor
 
     @Column(name = "opening_times", nullable = true)
-    private String openingTimes;
+    private String openingTimes; // for doctor
 
-//    @JsonIgnore
+    // to make sure this account is verified
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified;
+
+
+    //    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "specialization_id")
     private Specialization specialization;
 
+
+    //TODO: why role can be nullable
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
     private Role role;

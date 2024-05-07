@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication
+@EnableScheduling
 public class AkemhaApplication {
 
     public static void main(String[] args) {

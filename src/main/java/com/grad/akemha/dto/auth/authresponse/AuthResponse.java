@@ -1,4 +1,4 @@
-package com.grad.akemha.dto.auth.authResponse;
+package com.grad.akemha.dto.auth.authresponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthResponse {
+    private Long id;
     private String token;
     private String userEmail;
 }

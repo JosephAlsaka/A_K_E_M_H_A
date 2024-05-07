@@ -4,9 +4,7 @@ import com.grad.akemha.entity.User;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.UserRepository;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
-import java.security.PublicKey;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +25,7 @@ public class JwtService {
     @Autowired
     private UserRepository userRepository;
 
+    // one year number: 31556952000L
     public String getIdentifier(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(getSignInKey()) // TODO: check the deprecated
@@ -38,7 +35,7 @@ public class JwtService {
         return claims.getSubject();
     }
 
-//        public String getId(String token){ //when we will use this method? when we receive the token from the client when client makes a request to the server and through this token we get the user name
+//        public String getId(String token){ //when we will use this method? when we receive the token from the client when client makes a request to the server and through this token we get the username
 //        String claims = Jwts.parser()
 //                .setSigningKey(getSignInKey())
 //                .build()
@@ -62,11 +59,11 @@ public class JwtService {
         if (optionalUser.isPresent()) {
             return optionalUser.get();
         } else {
-            throw new NotFoundException("Something Went Wrong When getting the user id");
+            throw new NotFoundException("Something Went Wrong When getting the User");
         }
     }
 
-    public String extractUserId(HttpHeaders httpHeaders) { //when we will use this method? when we receive the token from the client when client makes a request to the server and through this token we get the user name
+    public String extractUserId(HttpHeaders httpHeaders) { //when we will use this method? when we receive the token from the client when client makes a request to the server and through this token we get the username
         // Assuming your token is in the "Authorization" header
         String token = httpHeaders.getFirst("Authorization");
         String jwt = token.replace("Bearer ", "");
@@ -97,7 +94,8 @@ public class JwtService {
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 31556952000L)) // 1 year
+                // the token will live for one week not one year
+                .expiration(new Date(System.currentTimeMillis() + (1000 * 3600 * 24 * 7) )) // 1 week
                 .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
     }
@@ -118,7 +116,7 @@ public class JwtService {
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
-                .verifyWith(getSignInKey()) //TODO: is this should be public key or private?
+                .verifyWith(getSignInKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

@@ -23,7 +23,7 @@ public class PostResponse {
         this.id = post.getId();
         this.doctor = new DoctorResponse(post.getUser());
         this.imageUrl = post.getImageUrl();
-        this.description = post.getText();
+        this.description = post.getDescription();
         this.likesCount = post.getLikes().size();
         this.commentsCount = post.getComments().size();
     }

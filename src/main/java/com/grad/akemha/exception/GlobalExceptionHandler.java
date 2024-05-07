@@ -1,10 +1,12 @@
 package com.grad.akemha.exception;
 
+import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.ErrorResponse;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -87,4 +89,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.FORBIDDEN , exception.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorMessage);
     }
+    @ExceptionHandler(CloudinaryException.class)
+    public ResponseEntity<ErrorResponse> handleCloudinaryException(CloudinaryException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body
+                (new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), ex.getMessage()));
+    }
+
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+//        String errorMessage = ex.getBindingResult().getFieldError().getDefaultMessage();
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage));
+//    }
+
 }

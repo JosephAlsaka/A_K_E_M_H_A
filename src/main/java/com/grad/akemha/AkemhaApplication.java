@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableScheduling
+
 @SpringBootApplication
 @EnableScheduling
 public class AkemhaApplication {

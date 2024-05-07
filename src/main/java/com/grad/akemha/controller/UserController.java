@@ -31,7 +31,7 @@ public class UserController {
 //                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
 //    }
 
-    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('USER')")
     @PatchMapping(value = "/information/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only beneficiary
     public ResponseEntity<BaseResponse<User>> editUserInformation(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "phoneNumber", required = false) String phoneNumber, @RequestParam(value = "password", required = false) String password, @RequestParam(value = "dob", required = false) LocalDate dob, @RequestParam(value = "profileImg", required = false) MultipartFile profileImg, @RequestParam(value = "gender", required = false) Gender gender, @RequestHeader HttpHeaders httpHeaders) {
         try {
@@ -57,6 +57,18 @@ public class UserController {
                                                                     @RequestHeader HttpHeaders httpHeaders) {
         try {
             User response = beneficiaryService.editDoctorInformation(name, phoneNumber, password, dob, profileImg, gender,description,location,openingTimes, httpHeaders);
+            return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+            return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
+        }
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
+    @GetMapping(value = "/information/{user_id}")
+    public ResponseEntity<BaseResponse<User>> viewUserInformation(@PathVariable Long user_id) {
+        try {
+            User response = beneficiaryService.viewUserInformation(user_id);
             return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
         } catch (NumberFormatException e) {
             System.out.println("Invalid input: " + e.getMessage());

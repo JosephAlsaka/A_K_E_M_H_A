@@ -86,4 +86,9 @@ public class UserService {
         User userResponse = userRepository.save(doctorAfterEditing);
         return userResponse;
     }
+
+    public User viewUserInformation(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user Id: " + userId + " is not found"));
+        return user; //TODO, need to be edited there are to much info in response
+    }
 }

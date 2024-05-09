@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // note this function is called in AccountCleanupTask in bootstrap folder
     @Query("SELECT u FROM User u WHERE u.isVerified = false AND u.creationDate < :timeLimit")
     List<User> findUnverifiedAccountsCreatedBefore(LocalDateTime timeLimit);
+
+    @Query("SELECT u FROM User u WHERE u.name LIKE %:keyword%")
+    List<User> findByKeywordInName(String keyword);
 }

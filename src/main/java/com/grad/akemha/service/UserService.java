@@ -1,4 +1,4 @@
-package com.grad.akemha.service.userService;
+package com.grad.akemha.service;
 
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;

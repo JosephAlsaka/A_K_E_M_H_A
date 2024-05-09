@@ -170,4 +170,8 @@ public class ConsultationService {
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }
+
+    public void deleteConsultation(Long consultationId) {
+        consultationRepository.deleteById(consultationId);
+    }
 }

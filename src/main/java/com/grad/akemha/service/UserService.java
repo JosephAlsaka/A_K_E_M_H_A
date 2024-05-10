@@ -1,6 +1,7 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
+import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
 import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.User;
@@ -91,9 +92,10 @@ public class UserService {
         return userResponse;
     }
 
-    public User viewUserInformation(Long userId) {
+    public UserFullResponse viewUserInformation(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user Id: " + userId + " is not found"));
-        return user; //TODO, need to be edited there are to much info in response
+        UserFullResponse userFullResponse = new UserFullResponse(user);
+        return userFullResponse;
     }
 
     public List<UserLessResponse> findUsersByKeyword(String keyword) {

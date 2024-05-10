@@ -2,6 +2,7 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
+import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;
@@ -69,9 +70,9 @@ public class UserController {
 
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
     @GetMapping(value = "/information/{user_id}")
-    public ResponseEntity<BaseResponse<User>> viewUserInformation(@PathVariable Long user_id) {
+    public ResponseEntity<BaseResponse<UserFullResponse>> viewUserInformation(@PathVariable Long user_id) {
         try {
-            User response = userService.viewUserInformation(user_id);
+            UserFullResponse response = userService.viewUserInformation(user_id);
             return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
         } catch (NumberFormatException e) {
             System.out.println("Invalid input: " + e.getMessage());

@@ -16,10 +16,12 @@ public class UserLessResponse {
     private Long id;
     private String name;
     private String email;
+    private String profileImg;
 
     public UserLessResponse(User user) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
+        this.profileImg = user.getProfileImage();
     }
 }

@@ -1,5 +1,7 @@
 package com.grad.akemha.entity;
 
+import com.grad.akemha.entity.enums.ConsultationType;
+import com.grad.akemha.entity.enums.SupervisionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,4 +25,8 @@ public class Supervision {
     @ManyToOne
     @JoinColumn(name = "supervised_id")
     private User supervised;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SupervisionStatus supervisionStatus;
 }

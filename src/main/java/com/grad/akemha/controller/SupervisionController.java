@@ -3,6 +3,7 @@ package com.grad.akemha.controller;
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.post.PostRequest;
 import com.grad.akemha.dto.post.PostResponse;
+import com.grad.akemha.dto.supervision.response.SupervisionResponse;
 import com.grad.akemha.entity.Supervision;
 import com.grad.akemha.entity.enums.SupervisionStatus;
 import com.grad.akemha.service.SupervisionService;
@@ -36,10 +37,10 @@ public class SupervisionController {
 
     @PreAuthorize("hasRole('DOCTOR') or hasRole('USER')")
     @GetMapping("/requests")
-    public ResponseEntity<BaseResponse<List<Supervision>>> viewSupervisionRequest(
+    public ResponseEntity<BaseResponse<List<SupervisionResponse>>> viewSupervisionRequest(
             @RequestHeader HttpHeaders httpHeaders
     ) {
-        List<Supervision> supervisionList =supervisionService.viewSupervisionRequest(httpHeaders);
+        List<SupervisionResponse> supervisionList =supervisionService.viewSupervisionRequest(httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Supervision requests successfully", supervisionList));
     }
@@ -48,7 +49,7 @@ public class SupervisionController {
     @PostMapping("/reply/{supervisionId}")
     public ResponseEntity<BaseResponse<String>> replyToSupervisionRequest(
             @PathVariable Long supervisionId,
-            @ModelAttribute SupervisionStatus supervisionStatus,
+            @RequestBody SupervisionStatus supervisionStatus,
             @RequestHeader HttpHeaders httpHeaders
     ) {
         supervisionService.replyToSupervisionRequest(supervisionId, supervisionStatus, httpHeaders);
@@ -58,20 +59,20 @@ public class SupervisionController {
 
     @PreAuthorize("hasRole('DOCTOR') or hasRole('USER')")
     @GetMapping("/approved/supervised")
-    public ResponseEntity<BaseResponse<List<Supervision>>> getApprovedSupervisionBySupervised(
+    public ResponseEntity<BaseResponse<List<SupervisionResponse>>> getApprovedSupervisionBySupervised(
             @RequestHeader HttpHeaders httpHeaders
     ) {
-        List<Supervision> supervisionList = supervisionService.getApprovedSupervisionBySupervised(httpHeaders);
+        List<SupervisionResponse> supervisionList = supervisionService.getApprovedSupervisionBySupervised(httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Approved supervision successfully", supervisionList));
     }
 
     @PreAuthorize("hasRole('DOCTOR') or hasRole('USER')")
     @GetMapping("/approved/supervisor")
-    public ResponseEntity<BaseResponse<List<Supervision>>> getApprovedSupervisionBySupervisor(
+    public ResponseEntity<BaseResponse<List<SupervisionResponse>>> getApprovedSupervisionBySupervisor(
             @RequestHeader HttpHeaders httpHeaders
     ) {
-        List<Supervision> supervisionList = supervisionService.getApprovedSupervisionBySupervisor(httpHeaders);
+        List<SupervisionResponse> supervisionList = supervisionService.getApprovedSupervisionBySupervisor(httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Approved supervision successfully", supervisionList));
     }

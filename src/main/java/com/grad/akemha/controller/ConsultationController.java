@@ -166,4 +166,13 @@ public class ConsultationController {
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
+
+    @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
+    @DeleteMapping("/{consultationId}")
+    public ResponseEntity<BaseResponse> deleteConsultation(
+            @PathVariable Long consultationId) {
+        consultationService.deleteConsultation(consultationId);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully",null));
+    }
 }

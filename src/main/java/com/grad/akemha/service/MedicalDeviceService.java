@@ -132,4 +132,10 @@ public class MedicalDeviceService {
         deviceReservation.getMedicalDevice().setReservedCount(deviceReservation.getMedicalDevice().getReservedCount() - 1);
         deviceReservationRepository.save(deviceReservation);
     }
+
+    public void changQuantity(Long medicalDeviceId, int quantity) {
+        MedicalDevice medicalDevice = medicalDeviceRepository.findById(medicalDeviceId).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
+        medicalDevice.setCount(quantity);
+        medicalDeviceRepository.save(medicalDevice);
+    }
 }

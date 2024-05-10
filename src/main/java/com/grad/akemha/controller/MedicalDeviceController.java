@@ -1,7 +1,9 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
+import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.medicalDevice.AddDeviceRequest;
+import com.grad.akemha.dto.medicalDevice.ChangeQuantityRequest;
 import com.grad.akemha.dto.medicalDevice.ReserveDeviceRequest;
 import com.grad.akemha.entity.DeviceReservation;
 import com.grad.akemha.entity.MedicalDevice;
@@ -74,5 +76,9 @@ public class MedicalDeviceController {
         medicalDeviceService.deviceRewind(deviceReservationId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device rewind successfully", null));
     }
-
+    @PatchMapping("changQuantity/{medicalDeviceId}")
+    public ResponseEntity<BaseResponse<String>> changQuantity(@RequestBody ChangeQuantityRequest request, @PathVariable Long medicalDeviceId) {
+        medicalDeviceService.changQuantity(medicalDeviceId,request.getQuantity());
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "quantity changed successfully", null));
+    }
 }

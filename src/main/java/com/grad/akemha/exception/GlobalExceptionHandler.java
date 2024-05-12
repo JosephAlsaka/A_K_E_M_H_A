@@ -52,6 +52,43 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 (new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
     }
 
+
+    @ExceptionHandler(DeviceAlreadyExistsException.class)
+    public ResponseEntity<ErrorMessage> handleDeviceAlreadyExistsException(DeviceAlreadyExistsException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_ACCEPTABLE, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorMessage);
+    }
+
+
+    @ExceptionHandler(DeviceNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleDeviceNotFoundException(DeviceNotFoundException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_FOUND, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
+    @ExceptionHandler(DeviceReservationNoQuantityException.class)
+    public ResponseEntity<ErrorMessage> handleDeviceReservationNoQuantityException(DeviceReservationNoQuantityException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.CONFLICT, exception.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+    }
+
+    @ExceptionHandler(DeviceReservationQuantityException.class)
+    public ResponseEntity<ErrorMessage> handleDeviceReservationQuantityException(DeviceReservationQuantityException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY , exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorMessage);
+    }
+
+    @ExceptionHandler(ReservationUnauthorizedException.class)
+    public ResponseEntity<ErrorMessage> handleReservationUnauthorizedException(DeviceReservationQuantityException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.UNAUTHORIZED , exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
+    }
+
+    @ExceptionHandler(ReservationDeleteException.class)
+    public ResponseEntity<ErrorMessage> handleReservationDeleteException(ReservationDeleteException exception) {
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.FORBIDDEN , exception.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorMessage);
+    }
     @ExceptionHandler(CloudinaryException.class)
     public ResponseEntity<ErrorResponse> handleCloudinaryException(CloudinaryException ex) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body

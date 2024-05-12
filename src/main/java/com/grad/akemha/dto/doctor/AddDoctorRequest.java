@@ -1,4 +1,4 @@
-package com.grad.akemha.dto.auth.doctor;
+package com.grad.akemha.dto.doctor;
 import com.grad.akemha.entity.enums.Gender;
 import lombok.Getter;
 import lombok.Setter;

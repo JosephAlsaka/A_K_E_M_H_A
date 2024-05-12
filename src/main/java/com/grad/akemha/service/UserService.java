@@ -1,5 +1,9 @@
-package com.grad.akemha.service.userService;
+package com.grad.akemha.service;
 
+import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
+import com.grad.akemha.dto.user.response.UserFullResponse;
+import com.grad.akemha.dto.user.response.UserLessResponse;
+import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.exception.CloudinaryException;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -85,5 +90,17 @@ public class UserService {
         }
         User userResponse = userRepository.save(doctorAfterEditing);
         return userResponse;
+    }
+
+    public UserFullResponse viewUserInformation(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user Id: " + userId + " is not found"));
+        UserFullResponse userFullResponse = new UserFullResponse(user);
+        return userFullResponse;
+    }
+
+    public List<UserLessResponse> findUsersByKeyword(String keyword) {
+        List<User> userList = userRepository.findByKeywordInName(keyword);
+        List<UserLessResponse> userResponseList = userList.stream().map(user -> new UserLessResponse(user)).toList();
+        return userResponseList;
     }
 }

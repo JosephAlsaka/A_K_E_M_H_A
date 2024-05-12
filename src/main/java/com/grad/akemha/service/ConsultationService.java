@@ -2,10 +2,7 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
-import com.grad.akemha.entity.Consultation;
-import com.grad.akemha.entity.Image;
-import com.grad.akemha.entity.Specialization;
-import com.grad.akemha.entity.User;
+import com.grad.akemha.entity.*;
 import com.grad.akemha.entity.enums.ConsultationStatus;
 import com.grad.akemha.entity.enums.ConsultationType;
 import com.grad.akemha.exception.CloudinaryException;
@@ -17,6 +14,10 @@ import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,15 +47,20 @@ public class ConsultationService {
     @Autowired
     private JwtService jwtService;
 
-    public List<ConsultationRes> getAllConsultations() {
-        List<Consultation> consultationList = consultationRepository.findAll();
-        List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+    public List<ConsultationRes> getAllConsultations(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Page<Consultation> consultationPage = consultationRepository.findAll(pageable);
+        List<ConsultationRes> consultationResponseList = consultationPage.getContent().stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
+//        List<Consultation> consultationList = consultationRepository.findAll();
+//        List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+//        return consultationResponseList;
     }
 
-    public List<ConsultationRes> getConsultationsBySpecializationId(Long specializationId) {
+    public List<ConsultationRes> getConsultationsBySpecializationId(Long specializationId,Integer page) {
         if (specializationRepository.findById(specializationId).isPresent()) {
-            List<Consultation> consultationList = consultationRepository.findBySpecializationId(specializationId);
+            Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+            List<Consultation> consultationList = consultationRepository.findBySpecializationId(specializationId,pageable);
             List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
             return consultationResponseList;
         } else {
@@ -63,9 +69,10 @@ public class ConsultationService {
 
     }
 
-    public List<ConsultationRes> getAnsweredConsultationsBySpecializationId(Long specializationId) {
+    public List<ConsultationRes> getAnsweredConsultationsBySpecializationId(Long specializationId, Integer page) {
         if (specializationRepository.findById(specializationId).isPresent()) {
-            List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndSpecializationId(specializationId);
+            Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+            List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndSpecializationId(specializationId, pageable);
             List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
             return consultationResponseList;
         } else {
@@ -114,9 +121,11 @@ public class ConsultationService {
         return consultation;
     }
 
-    public List<ConsultationRes> getAllAnsweredConsultations() {
-        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNull();
-        List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+    public List<ConsultationRes> getAllAnsweredConsultations(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Page<Consultation> consultationPage = consultationRepository.findAllByConsultationAnswerIsNotNull(pageable);
+//        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNull(pageable);
+        List<ConsultationRes> consultationResponseList = consultationPage.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }
 
@@ -127,36 +136,42 @@ public class ConsultationService {
         return consultationResponseList;
     }
 
-    public List<ConsultationRes> getPersonalAnsweredConsultations(HttpHeaders httpHeaders) {
+    public List<ConsultationRes> getPersonalAnsweredConsultations(HttpHeaders httpHeaders, Integer page) {
         Long beneficiaryId = Long.parseLong(jwtService.extractUserId(httpHeaders));
-        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndBeneficiaryId(beneficiaryId);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndBeneficiaryId(beneficiaryId, pageable);
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }
 
-    public List<ConsultationRes> getPendingConsultationsForDoctor(HttpHeaders httpHeaders) { //الاستشارات يلي بيقدر يجاوب عليهاالدكتور
+    public List<ConsultationRes> getPendingConsultationsForDoctor(HttpHeaders httpHeaders, Integer page) { //الاستشارات يلي بيقدر يجاوب عليهاالدكتور
         Long doctorId = Long.parseLong(jwtService.extractUserId(httpHeaders));
         User doctor = userRepository.findById(doctorId).orElseThrow(() -> new NotFoundException("doctor Id: " + doctorId + " is not found"));
 //        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNullAndSpecializationId(doctor.getSpecialization().getId());
 //        List<Consultation> consultationListTwo = consultationRepository.findAllBySpecializationIsPublicTrue();
-        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(doctor.getSpecialization().getId());
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").ascending());
+        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(doctor.getSpecialization().getId(),pageable);
 
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }
 
-    public List<ConsultationRes> getBeneficiaryAnsweredConsultations(Long beneficiaryId) {
-        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndBeneficiaryId(beneficiaryId);
+    public List<ConsultationRes> getBeneficiaryAnsweredConsultations(Long beneficiaryId, Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndBeneficiaryId(beneficiaryId, pageable);
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }
 
-    public List<ConsultationRes> getDoctorAnsweredConsultations(HttpHeaders httpHeaders) {
+    public List<ConsultationRes> getDoctorAnsweredConsultations(HttpHeaders httpHeaders, Integer page) {
         Long doctorId = Long.parseLong(jwtService.extractUserId(httpHeaders));
-        List<Consultation> consultationList = consultationRepository.findAllByDoctorId(doctorId);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        List<Consultation> consultationList = consultationRepository.findAllByDoctorId(doctorId,pageable);
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }
 
-
+    public void deleteConsultation(Long consultationId) {
+        consultationRepository.deleteById(consultationId);
+    }
 }

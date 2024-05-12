@@ -11,7 +11,6 @@ import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.MedicalRecordRepository;
 import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.security.JwtService;
-import com.grad.akemha.service.userService.UserService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;

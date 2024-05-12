@@ -27,12 +27,6 @@ public class FCMInitializer {
 //                logger.info("Firebase application initialized");
             }
 
-            // TODO: remove this 3 lines of code
-//            FirebaseMessaging.getInstance().subscribeToTopicAsync(
-//                    List.of("cvcy8XJ7QSGqx5ATL45Gdv:APA91bGXxkbwUDlO6Z7K97i9VurgqMzJlo76kKoLZKJLtGxhxcICxYX3wA-s9ZVI3EFGEH-oS6ePslZYQFITykzHxm5P8Gv-eXVBXQpHpKTLAfz3p1_Kk1_EIBS-iP1uzbpZ5x0D5R9f"),
-//                    "sssss");
-//            System.out.println("Subscribed successfully");
-
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

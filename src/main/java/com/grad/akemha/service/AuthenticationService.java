@@ -1,7 +1,8 @@
 package com.grad.akemha.service;
 
-import com.grad.akemha.dto.auth.authRequest.LoginRequest;
-import com.grad.akemha.dto.auth.authRequest.RegisterRequest;
+
+import com.grad.akemha.dto.auth.authrequest.LoginRequest;
+import com.grad.akemha.dto.auth.authrequest.RegisterRequest;
 import com.grad.akemha.dto.auth.authrequest.VerificationRequest;
 import com.grad.akemha.dto.auth.authresponse.AuthResponse;
 import com.grad.akemha.entity.User;
@@ -32,24 +33,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    @Autowired
     private final UserRepository userRepository;
-    @Autowired
     private final PasswordEncoder passwordEncoder;
-    @Autowired
     private final JwtService jwtService;
-    @Autowired
     private final AuthenticationManager authenticationManager;
-
     private final WhatsAppService whatsAppService;
     private final VerificationCodeRepository verificationCodeRepository;
+    private final FCMService fcmService;
 
     public String register(RegisterRequest request) throws IOException {
         if (userAlreadyExists(request.getEmail())) {
             throw new EmailAlreadyExistsException("User already exists");
         }
 
-        var user = User.builder().name(request.getName()).email(request.getEmail()).phoneNumber(request.getPhoneNumber()).dob(request.getDob()).password(passwordEncoder.encode(request.getPassword())).role(request.getRole()).isActive(true).isVerified(false).creationDate(LocalDateTime.now()).build();
+        var user = User.builder().name(request.getName()).email(request.getEmail()).phoneNumber(request.getPhoneNumber()).dob(request.getDob()).deviceToken(request.getDeviceToken()).password(passwordEncoder.encode(request.getPassword())).role(request.getRole()).isActive(true).isVerified(false).creationDate(LocalDateTime.now()).build();
 
         userRepository.save(user);
         // after I save the user I send him the code
@@ -67,9 +64,15 @@ public class AuthenticationService {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
-            // adding a condition when the user is trying to login and he is not verified
+            // adding a condition when the user is trying to log in, and he is not verified
             if (!user.getIsVerified()) {
                 throw new ForbiddenException("The User is not verified");
+            }
+            if (!Objects.equals(user.getDeviceToken(), request.getDeviceToken())) {
+                System.out.println("THE DEVICE TOKEN HAVE BEEN CHANGED");
+                user.setDeviceToken(request.getDeviceToken());
+                userRepository.save(user);
+                // TODO: subscribe to topics
             }
             boolean result = passwordEncoder.matches(request.getPassword(), user.getPassword());
             if(!result){
@@ -106,6 +109,9 @@ public class AuthenticationService {
                 user.setIsVerified(true);
                 userRepository.save(user);
                 var jwtToken = jwtService.generateToken(user);
+
+                // TODO: subscribe to topics
+
                 return AuthResponse.builder()
                         .token(jwtToken)
                         .id(user.getId())

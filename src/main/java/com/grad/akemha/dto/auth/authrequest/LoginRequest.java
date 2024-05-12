@@ -1,4 +1,4 @@
-package com.grad.akemha.dto.auth.authRequest;
+package com.grad.akemha.dto.auth.authrequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class LoginRequest {
     private String email;
     private String password;
+    private String deviceToken;
 }

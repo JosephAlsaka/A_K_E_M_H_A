@@ -6,20 +6,20 @@ import com.grad.akemha.dto.notification.NotificationRequestTopic;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class FCMService {
-//    private Logger logger = LoggerFactory.getLogger(FCMService.class);
-
+    //    private Logger logger = LoggerFactory.getLogger(FCMService.class);
+// TODO: do we need an image?
     // token (a specific User)
     public void sendMessageToToken(NotificationRequestToken request)
             throws InterruptedException, ExecutionException {
         Message message = getPreconfiguredMessageToToken(request);
 //        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 //        String jsonOutput = gson.toJson(message);
-        String response = sendAndGetResponse(message);
-
+        sendAndGetResponse(message);
     }
 
     // global
@@ -37,7 +37,7 @@ public class FCMService {
 //      OLD          .setTtl(Duration.ofMinutes(2).toMillis()).setCollapseKey(topic)
 
                 // I want it to live 24 hours if the user is offline
-                // and recieve all messages
+                // and receive all messages
                 .setTtl(Duration.ofDays(1).toMillis())
                 .setPriority(AndroidConfig.Priority.HIGH)
                 .setNotification(AndroidNotification.builder()
@@ -104,5 +104,14 @@ public class FCMService {
                         .setCategory(topic)
                         .setThreadId(topic)
                         .build()).build();
+    }
+
+
+    // **************************
+    // to Subscribe to Topic so u can get notification each time a notification is sent to that topic
+    private void subscribeToTopic(String deviceToken, String topic) {
+        FirebaseMessaging.getInstance()
+                .subscribeToTopicAsync(List.of(deviceToken), topic);
+        System.out.println("Subscribed successfully");
     }
 }

@@ -157,4 +157,6 @@ public class ConsultationService {
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }
+
+
 }

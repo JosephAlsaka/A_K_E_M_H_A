@@ -1,38 +1,49 @@
 package com.grad.akemha.controller;
 
+import com.grad.akemha.dto.BaseResponse;
+import com.grad.akemha.dto.message.request.MessageRequest;
+import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.Message;
+import com.grad.akemha.exception.NotFoundException;
+import com.grad.akemha.repository.ConsultationRepository;
+import com.grad.akemha.repository.MessageRepository;
+import com.grad.akemha.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @Slf4j
 @RestController
 public class ChatController {
+    @Autowired
+    private MessageService messageService;
+
+    @Autowired
+    private MessageRepository messageRepository;
+
+    @Autowired
+    private ConsultationRepository consultationRepository;
     //    @Autowired
 //    ChatMessageModelRepository chatMessageModelRepository;
 //    two methods.
 //    the first one is to add user. when new user connect to our chat app, we need to hit that endpoint and inform ALL the users that we have a new user joined the chat
-//i think it is the same like when the doctor start the conversaion
+//i think it is the same as when the doctor start the conversion
 //
 //    second method is to send the msg
 //
 //    payload == object
 
-//    @MessageMapping("/chat.sendMessage") // tells what is the url you want to use to invoke this method
-//    @SendTo("/topic/public")
-//    // to which topic or to which queue you want to send this one // the topic comes from method configureMessageBroker in WebSocketConfig class // it will send automaticly to /topic/public
-//    public ChatMessageModel sendMessage(
-//            @Payload ChatMessageModel chatMessage // in http we just put @RequestBody (which is an object) but in websocket we use @Payload they are the same
-//    ) {
-//        System.out.println("hello I'm sami in sendMessage");
-//        return chatMessage;
-//    }
+
 
 //    @MessageMapping("/chat.addUser") //note: messageMapping is the endPoint.  the end point is /app/chat.addUser   app from prefix config
 //    @SendTo("/topic/public")
@@ -50,24 +61,31 @@ public class ChatController {
 
     @MessageMapping("/consultation/{consultationId}/chat")
     @SendTo("/topic/consultation/{consultationId}/messages")
+    @MessageExceptionHandler()
     public Message sendMessageWithWebsocket(@DestinationVariable String consultationId,
-                                         @Payload Message message) {
+                                         @Payload MessageRequest message) {
         log.info("new message arrived in chat with id {}", consultationId);
         System.out.println(message);
-        return message;
+        Consultation consultation = consultationRepository.findById(Long.valueOf(consultationId)).orElseThrow(() -> new NotFoundException("not found"));
+        Message savedMessage = Message.builder()
+                .textMsg(message.getTextMsg())
+                .consultation(consultation)
+                .userId(1L)
+                .build();
+        messageRepository.save(savedMessage);
+        return savedMessage;
 //        var messages = this.chats.getOrDefault(chatId);
 //        messages.add(message.getPayload());
 //        chats.put(chatId, messages);
 //        return messages;
     }
 
-//    @MessageMapping("/gifts")
-//    @SendTo("/topic/messages")
-//    public ChatMessageModel send(@Payload ChatMessageModel messageModel){
-//        log.info("received chat message");
-//        System.out.println(messageModel);
-//        return messageModel; // it will return to     @SendTo("/topic/messages") //note: the client subscrieb this pat
-//
-//    }
-
+   //TODO: get list of messages by consultationId.
+    @GetMapping("/consultation/messages/{consultationId}")
+    public ResponseEntity<BaseResponse<List<Message>>> getMessagesByConsultationId(
+            @PathVariable Long consultationId
+    ) {
+        List<Message> messageList = messageService.getMessagesByConsultationId(consultationId);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "messages", messageList));
+    }
 }

@@ -21,4 +21,10 @@ public class Message {
     private Long userId;
     @Column(name = "text_msg", nullable = false)
     private String textMsg;
+
+    @ManyToOne
+    @JoinColumn(name = "consultation_id")
+    private Consultation consultation;
+
+
 }

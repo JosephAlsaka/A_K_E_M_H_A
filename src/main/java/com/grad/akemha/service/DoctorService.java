@@ -39,16 +39,10 @@ public class DoctorService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setRole(Role.DOCTOR);
+        user.setIsVerified(true);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setGender(request.getGender());
-        //check if the specialization not exist  create it and assign it to user
         Specialization specialization = specializationRepository.findBySpecializationType(request.getSpecialization());
-//        System.out.println(specialization);
-        if (specialization == null) {
-            specialization = new Specialization();
-            specialization.setSpecializationType(request.getSpecialization());
-            specializationRepository.save(specialization);
-        }
         user.setSpecialization(specialization);
         userRepository.save(user);
     }

@@ -1,9 +1,14 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
+import com.grad.akemha.dto.beneficiary.AddBeneficiaryRequest;
+import com.grad.akemha.dto.beneficiary.BeneficiaryResponse;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
+import com.grad.akemha.dto.doctor.AddDoctorRequest;
+import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
+import com.grad.akemha.entity.Post;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.service.UserService;
@@ -20,6 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/user")
 public class UserController {
 
@@ -86,5 +92,22 @@ public class UserController {
         List<UserLessResponse> response = userService.findUsersByKeyword(keyword);
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+    }
+
+    @GetMapping("/beneficiary")
+    public ResponseEntity<BaseResponse<List<BeneficiaryResponse>>> getBeneficiaries() {
+        List<User> beneficiaries = userService.getBeneficiaries();
+        List<BeneficiaryResponse> response = beneficiaries.stream().map(BeneficiaryResponse::new).toList();
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiaries", response));
+    }
+    @PostMapping("/beneficiary")
+    public ResponseEntity<BaseResponse<?>> addBeneficiary(@RequestBody AddBeneficiaryRequest request) {
+        userService.addBeneficiary(request);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiary added successfully", null));
+    }
+    @DeleteMapping("beneficiary/{userId}")
+    public ResponseEntity<BaseResponse<String>> deleteBeneficiary(@PathVariable Long userId) {
+        userService.deleteBeneficiary(userId);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiary deleted successfully",null));
     }
 }

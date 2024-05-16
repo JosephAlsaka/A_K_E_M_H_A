@@ -2,11 +2,14 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.message.request.MessageRequest;
+import com.grad.akemha.dto.message.response.MessageResponse;
 import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.Message;
+import com.grad.akemha.entity.User;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.ConsultationRepository;
 import com.grad.akemha.repository.MessageRepository;
+import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,9 @@ public class ChatController {
 
     @Autowired
     private ConsultationRepository consultationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
     //    @Autowired
 //    ChatMessageModelRepository chatMessageModelRepository;
 //    two methods.
@@ -62,7 +68,7 @@ public class ChatController {
     @MessageMapping("/consultation/{consultationId}/chat")
     @SendTo("/topic/consultation/{consultationId}/messages")
     @MessageExceptionHandler()
-    public Message sendMessageWithWebsocket(@DestinationVariable String consultationId,
+    public MessageResponse sendMessageWithWebsocket(@DestinationVariable String consultationId,
                                          @Payload MessageRequest message) {
         log.info("new message arrived in chat with id {}", consultationId);
         System.out.println(message);
@@ -73,7 +79,10 @@ public class ChatController {
                 .userId(1L)
                 .build();
         messageRepository.save(savedMessage);
-        return savedMessage;
+
+        User user = userRepository.findById(1L).orElseThrow();
+        MessageResponse messageResponse = new MessageResponse(savedMessage, user);
+        return messageResponse;
 //        var messages = this.chats.getOrDefault(chatId);
 //        messages.add(message.getPayload());
 //        chats.put(chatId, messages);
@@ -82,10 +91,13 @@ public class ChatController {
 
    //TODO: get list of messages by consultationId.
     @GetMapping("/consultation/messages/{consultationId}")
-    public ResponseEntity<BaseResponse<List<Message>>> getMessagesByConsultationId(
+    public ResponseEntity<BaseResponse<List<MessageResponse>>> getMessagesByConsultationId(
             @PathVariable Long consultationId
     ) {
         List<Message> messageList = messageService.getMessagesByConsultationId(consultationId);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "messages", messageList));
+        User user = userRepository.findById(1L).orElseThrow();
+
+        List<MessageResponse> messageResponseList = messageList.stream().map(message -> new MessageResponse(message, user)).toList();
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "messages", messageResponseList));
     }
 }

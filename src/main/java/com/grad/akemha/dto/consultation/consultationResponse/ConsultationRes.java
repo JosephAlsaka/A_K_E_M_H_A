@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -26,6 +27,8 @@ public class ConsultationRes {
     private UserInConsultationRes beneficiary;
     private UserInConsultationRes doctor;
     private ConsultationType consultationType;
+    private Date createTime;
+    private Date updateAnswerTime;
     public ConsultationRes(Consultation consultation) {
         this.id = consultation.getId();
         this.consultationText = consultation.getConsultationText();
@@ -33,6 +36,8 @@ public class ConsultationRes {
         this.images = consultation.getImages().stream().map(image -> new String(image.getImageUrl())).toList();
         this.consultationStatus = consultation.getConsultationStatus();
         this.consultationType = consultation.getConsultationType();
+        this.createTime = consultation.getCreateTime();
+        this.updateAnswerTime = consultation.getUpdateAnswerTime();
         this.specialization = consultation.getSpecialization();
         this.beneficiary = new UserInConsultationRes(consultation.getBeneficiary().getName(), consultation.getBeneficiary().getProfileImage(), consultation.getBeneficiary().getGender());
         if (consultation.getDoctor() != null) {

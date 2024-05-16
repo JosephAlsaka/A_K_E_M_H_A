@@ -2,7 +2,6 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
-import com.grad.akemha.dto.consultation.consultationRequest.ConsultationAnonymousRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.enums.ConsultationType;

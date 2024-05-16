@@ -1,6 +1,7 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
+import com.grad.akemha.dto.consultation.consultationRequest.ConsultationAnonymousRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.entity.*;
 import com.grad.akemha.entity.enums.ConsultationStatus;
@@ -173,5 +174,12 @@ public class ConsultationService {
 
     public void deleteConsultation(Long consultationId) {
         consultationRepository.deleteById(consultationId);
+    }
+
+    public Consultation makeConsultationAnonymous(Long consultationId) {
+        Consultation consultation = consultationRepository.findById(consultationId).orElseThrow(() -> new NotFoundException("consultation not found"));
+        consultation.setConsultationType(ConsultationType.ANONYMOUS);
+        consultationRepository.save(consultation);
+        return consultation;
     }
 }

@@ -2,11 +2,10 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
-import com.grad.akemha.dto.consultation.consultationRequest.ConsultationRequest;
+import com.grad.akemha.dto.consultation.consultationRequest.ConsultationAnonymousRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.enums.ConsultationType;
-import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.ConsultationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -174,5 +173,19 @@ public class ConsultationController {
         consultationService.deleteConsultation(consultationId);
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully",null));
+    }
+
+    @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
+    @PatchMapping("/anonymous/{consultationId}")
+    public ResponseEntity<BaseResponse<Consultation>> makeConsultationAnonymous(@PathVariable Long consultationId) {
+        try {
+            consultationService.makeConsultationAnonymous(consultationId);
+            return ResponseEntity.ok()
+                    .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", null));
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+            return ResponseEntity.ok()
+                    .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
+        }
     }
 }

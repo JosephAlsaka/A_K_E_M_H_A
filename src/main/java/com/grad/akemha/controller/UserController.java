@@ -95,11 +95,12 @@ public class UserController {
     }
 
     @GetMapping("/beneficiary")
-    public ResponseEntity<BaseResponse<List<BeneficiaryResponse>>> getBeneficiaries() {
-        List<User> beneficiaries = userService.getBeneficiaries();
+    public ResponseEntity<BaseResponse<List<BeneficiaryResponse>>> getBeneficiaries(@RequestParam(name = "page", defaultValue = "0") int page) {
+        List<User> beneficiaries = userService.getBeneficiaries(page);
         List<BeneficiaryResponse> response = beneficiaries.stream().map(BeneficiaryResponse::new).toList();
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiaries", response));
     }
+
     @PostMapping("/beneficiary")
     public ResponseEntity<BaseResponse<?>> addBeneficiary(@RequestBody AddBeneficiaryRequest request) {
         userService.addBeneficiary(request);

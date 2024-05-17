@@ -18,6 +18,10 @@ import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,8 +117,10 @@ public class UserService {
         return userResponseList;
     }
 
-    public List<User> getBeneficiaries() {
-        return userRepository.findByRole(Role.USER);
+    public List<User> getBeneficiaries(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Page<User> doctorPage = (Page<User>) userRepository.findByRole(Role.USER,pageable);
+        return doctorPage.getContent();
     }
 
     public void addBeneficiary(AddBeneficiaryRequest request) {

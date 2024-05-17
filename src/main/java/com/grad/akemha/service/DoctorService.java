@@ -1,6 +1,7 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
+import com.grad.akemha.entity.Post;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Role;
@@ -10,6 +11,10 @@ import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +32,10 @@ public class DoctorService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public List<User> getDoctors() {
-        return userRepository.findByRole(Role.DOCTOR);
+    public List<User> getDoctors(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Page<User> doctorPage =  userRepository.findByRole(Role.DOCTOR, pageable);
+        return doctorPage.getContent();
     }
 
     public void addDoctor(AddDoctorRequest request) {

@@ -3,8 +3,8 @@ package com.grad.akemha.controller;
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.User;
-import com.grad.akemha.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.grad.akemha.service.DoctorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,25 +16,24 @@ import java.util.List;
 @RequestMapping("/admin/doctor")
 public class DoctorController {
     @Autowired
-    DoctorService adminService;
-    //comment test
-    //comment test2222
+    DoctorService doctorService;
+
     @GetMapping()
-    public ResponseEntity<BaseResponse<List<User>>> getDoctors() {
-        List<User> doctors = adminService.getDoctors();
+    public ResponseEntity<BaseResponse<List<User>>> getDoctors( @RequestParam(name = "page", defaultValue = "0") int page) {
+        List<User> doctors = doctorService.getDoctors(page);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctors", doctors));
     }
 
     @PostMapping()
     public ResponseEntity<BaseResponse<?>> addDoctor(@RequestBody AddDoctorRequest request) {
-        adminService.addDoctor(request);
+        doctorService.addDoctor(request);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor added successfully", null));
     }
 
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<BaseResponse<String>> deleteDoctor(@PathVariable Long userId) {
-        adminService.deleteDoctor(userId);
+        doctorService.deleteDoctor(userId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor deleted successfully",null));
     }
 

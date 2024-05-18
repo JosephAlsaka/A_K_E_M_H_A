@@ -66,7 +66,8 @@ public class UserService {
             System.out.println("3");
             //check if password == confirmPassword
             //encypt password
-            //save password // TODO
+            //save password
+            // TODO
 //            user.setPassword(request.password());
         }
         if (dob != null) {

@@ -37,7 +37,7 @@ public class SliderController {
         List<Slider> response = sliderService.getSliders();
 
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "Activity Found successfully", response));
+                (HttpStatus.OK.value(), "Slider Found successfully", response));
     }
 
     @PreAuthorize("hasRole('OWNER')")
@@ -46,6 +46,6 @@ public class SliderController {
             @PathVariable Long id) {
         sliderService.deleteSliderPage(id);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "Activity deleted successfully", "the slide is deleted"));
+                (HttpStatus.OK.value(), "Slide deleted successfully", "the slide is deleted"));
     }
 }

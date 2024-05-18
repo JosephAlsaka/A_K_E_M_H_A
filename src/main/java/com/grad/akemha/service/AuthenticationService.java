@@ -10,11 +10,13 @@ import com.grad.akemha.exception.ForbiddenException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
+import com.grad.akemha.exception.authExceptions.WrongPasswordException;
 import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.repository.VerificationCodeRepository;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.utils.AESEncryptionUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,10 +32,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
+    @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private final PasswordEncoder passwordEncoder;
+    @Autowired
     private final JwtService jwtService;
+    @Autowired
     private final AuthenticationManager authenticationManager;
+
     private final WhatsAppService whatsAppService;
     private final VerificationCodeRepository verificationCodeRepository;
 
@@ -63,6 +70,10 @@ public class AuthenticationService {
             // adding a condition when the user is trying to login and he is not verified
             if (!user.getIsVerified()) {
                 throw new ForbiddenException("The User is not verified");
+            }
+            boolean result = passwordEncoder.matches(request.getPassword(), user.getPassword());
+            if(!result){
+                throw new WrongPasswordException("The password is wrong");
             }
             var jwtToken = jwtService.generateToken(user);
             return AuthResponse.builder().token(jwtToken)

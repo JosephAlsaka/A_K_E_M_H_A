@@ -4,6 +4,7 @@ import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.ErrorResponse;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
+import com.grad.akemha.exception.authExceptions.WrongPasswordException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -102,4 +103,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 //                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage));
 //    }
 
+    @ExceptionHandler(WrongPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleWrongPasswordException(WrongPasswordException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body
+                (new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
+    }
 }

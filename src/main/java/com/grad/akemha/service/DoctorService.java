@@ -1,6 +1,7 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
+import com.grad.akemha.dto.doctor.DoctorResponse;
 import com.grad.akemha.entity.Post;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
@@ -32,11 +33,15 @@ public class DoctorService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public List<User> getDoctors(Integer page) {
+    public Page<User> getDoctors(Integer page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        Page<User> doctorPage =  userRepository.findByRole(Role.DOCTOR, pageable);
-        return doctorPage.getContent();
+        return userRepository.findByRole(Role.DOCTOR, pageable);
     }
+//    public DoctorResponse getDoctors(Integer page) {
+//        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+//        Page<User> doctorPage = userRepository.findByRole(Role.DOCTOR, pageable);
+//        return new DoctorResponse(doctorPage.getContent(), doctorPage.getTotalElements());
+//    }
 
     public void addDoctor(AddDoctorRequest request) {
         if (userAlreadyExists(request.getEmail())) {

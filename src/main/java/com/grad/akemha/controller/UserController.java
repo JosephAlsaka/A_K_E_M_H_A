@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
-
+import org.springframework.data.domain.Page;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/user")
@@ -94,12 +94,25 @@ public class UserController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 
+//    @GetMapping("/beneficiary")
+//    public ResponseEntity<BaseResponse<List<BeneficiaryResponse>>> getBeneficiaries(@RequestParam(name = "page", defaultValue = "0") int page) {
+//        List<User> beneficiaries = userService.getBeneficiaries(page);
+//        List<BeneficiaryResponse> response = beneficiaries.stream().map(BeneficiaryResponse::new).toList();
+//        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiaries", response));
+//    }
+//    @GetMapping("/beneficiary")
+//    public ResponseEntity<BaseResponse<List<BeneficiaryResponse>>> getBeneficiaries(@RequestParam(name = "page", defaultValue = "0") int page) {
+//        List<User> beneficiaries = userService.getBeneficiaries(page);
+//        List<BeneficiaryResponse> response = beneficiaries.stream().map(BeneficiaryResponse::new).toList();
+//        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiaries", response));
+//    }
     @GetMapping("/beneficiary")
-    public ResponseEntity<BaseResponse<List<BeneficiaryResponse>>> getBeneficiaries(@RequestParam(name = "page", defaultValue = "0") int page) {
-        List<User> beneficiaries = userService.getBeneficiaries(page);
-        List<BeneficiaryResponse> response = beneficiaries.stream().map(BeneficiaryResponse::new).toList();
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiaries", response));
+    public ResponseEntity<BaseResponse<Page<BeneficiaryResponse>>> getBeneficiaries(@RequestParam(name = "page", defaultValue = "0") int page) {
+        Page<User> beneficiariesPage = userService.getBeneficiaries(page);
+        Page<BeneficiaryResponse> responsePage = beneficiariesPage.map(BeneficiaryResponse::new);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiaries", responsePage));
     }
+
 
     @PostMapping("/beneficiary")
     public ResponseEntity<BaseResponse<?>> addBeneficiary(@RequestBody AddBeneficiaryRequest request) {

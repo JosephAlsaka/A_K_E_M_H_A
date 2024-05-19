@@ -41,15 +41,15 @@ public class ConsultationRes {
         this.updateAnswerTime = consultation.getUpdateAnswerTime();
         this.specialization = consultation.getSpecialization();
         if (consultation.getConsultationType() != ConsultationType.ANONYMOUS) {
-            this.beneficiary = new UserInConsultationRes(consultation.getBeneficiary().getName(), consultation.getBeneficiary().getProfileImage(), consultation.getBeneficiary().getGender());
+            this.beneficiary = new UserInConsultationRes(consultation.getBeneficiary().getId(),consultation.getBeneficiary().getName(), consultation.getBeneficiary().getProfileImage(), consultation.getBeneficiary().getGender());
         }
         if (consultation.getDoctor() != null) {
-            this.doctor = new UserInConsultationRes(consultation.getDoctor().getName(), consultation.getDoctor().getProfileImage(), consultation.getDoctor().getGender());
+            this.doctor = new UserInConsultationRes(consultation.getDoctor().getId(),consultation.getDoctor().getName(), consultation.getDoctor().getProfileImage(), consultation.getDoctor().getGender());
         }
 //        this.specialization = consultation.getTextFiles().stream().map(file -> new FileResponse(file)).toList();
     }
 
-    record UserInConsultationRes(String name, String profileImg, Gender gender) {
+    record UserInConsultationRes(Long id,String name, String profileImg, Gender gender) {
     }
 }
 

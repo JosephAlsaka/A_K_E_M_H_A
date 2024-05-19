@@ -79,9 +79,8 @@ public class User implements UserDetails {
     private Specialization specialization;
 
 
-    //TODO: why role can be nullable
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
+    @Column(nullable = false)
     private Role role;
 
 //    @OneToMany(cascade = CascadeType.ALL) //fetch = FetchType.LAZY, cascade = CascadeType.ALL

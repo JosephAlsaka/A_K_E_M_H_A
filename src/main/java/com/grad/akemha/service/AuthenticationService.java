@@ -90,7 +90,7 @@ public class AuthenticationService {
                     .id(user.getId())
                     .userEmail(user.getEmail())
                     .role(user.getRole().toString())
-                    .role(user.getRole())
+                    .role(user.getRole().toString())
                     .build();
             //another way
 ////        final AuthResponse authResponseModel;

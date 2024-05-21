@@ -6,10 +6,13 @@ import com.grad.akemha.dto.auth.authrequest.RegisterRequest;
 import com.grad.akemha.dto.auth.authresponse.AuthResponse;
 import com.grad.akemha.dto.auth.authrequest.VerificationRequest;
 import com.grad.akemha.service.AuthenticationService;
+import com.grad.akemha.service.LogoutService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +31,7 @@ public class AuthController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthenticationService authService;
+    private final LogoutService logoutService;
 
     @PostMapping("/register")
     public ResponseEntity<BaseResponse<String>> register(
@@ -70,5 +74,15 @@ public class AuthController {
         AuthResponse response = authService.verifyAccount(verificationRequest);
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "User Verified successfully", response));
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<BaseResponse<String>> logout(
+            @RequestHeader HttpHeaders httpHeaders
+    ) throws Exception {
+//        AuthResponse response = logoutService.logout();
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "User logged out successfully",
+                        "response"));
     }
 }

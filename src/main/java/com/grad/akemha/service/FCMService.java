@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class FCMService {
     //    private Logger logger = LoggerFactory.getLogger(FCMService.class);
-// TODO: do we need an image?
+
     // token (a specific User)
     public void sendMessageToToken(NotificationRequestToken request)
             throws InterruptedException, ExecutionException {
@@ -21,6 +21,10 @@ public class FCMService {
 //        String jsonOutput = gson.toJson(message);
         sendAndGetResponse(message);
     }
+
+    ///////////////////////////////////////////////
+    // // TODO: send to multiple tokens
+
 
     // global
     private String sendAndGetResponse(Message message) throws InterruptedException, ExecutionException {
@@ -52,7 +56,7 @@ public class FCMService {
     }
 
     private Message getPreconfiguredMessageToToken(NotificationRequestToken request) {
-        return getPreconfiguredMessageBuilder(request).setToken(request.getToken())
+        return getPreconfiguredMessageBuilder(request).setToken(request.getDeviceToken())
                 .build();
     }
 
@@ -109,9 +113,16 @@ public class FCMService {
 
     // **************************
     // to Subscribe to Topic so u can get notification each time a notification is sent to that topic
-    private void subscribeToTopic(String deviceToken, String topic) {
+    public void subscribeToTopic(String deviceToken, String topic) {
         FirebaseMessaging.getInstance()
                 .subscribeToTopicAsync(List.of(deviceToken), topic);
         System.out.println("Subscribed successfully");
+    }
+
+    // to UnSubscribe from Topics so u don't get notification each time a notification is sent to that topic
+    public void unSubscribeFromTopic(String deviceToken, String topic) {
+        FirebaseMessaging.getInstance()
+                .unsubscribeFromTopicAsync(List.of(deviceToken), topic);
+        System.out.println("UnSubscribed successfully");
     }
 }

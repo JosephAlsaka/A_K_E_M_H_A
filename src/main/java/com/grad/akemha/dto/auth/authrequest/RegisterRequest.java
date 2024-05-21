@@ -27,5 +27,4 @@ public class RegisterRequest {
     private LocalDate dob;
     private Role role;
     private Gender gender;
-    private String deviceToken;
 }

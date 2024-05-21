@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,13 +47,15 @@ public class LogoutService implements LogoutHandler {
             for (Token token : tokens) {
                 tokenRepository.delete(token);
             }
-            List<DeviceToken> deviceTokens = deviceTokenRepository.findAllByUser(user);
+            Optional<DeviceToken> optionalDeviceToken = deviceTokenRepository.findByDeviceToken(user.getDeviceToken());
             // TODO: unsubscribe to topics
-            for (DeviceToken deviceToken : deviceTokens) {
+            if (optionalDeviceToken.isPresent()) {
+                DeviceToken deviceToken = optionalDeviceToken.get();
                 fcmService.unSubscribeFromTopic(deviceToken.getDeviceToken(), "all");
                 fcmService.unSubscribeFromTopic(deviceToken.getDeviceToken(), "posts");
                 deviceTokenRepository.delete(deviceToken);
             }
+
             SecurityContextHolder.clearContext();
         }
     }

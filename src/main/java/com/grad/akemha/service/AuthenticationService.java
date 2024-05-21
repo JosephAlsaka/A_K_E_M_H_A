@@ -5,6 +5,7 @@ import com.grad.akemha.dto.auth.authrequest.LoginRequest;
 import com.grad.akemha.dto.auth.authrequest.RegisterRequest;
 import com.grad.akemha.dto.auth.authrequest.VerificationRequest;
 import com.grad.akemha.dto.auth.authresponse.AuthResponse;
+import com.grad.akemha.entity.DeviceToken;
 import com.grad.akemha.entity.Token;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.VerificationCode;
@@ -12,14 +13,13 @@ import com.grad.akemha.exception.ForbiddenException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
-import com.grad.akemha.repository.TokenRepository;
 import com.grad.akemha.exception.authExceptions.WrongPasswordException;
+import com.grad.akemha.repository.TokenRepository;
 import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.repository.VerificationCodeRepository;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.utils.AESEncryptionUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -76,30 +76,24 @@ public class AuthenticationService {
             }
 
             if (deviceTokenService.saveDeviceTokenIfNotExists(request.getDeviceToken(), user)) {
+                user.setDeviceToken(request.getDeviceToken());
+                userRepository.save(user);
                 fcmService.subscribeToTopic(request.getDeviceToken(), "all");
                 fcmService.subscribeToTopic(request.getDeviceToken(), "posts");
             }
             boolean result = passwordEncoder.matches(request.getPassword(), user.getPassword());
-            if(!result){
+            if (!result) {
                 throw new WrongPasswordException("The password is wrong");
             }
             var jwtToken = jwtService.generateToken(user);
             // to save token in token entity
             saveUserToken(user, jwtToken);
-            return AuthResponse.builder().token(jwtToken)
+            return AuthResponse.builder()
+                    .token(jwtToken)
                     .id(user.getId())
                     .userEmail(user.getEmail())
                     .role(user.getRole().toString())
-                    .role(user.getRole().toString())
                     .build();
-            //another way
-////        final AuthResponse authResponseModel;
-////        authResponseModel = new AuthResponseModel(
-////                jwtToken,
-////                HttpStatus.OK.value(),
-////                user.getEmail(),
-////                "Successfully logged in"
-////        );
         } catch (BadCredentialsException e) {
             throw new UserNotFoundException("User not found");
         }
@@ -116,11 +110,12 @@ public class AuthenticationService {
 
             if (Objects.equals(storedCode, verificationRequest.getCode())) {
                 user.setIsVerified(true);
-                userRepository.save(user);
                 var jwtToken = jwtService.generateToken(user);
 
-                // TODO: subscribe to topics
+                // saving device entity if it isn't existed
                 if (deviceTokenService.saveDeviceTokenIfNotExists(verificationRequest.getDeviceToken(), user)) {
+                    user.setDeviceToken(verificationRequest.getDeviceToken());
+                    userRepository.save(user);
                     // todo: subscribe to topics
                     fcmService.subscribeToTopic(verificationRequest.getDeviceToken(), "all");
                     fcmService.subscribeToTopic(verificationRequest.getDeviceToken(), "posts");

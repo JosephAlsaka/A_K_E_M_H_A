@@ -71,8 +71,8 @@ public class User implements UserDetails {
     @Column(name = "is_verified", nullable = false)
     private Boolean isVerified;
 
-//    @Column(name = "device_token")
-//    private String deviceToken;
+    @Column(name = "device_token")
+    private String deviceToken;
 
     //    @JsonIgnore
     @ManyToOne

@@ -5,7 +5,6 @@ import com.grad.akemha.dto.auth.authrequest.LoginRequest;
 import com.grad.akemha.dto.auth.authrequest.RegisterRequest;
 import com.grad.akemha.dto.auth.authrequest.VerificationRequest;
 import com.grad.akemha.dto.auth.authresponse.AuthResponse;
-import com.grad.akemha.entity.DeviceToken;
 import com.grad.akemha.entity.Token;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.VerificationCode;

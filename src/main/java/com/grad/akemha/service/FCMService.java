@@ -22,10 +22,6 @@ public class FCMService {
         sendAndGetResponse(message);
     }
 
-    ///////////////////////////////////////////////
-    // // TODO: send to multiple tokens
-
-
     // global
     private String sendAndGetResponse(Message message) throws InterruptedException, ExecutionException {
         return FirebaseMessaging.getInstance().sendAsync(message).get();

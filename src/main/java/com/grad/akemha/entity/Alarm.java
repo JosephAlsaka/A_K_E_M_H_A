@@ -1,6 +1,6 @@
 package com.grad.akemha.entity;
 
-import com.grad.akemha.entity.enums.WeekDays;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,6 +34,7 @@ public class Alarm {
 //    @Column(nullable = false)
 //    private WeekDays medicineDays; //TODO : i think we will have a problem here because we need to store a list from days not just one day
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "medicine_id")
     private Medicine medicine;

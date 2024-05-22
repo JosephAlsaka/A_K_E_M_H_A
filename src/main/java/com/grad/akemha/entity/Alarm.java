@@ -30,9 +30,9 @@ public class Alarm {
     @Column(name = "alarm_time")
     private LocalTime alarmTime; // Time variable representing the alarm time
     //alarm.setAlarmTime(LocalTime.of(7, 30)); // Sets alarm time to 7:30 AM
-
-    @Column(nullable = false)
-    private WeekDays medicineDays; //TODO : i think we will have a problem here because we need to store a list from days not just one day
+//
+//    @Column(nullable = false)
+//    private WeekDays medicineDays; //TODO : i think we will have a problem here because we need to store a list from days not just one day
 
     @ManyToOne
     @JoinColumn(name = "medicine_id")

@@ -1,7 +1,6 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
-import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.medicalDevice.AddDeviceRequest;
 import com.grad.akemha.dto.medicalDevice.ChangeQuantityRequest;
 import com.grad.akemha.dto.medicalDevice.ReserveDeviceRequest;
@@ -22,7 +21,6 @@ import java.util.List;
 public class MedicalDeviceController {
     @Autowired
     MedicalDeviceService medicalDeviceService;
-
 
     @GetMapping()
     public ResponseEntity<BaseResponse<List<MedicalDevice>>> getDevices( @RequestParam(name = "page", defaultValue = "0") Integer page) {

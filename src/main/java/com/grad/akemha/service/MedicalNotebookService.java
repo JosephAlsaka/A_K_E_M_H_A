@@ -3,9 +3,11 @@ package com.grad.akemha.service;
 import com.grad.akemha.dto.medicine.AddAlarmRequest;
 import com.grad.akemha.dto.medicine.AddMedicineRequest;
 import com.grad.akemha.entity.Alarm;
+import com.grad.akemha.entity.AlarmHistory;
 import com.grad.akemha.entity.Medicine;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
+import com.grad.akemha.repository.AlarmHistoryRepository;
 import com.grad.akemha.repository.AlarmRepository;
 import com.grad.akemha.repository.MedicineRepository;
 import com.grad.akemha.security.JwtService;
@@ -17,6 +19,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 
 @Service
 public class MedicalNotebookService {
@@ -26,6 +31,9 @@ public class MedicalNotebookService {
     private MedicineRepository medicineRepository;
     @Autowired
     private AlarmRepository alarmRepository;
+
+    @Autowired
+    private AlarmHistoryRepository alarmHistoryRepository;
 
     public Page<Medicine> getMedicine(HttpHeaders httpHeaders, Integer page) {
         User user = jwtService.extractUserFromToken(httpHeaders);
@@ -45,6 +53,7 @@ public class MedicalNotebookService {
         User user = jwtService.extractUserFromToken(httpHeaders);
         Medicine medicine = new Medicine();
         medicine.setName(request.getName());
+        medicine.setDescription(request.getDescription());
         medicine.setUser(user);
         medicine = medicineRepository.save(medicine);
         Alarm alarm = new Alarm();
@@ -81,6 +90,16 @@ public class MedicalNotebookService {
         Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(() -> new UserNotFoundException("Alarm not found"));
         Medicine medicine = medicineRepository.findByIdAndUser(alarm.getMedicine().getId(), user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
         alarmRepository.delete(alarm);
+    }
+
+    public void takeMedicine(Long alarmId, HttpHeaders httpHeaders) {
+        User user = jwtService.extractUserFromToken(httpHeaders);
+        Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(() -> new UserNotFoundException("Alarm not found"));
+        Medicine medicine = medicineRepository.findByIdAndUser(alarm.getMedicine().getId(), user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
+        AlarmHistory alarmHistory=new AlarmHistory();
+        alarmHistory.setAlarm(alarm);
+        alarmHistory.setTakeDate(LocalDateTime.now());
+        alarmHistoryRepository.save(alarmHistory);
     }
 
 

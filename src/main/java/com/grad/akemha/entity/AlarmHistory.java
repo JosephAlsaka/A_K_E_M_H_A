@@ -3,6 +3,7 @@ package com.grad.akemha.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @ToString
@@ -19,7 +20,7 @@ public class AlarmHistory {
     private Long id;
 
     @Column
-    private LocalTime takeDate; //TODO , check the type
+    private LocalDateTime takeDate; //TODO , check the type
 
     @ManyToOne
     @JoinColumn(name = "alarm_id")

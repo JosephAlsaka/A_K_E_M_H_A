@@ -82,7 +82,7 @@ public class SupervisionService {
         return supervisionResponseList;
     }
 
-    // retrieve random 10 Max users++++++++++
+    // retrieve random 10 Max users++++++++++++
     public List<UserLessResponse> returnRandomTenUser(HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
         Long userId = user.getId();

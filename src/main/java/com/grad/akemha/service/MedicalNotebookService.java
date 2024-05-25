@@ -75,9 +75,6 @@ public class MedicalNotebookService {
         alarmRepository.save(alarm);
     }
 
-    //TODO
-//    public void editMedicine(AddAlarmRequest request,HttpHeaders httpHeaders) {
-//    }
 
     public void deleteMedicine(Long medicineId, HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);

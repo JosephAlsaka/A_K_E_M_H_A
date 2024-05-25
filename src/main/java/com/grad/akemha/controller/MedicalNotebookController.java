@@ -74,13 +74,6 @@ public class MedicalNotebookController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "alarm added successfully", null));
     }
 
-//    @PatchMapping() //TODO  medicine just have name???
-//    public ResponseEntity<BaseResponse<?>> editMedicine() {
-//
-//        Consultation response = medicalNotebookService.editMedicine(request, httpHeaders);
-//        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "edited successfully", null));
-//    }
-
     @DeleteMapping("/{medicineId}")
     public ResponseEntity<BaseResponse<?>> deleteMedicine(@PathVariable Long medicineId, @RequestHeader HttpHeaders httpHeaders) {
         medicalNotebookService.deleteMedicine(medicineId, httpHeaders);

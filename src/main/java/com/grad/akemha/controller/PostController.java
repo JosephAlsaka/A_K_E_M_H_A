@@ -14,11 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class PostController {
 
@@ -28,7 +30,7 @@ public class PostController {
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<PostResponse>> getPostById(
-            @PathVariable int id)  {
+            @PathVariable int id) {
         PostResponse response = postService.getPostById(id);
 
         return ResponseEntity.ok().body(new BaseResponse<>
@@ -37,17 +39,29 @@ public class PostController {
     }
 
 
+//    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
+//    @GetMapping()
+//    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
+//            // this page is for pagination //this may be an Integer instead of int
+//            @RequestParam(name = "page", defaultValue = "0") int page
+//    ) {
+//        List<Post> posts = postService.getAllPosts(page);
+//        List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
+//
+//        return ResponseEntity.ok().body(new BaseResponse<>
+//                (HttpStatus.OK.value(), "All Posts", response));
+//    }
+
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping()
-    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
+    public ResponseEntity<BaseResponse<Page<PostResponse>>> getAllPosts(
             // this page is for pagination //this may be an Integer instead of int
             @RequestParam(name = "page", defaultValue = "0") int page
     ) {
-        List<Post> posts = postService.getAllPosts(page);
-        List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
-
+        Page<Post> postPage=postService.getAllPosts(page);
+        Page<PostResponse> responsePage = postPage.map(PostResponse::new);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "All Posts", response));
+                (HttpStatus.OK.value(), "All Posts", responsePage));
     }
 
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")

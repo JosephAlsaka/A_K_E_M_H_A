@@ -53,11 +53,16 @@ public class PostService {
     }
 
 
-    public List<Post> getAllPosts(int page) {
+    //    public List<Post> getAllPosts(int page) {
+//        // this page size indicates of number of data retrieved
+//        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+//        Page<Post> postPage = postRepository.findAll(pageable);
+//        return postPage.getContent();
+//    }
+    public Page<Post> getAllPosts(int page) {
         // this page size indicates of number of data retrieved
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        Page<Post> postPage = postRepository.findAll(pageable);
-        return postPage.getContent();
+        return postRepository.findAll(pageable);
     }
 
     // Create

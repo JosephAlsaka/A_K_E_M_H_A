@@ -96,6 +96,7 @@ public class ConsultationController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<Consultation>> postConsultation(
 //            @RequestPart("request") ConsultationRequest request,
@@ -107,7 +108,7 @@ public class ConsultationController {
             @RequestParam(value = "files", required = false) List<MultipartFile> files,
             @RequestHeader HttpHeaders httpHeaders) {
                 try {
-            Consultation response = consultationService.postConsultation(httpHeaders, title, consultationText, specializationId, consultationType, files);
+                    Consultation response = consultationService.postConsultation(httpHeaders, title, consultationText, specializationId, consultationType, files);
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.OK.value(), "Consultation added successfully", response));
         } catch (NumberFormatException e) {

@@ -4,6 +4,8 @@ import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.post.PostRequest;
 import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.entity.Post;
+import com.grad.akemha.entity.Token;
+import com.grad.akemha.repository.TokenRepository;
 import com.grad.akemha.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +14,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/post")
@@ -23,12 +28,13 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final TokenRepository tokenRepository;
 
     // Read
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<PostResponse>> getPostById(
-            @PathVariable int id)  {
+            @PathVariable int id) {
         PostResponse response = postService.getPostById(id);
 
         return ResponseEntity.ok().body(new BaseResponse<>
@@ -46,7 +52,7 @@ public class PostController {
         List<Post> posts = postService.getAllPosts(page);
         List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
 
-        return ResponseEntity.ok().body(new BaseResponse<>
+       return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "All Posts", response));
     }
 
@@ -55,7 +61,7 @@ public class PostController {
     public ResponseEntity<BaseResponse<PostResponse>> addPost(
             @Valid @ModelAttribute PostRequest postRequest,
             @RequestHeader HttpHeaders httpHeaders
-    ) {
+    ) throws ExecutionException, InterruptedException {
         PostResponse response = postService.createPost(postRequest, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.CREATED.value(), "Post created successfully", response));
@@ -109,5 +115,4 @@ public class PostController {
                 (HttpStatus.OK.value(), "Removed like from the Post successfully", response));
 
     }
-
 }

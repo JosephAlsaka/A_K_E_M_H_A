@@ -118,10 +118,15 @@ public class UserService {
         return userResponseList;
     }
 
-    public List<User> getBeneficiaries(Integer page) {
+//    public List<User> getBeneficiaries(Integer page) {
+//        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+//        Page<User> doctorPage = (Page<User>) userRepository.findByRole(Role.USER,pageable);
+//        return doctorPage.getContent();
+//    }
+
+    public Page<User> getBeneficiaries(Integer page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        Page<User> doctorPage = (Page<User>) userRepository.findByRole(Role.USER,pageable);
-        return doctorPage.getContent();
+        return userRepository.findByRole(Role.USER, pageable);
     }
 
     public void addBeneficiary(AddBeneficiaryRequest request) {

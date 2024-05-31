@@ -150,4 +150,8 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    public List<User> getDoctors() {
+        return userRepository.findAllByRole(Role.DOCTOR);
+    }
+
 }

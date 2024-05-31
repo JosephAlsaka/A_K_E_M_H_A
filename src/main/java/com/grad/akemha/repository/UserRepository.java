@@ -21,6 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findByRole(Role role, Pageable pageable);
 
+    List<User> findAllByRole(Role role);
     // to delete users that are not verified
     // note this function is called in AccountCleanupTask in bootstrap folder
     @Query("SELECT u FROM User u WHERE u.isVerified = false AND u.creationDate < :timeLimit")

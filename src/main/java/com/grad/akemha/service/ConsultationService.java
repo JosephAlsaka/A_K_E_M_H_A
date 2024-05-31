@@ -189,4 +189,8 @@ public class ConsultationService {
         consultationRepository.save(consultation);
         return consultation;
     }
+
+    public long getAnsweredConsultationByDoctorCount(Long doctorId){
+        return consultationRepository.countAnsweredConsultationsByDoctorId(doctorId);
+    }
 }

@@ -121,7 +121,8 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 // the token will live for one week not one year
-                .expiration(new Date(System.currentTimeMillis() + (1000 * 3600 * 24 * 7))) // 1 week
+//                .expiration(new Date(System.currentTimeMillis() + (1000 * 3600 * 24 * 7))) // 1 week
+                .expiration(new Date(System.currentTimeMillis() + 31556952000L)) // 1 year
                 .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
     }

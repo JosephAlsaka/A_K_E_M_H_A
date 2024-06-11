@@ -29,6 +29,7 @@ public class DoctorResponseMobile {
         this.name = user.getName();
         this.email = user.getEmail();
         this.phoneNumber = user.getPhoneNumber();
+        this.profileImage = user.getProfileImage();
         this.description = user.getDescription();
         this.location = user.getLocation();
         this.openingTimes = user.getOpeningTimes();

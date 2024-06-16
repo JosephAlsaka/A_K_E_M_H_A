@@ -1,5 +1,6 @@
 package com.grad.akemha.service;
 
+import com.grad.akemha.dto.notification.NotificationRequestTopic;
 import com.grad.akemha.dto.post.DoctorResponse;
 import com.grad.akemha.dto.post.PostRequest;
 import com.grad.akemha.dto.post.PostResponse;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class PostService {
     private final JwtService jwtService;
     private final LikeRepository likeRepository;
     private final CloudinaryService cloudinaryService;
+    private final FCMService fcmService;
 
     // Read
     public PostResponse getPostById(int id) {
@@ -62,7 +65,7 @@ public class PostService {
 
     // Create
     public PostResponse createPost(@NotNull PostRequest postRequest,
-                                   HttpHeaders httpHeaders) {
+                                   HttpHeaders httpHeaders) throws ExecutionException, InterruptedException {
 
         if (postRequest.getDescription() == null) {
             throw new ForbiddenException("Description Data is Null");
@@ -80,6 +83,11 @@ public class PostService {
         post.setLikes(new ArrayList<>());
         post.setComments(new ArrayList<>());
         postRepository.save(post);
+        // modifying body to be small
+        String notificationBody = shortenString(post.getDescription());
+        NotificationRequestTopic notificationRequestTopic = new NotificationRequestTopic("New Post", notificationBody, "posts");
+        fcmService.sendMessageToTopic(notificationRequestTopic);
+
         return PostResponse
                 .builder()
                 .id(post.getId())
@@ -89,6 +97,16 @@ public class PostService {
                 .likesCount(post.getLikes().size())
                 .commentsCount(post.getComments().size())
                 .build();
+    }
+
+    // to cut the description (body of the notification)
+    private String shortenString(String input) {
+        final int maxLength = 50;
+        if (input.length() > maxLength) {
+            return input.substring(0, maxLength) + "...";
+        } else {
+            return input + "...";
+        }
     }
 
     // Update
@@ -105,6 +123,7 @@ public class PostService {
         if (optionalPost.isPresent()) {
             Post post = optionalPost.get();
             String userId = jwtService.extractUserId(httpHeaders);
+
 
             if (description != null
                     && !Objects.equals(description, post.getDescription())) {
@@ -225,5 +244,4 @@ public class PostService {
         }
 
     }
-
 }

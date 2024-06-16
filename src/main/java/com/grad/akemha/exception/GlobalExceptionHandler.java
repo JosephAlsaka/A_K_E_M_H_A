@@ -103,6 +103,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 //                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage));
 //    }
 
+    // notification Exception
+    @ExceptionHandler(Exception.class)
+    public final ResponseEntity<ErrorResponse> handleNotificationsException(Exception ex, WebRequest request) throws Exception {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body
+                (new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getCause().getMessage()));
+    }
     @ExceptionHandler(WrongPasswordException.class)
     public ResponseEntity<ErrorResponse> handleWrongPasswordException(WrongPasswordException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body

@@ -17,7 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.data.domain.Page;
+import com.grad.akemha.entity.Post;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -44,18 +45,32 @@ public class PostController {
     }
 
 
+
+//    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
+//    @GetMapping()
+//    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
+//            // this page is for pagination //this may be an Integer instead of int
+//            @RequestParam(name = "page", defaultValue = "0") int page
+//    ) {
+//        List<Post> posts = postService.getAllPosts(page);
+//        List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
+//
+//        return ResponseEntity.ok().body(new BaseResponse<>
+//                (HttpStatus.OK.value(), "All Posts", response));
+//    }
+
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping()
-    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
+    public ResponseEntity<BaseResponse<Page<PostResponse>>> getAllPosts(
             // this page is for pagination //this may be an Integer instead of int
             @RequestParam(name = "page", defaultValue = "0") int page
     ) {
-        List<Post> posts = postService.getAllPosts(page);
-        List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
-
-       return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "All Posts", response));
+        Page<Post> postPage= (Page<Post>) postService.getAllPosts(page);
+        Page<PostResponse> responsePage = postPage.map(PostResponse::new);
+        return ResponseEntity.ok().body(new BaseResponse<>
+                (HttpStatus.OK.value(), "All Posts", responsePage));
     }
+
 
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

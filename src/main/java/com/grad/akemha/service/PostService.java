@@ -124,6 +124,7 @@ public class PostService {
             Post post = optionalPost.get();
             String userId = jwtService.extractUserId(httpHeaders);
 
+
             if (description != null
                     && !Objects.equals(description, post.getDescription())) {
                 post.setDescription(description);

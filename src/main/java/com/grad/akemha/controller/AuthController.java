@@ -27,7 +27,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Validated
 public class AuthController {
-    //s
+    //   s
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthenticationService authService;

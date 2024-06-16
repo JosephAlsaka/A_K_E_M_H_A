@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MedicalRecordResponse {
+public class AllMedicalRecordResponse {
     private Long id;
 
     private Boolean coffee;
@@ -33,16 +33,11 @@ public class MedicalRecordResponse {
 
     private BloodType bloodType;
 
-    private Date createTime; // for beneficiary and doctor
-//
-//    private List<AdditionalRecordInfoResponse> additionalRecordInfoResponse;
+    private Date createTime; // for owner and doctor
 
-    private List<AdditionalRecordInfoResponse> previousSurgeries;
-    private List<AdditionalRecordInfoResponse> previousIllnesses;
-    private List<AdditionalRecordInfoResponse> allergies;
-    private List<AdditionalRecordInfoResponse> familyHistoryOfIllnesses;
+    private List<AdditionalRecordInfoResponse> additionalRecordInfoResponse;
 
-    public MedicalRecordResponse(MedicalRecord medicalRecord) {
+    public AllMedicalRecordResponse(MedicalRecord medicalRecord) {
         this.id = medicalRecord.getId();
         this.createTime = medicalRecord.getCreateTime();
         this.coffee = medicalRecord.getCoffee();
@@ -53,10 +48,6 @@ public class MedicalRecordResponse {
         this.height = medicalRecord.getHeight();
         this.weight = medicalRecord.getWeight();
         this.bloodType = medicalRecord.getBloodType();
-        this.previousSurgeries = medicalRecord.getAdditionalRecordInfo().stream().map(AdditionalRecordInfoResponse::new).toList();
-        this.previousIllnesses = medicalRecord.getAdditionalRecordInfo().stream().map(AdditionalRecordInfoResponse::new).toList();
-        this.allergies = medicalRecord.getAdditionalRecordInfo().stream().map(AdditionalRecordInfoResponse::new).toList();
-        this.familyHistoryOfIllnesses = medicalRecord.getAdditionalRecordInfo().stream().map(AdditionalRecordInfoResponse::new).toList();
+        this.additionalRecordInfoResponse = medicalRecord.getAdditionalRecordInfo().stream().map(AdditionalRecordInfoResponse::new).toList();
     }
-
 }

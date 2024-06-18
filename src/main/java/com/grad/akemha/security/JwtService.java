@@ -63,11 +63,28 @@ public class JwtService {
         }
     }
 
+    public User extractUserFromJwtToken(String jwtToken) {
+        String userEmail = Jwts
+                .parser()
+                .verifyWith(getSignInKey()) //56:33
+                .build()
+                .parseSignedClaims(jwtToken)
+                .getPayload()
+                .getSubject();
+
+        Optional<User> optionalUser = userRepository.findByEmail(userEmail);
+        if (optionalUser.isPresent()) {
+            return optionalUser.get();
+        } else {
+            throw new NotFoundException("Something Went Wrong When getting the User");
+        }
+    }
+
     public String extractUserId(HttpHeaders httpHeaders) { //when we will use this method? when we receive the token from the client when client makes a request to the server and through this token we get the username
         // Assuming your token is in the "Authorization" header
         String token = httpHeaders.getFirst("Authorization");
         String jwt = token.replace("Bearer ", "");
-        var id = extractAllClaims(jwt).get("id");
+        var id = extractAllClaims(jwt);
         return String.valueOf(id);
     }
 
@@ -95,7 +112,7 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 // the token will live for one week not one year
-                .expiration(new Date(System.currentTimeMillis() + (1000 * 3600 * 24 * 7) )) // 1 week
+                .expiration(new Date(System.currentTimeMillis() + (1000 * 3600 * 24 * 7))) // 1 week
                 .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
     }

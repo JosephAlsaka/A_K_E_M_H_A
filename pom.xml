@@ -101,6 +101,12 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+<!--        for notifications-->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>9.2.0</version>
+        </dependency>
         <!--		for whatsapp-->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>

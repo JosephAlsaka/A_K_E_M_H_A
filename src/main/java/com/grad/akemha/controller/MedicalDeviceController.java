@@ -25,8 +25,8 @@ public class MedicalDeviceController {
 
 
     @GetMapping()
-    public ResponseEntity<BaseResponse<List<MedicalDevice>>> getDevices() {
-        List<MedicalDevice> devices = medicalDeviceService.getDevices();
+    public ResponseEntity<BaseResponse<List<MedicalDevice>>> getDevices( @RequestParam(name = "page", defaultValue = "0") Integer page) {
+        List<MedicalDevice> devices = medicalDeviceService.getDevices(page);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "devices", devices));
     }
 

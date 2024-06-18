@@ -12,6 +12,10 @@ import com.grad.akemha.repository.MedicalDeviceRepository;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +38,10 @@ public class MedicalDeviceService {
     @Autowired
     private JwtService jwtService;
 
-    public List<MedicalDevice> getDevices() {
-        return medicalDeviceRepository.findAll();
+    public List<MedicalDevice> getDevices(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Page<MedicalDevice> devicePage = medicalDeviceRepository.findAll(pageable);
+        return devicePage.getContent();
     }
 
     public List<DeviceReservation> getReservations(Long medicalDeviceId) {

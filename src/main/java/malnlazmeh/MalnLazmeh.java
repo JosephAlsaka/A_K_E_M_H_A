@@ -184,7 +184,15 @@
     }
 */
 
-
+// FIXME from AuthService in login function line:79
+//another way
+////        final AuthResponse authResponseModel;
+////        authResponseModel = new AuthResponseModel(
+////                jwtToken,
+////                HttpStatus.OK.value(),
+////                user.getEmail(),
+////                "Successfully logged in"
+////        );
 
 
 

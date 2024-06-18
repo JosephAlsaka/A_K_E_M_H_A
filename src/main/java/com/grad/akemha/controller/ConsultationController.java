@@ -1,14 +1,15 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
+import com.grad.akemha.dto.beneficiary.BeneficiaryResponse;
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
-import com.grad.akemha.dto.consultation.consultationRequest.ConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.entity.Consultation;
+import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.ConsultationType;
-import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.ConsultationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,14 +28,27 @@ public class ConsultationController {
     private ConsultationService consultationService;
 
 
+//    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+//    @GetMapping()
+//    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAllConsultations(
+//            @RequestParam(name = "page", defaultValue = "0") Integer page) { //ConsultationResponse
+//        List<ConsultationRes> response = consultationService.getAllConsultations(page);
+//        return ResponseEntity.ok()
+//                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+//    }
+
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping()
-    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAllConsultations(
+    public ResponseEntity<BaseResponse<Page<ConsultationRes>>> getAllConsultations(
             @RequestParam(name = "page", defaultValue = "0") Integer page) { //ConsultationResponse
-        List<ConsultationRes> response = consultationService.getAllConsultations(page);
+
+        Page<Consultation> consultationPage=consultationService.getAllConsultations(page);
+        Page<ConsultationRes> responsePage = consultationPage.map(ConsultationRes::new);
         return ResponseEntity.ok()
-                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", responsePage));
     }
+
+
 
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping("/answered")
@@ -82,6 +96,7 @@ public class ConsultationController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<Consultation>> postConsultation(
 //            @RequestPart("request") ConsultationRequest request,
@@ -93,7 +108,7 @@ public class ConsultationController {
             @RequestParam(value = "files", required = false) List<MultipartFile> files,
             @RequestHeader HttpHeaders httpHeaders) {
                 try {
-            Consultation response = consultationService.postConsultation(httpHeaders, title, consultationText, specializationId, consultationType, files);
+                    Consultation response = consultationService.postConsultation(httpHeaders, title, consultationText, specializationId, consultationType, files);
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.OK.value(), "Consultation added successfully", response));
         } catch (NumberFormatException e) {
@@ -174,5 +189,19 @@ public class ConsultationController {
         consultationService.deleteConsultation(consultationId);
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully",null));
+    }
+
+    @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
+    @PatchMapping("/anonymous/{consultationId}")
+    public ResponseEntity<BaseResponse<Consultation>> makeConsultationAnonymous(@PathVariable Long consultationId) {
+        try {
+            consultationService.makeConsultationAnonymous(consultationId);
+            return ResponseEntity.ok()
+                    .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", null));
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+            return ResponseEntity.ok()
+                    .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
+        }
     }
 }

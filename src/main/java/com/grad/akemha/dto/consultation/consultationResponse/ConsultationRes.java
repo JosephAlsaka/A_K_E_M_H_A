@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -26,6 +27,9 @@ public class ConsultationRes {
     private UserInConsultationRes beneficiary;
     private UserInConsultationRes doctor;
     private ConsultationType consultationType;
+    private Date createTime;
+    private Date updateAnswerTime;
+
     public ConsultationRes(Consultation consultation) {
         this.id = consultation.getId();
         this.consultationText = consultation.getConsultationText();
@@ -33,14 +37,19 @@ public class ConsultationRes {
         this.images = consultation.getImages().stream().map(image -> new String(image.getImageUrl())).toList();
         this.consultationStatus = consultation.getConsultationStatus();
         this.consultationType = consultation.getConsultationType();
+        this.createTime = consultation.getCreateTime();
+        this.updateAnswerTime = consultation.getUpdateAnswerTime();
         this.specialization = consultation.getSpecialization();
-        this.beneficiary = new UserInConsultationRes(consultation.getBeneficiary().getName(), consultation.getBeneficiary().getProfileImage(), consultation.getBeneficiary().getGender());
+        if (consultation.getConsultationType() != ConsultationType.ANONYMOUS) {
+            this.beneficiary = new UserInConsultationRes(consultation.getBeneficiary().getId(),consultation.getBeneficiary().getName(), consultation.getBeneficiary().getProfileImage(), consultation.getBeneficiary().getGender());
+        }
         if (consultation.getDoctor() != null) {
-            this.doctor = new UserInConsultationRes(consultation.getDoctor().getName(), consultation.getDoctor().getProfileImage(), consultation.getDoctor().getGender());
+            this.doctor = new UserInConsultationRes(consultation.getDoctor().getId(),consultation.getDoctor().getName(), consultation.getDoctor().getProfileImage(), consultation.getDoctor().getGender());
         }
 //        this.specialization = consultation.getTextFiles().stream().map(file -> new FileResponse(file)).toList();
     }
-    record UserInConsultationRes(String name, String profileImg, Gender gender) {
+
+    record UserInConsultationRes(Long id,String name, String profileImg, Gender gender) {
     }
 }
 

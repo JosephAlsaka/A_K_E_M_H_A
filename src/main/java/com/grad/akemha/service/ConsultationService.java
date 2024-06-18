@@ -5,6 +5,7 @@ import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.entity.*;
 import com.grad.akemha.entity.enums.ConsultationStatus;
 import com.grad.akemha.entity.enums.ConsultationType;
+import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.ConsultationRepository;
@@ -47,15 +48,22 @@ public class ConsultationService {
     @Autowired
     private JwtService jwtService;
 
-    public List<ConsultationRes> getAllConsultations(Integer page) {
-        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        Page<Consultation> consultationPage = consultationRepository.findAll(pageable);
-        List<ConsultationRes> consultationResponseList = consultationPage.getContent().stream().map(consultation -> new ConsultationRes(consultation)).toList();
-        return consultationResponseList;
-//        List<Consultation> consultationList = consultationRepository.findAll();
-//        List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+//    public List<ConsultationRes> getAllConsultations(Integer page) {
+//        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+//        Page<Consultation> consultationPage = consultationRepository.findAll(pageable);
+//        List<ConsultationRes> consultationResponseList = consultationPage.getContent().stream().map(consultation -> new ConsultationRes(consultation)).toList();
 //        return consultationResponseList;
+////        List<Consultation> consultationList = consultationRepository.findAll();
+////        List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+////        return consultationResponseList;
+//    }
+
+    public Page<Consultation> getAllConsultations(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        return consultationRepository.findAll(pageable);
+
     }
+
 
     public List<ConsultationRes> getConsultationsBySpecializationId(Long specializationId,Integer page) {
         if (specializationRepository.findById(specializationId).isPresent()) {
@@ -173,5 +181,12 @@ public class ConsultationService {
 
     public void deleteConsultation(Long consultationId) {
         consultationRepository.deleteById(consultationId);
+    }
+
+    public Consultation makeConsultationAnonymous(Long consultationId) {
+        Consultation consultation = consultationRepository.findById(consultationId).orElseThrow(() -> new NotFoundException("consultation not found"));
+        consultation.setConsultationType(ConsultationType.ANONYMOUS);
+        consultationRepository.save(consultation);
+        return consultation;
     }
 }

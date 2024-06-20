@@ -76,7 +76,7 @@ public class ChatController {
         Message savedMessage = Message.builder()
                 .textMsg(message.getTextMsg())
                 .consultation(consultation)
-                .userId(1L)
+                .userId(1L) //TODO
                 .build();
         messageRepository.save(savedMessage);
 

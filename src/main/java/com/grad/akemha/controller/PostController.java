@@ -4,8 +4,6 @@ import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.post.PostRequest;
 import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.entity.Post;
-import com.grad.akemha.entity.Token;
-import com.grad.akemha.repository.TokenRepository;
 import com.grad.akemha.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 public class PostController {
 
     private final PostService postService;
-    private final TokenRepository tokenRepository;
 
     // Read
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")

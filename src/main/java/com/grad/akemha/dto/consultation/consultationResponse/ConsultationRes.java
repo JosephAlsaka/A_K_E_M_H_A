@@ -5,6 +5,7 @@ import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.enums.ConsultationStatus;
 import com.grad.akemha.entity.enums.ConsultationType;
 import com.grad.akemha.entity.enums.Gender;
+import com.grad.akemha.repository.ConsultationRepository;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConsultationRes {
+    private ConsultationRepository repository;
     private Long id;
     private String consultationText;
     private String consultationAnswer;

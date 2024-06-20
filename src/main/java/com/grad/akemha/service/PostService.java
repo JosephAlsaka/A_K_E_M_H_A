@@ -244,4 +244,10 @@ public class PostService {
         }
 
     }
+
+    public List<Post> getAllDoctorsPosts(Long doctorId, int page) {
+        // this page size indicates of number of data retrieved
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        return postRepository.findAllByUserId(doctorId, pageable);
+    }
 }

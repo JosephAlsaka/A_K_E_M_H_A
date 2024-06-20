@@ -54,7 +54,7 @@ public class MedicalRecordController {
     }
 
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<MedicalRecordResponse>> getMedicalRecordByUserId(
             @PathVariable Long id) {
         MedicalRecordResponse response = medicalRecordService.getMedicalRecordByUserId(id);

@@ -4,8 +4,6 @@ import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.post.PostRequest;
 import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.entity.Post;
-import com.grad.akemha.entity.Token;
-import com.grad.akemha.repository.TokenRepository;
 import com.grad.akemha.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -28,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 public class PostController {
 
     private final PostService postService;
-    private final TokenRepository tokenRepository;
+
 
     // Read
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
@@ -42,7 +38,6 @@ public class PostController {
 
     }
 
-
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping()
     public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
@@ -52,7 +47,7 @@ public class PostController {
         List<Post> posts = postService.getAllPosts(page);
         List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
 
-       return ResponseEntity.ok().body(new BaseResponse<>
+        return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "All Posts", response));
     }
 
@@ -66,7 +61,6 @@ public class PostController {
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.CREATED.value(), "Post created successfully", response));
     }
-
 
     // Update
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
@@ -82,7 +76,6 @@ public class PostController {
                 (HttpStatus.OK.value(), "Post updated successfully", response));
     }
 
-
     // Delete
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
     @DeleteMapping("/{id}")
@@ -92,7 +85,6 @@ public class PostController {
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Post deleted successfully", response));
     }
-
 
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
     @PostMapping("/add_like/{postId}")
@@ -114,5 +106,18 @@ public class PostController {
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Removed like from the Post successfully", response));
 
+    }
+
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllDoctorsPosts(
+            @PathVariable Long doctorId,
+            @RequestParam(name = "page", defaultValue = "0") int page
+    ) {
+        List<Post> posts = postService.getAllDoctorsPosts(doctorId,page);
+        List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
+
+        return ResponseEntity.ok().body(new BaseResponse<>
+                (HttpStatus.OK.value(), "All Posts", response));
     }
 }

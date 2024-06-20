@@ -167,7 +167,7 @@ public class ConsultationService {
     public List<ConsultationRes> getBeneficiaryAnsweredConsultations(Long beneficiaryId, Integer page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
         List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndBeneficiaryId(beneficiaryId, pageable);
-        List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+        List<ConsultationRes> consultationResponseList = consultationList.stream().map(ConsultationRes::new).toList();
         return consultationResponseList;
     }
 

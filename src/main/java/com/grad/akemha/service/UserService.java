@@ -1,7 +1,6 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.beneficiary.AddBeneficiaryRequest;
-import com.grad.akemha.dto.beneficiary.UserRestrictionResponse;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
@@ -27,7 +26,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -144,22 +142,16 @@ public class UserService {
         user.setGender(request.getGender());
         userRepository.save(user);
     }
-
     public void deleteBeneficiary(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
         userRepository.delete(user);
     }
-
     private boolean userAlreadyExists(String email) {
         return userRepository.existsByEmail(email);
     }
 
-
-    public UserRestrictionResponse userRestriction(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
-        user.setIsActive(!user.getIsActive());
-        userRepository.save(user);
-        return new UserRestrictionResponse(user);
+    public List<User> getDoctors() {
+        return userRepository.findAllByRole(Role.DOCTOR);
     }
 
 }

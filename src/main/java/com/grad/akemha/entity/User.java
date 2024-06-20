@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = true, unique = true, name = "phone_number")
+    @Column(unique = true, name = "phone_number")
     private String phoneNumber; // for beneficiary and doctor
 
     @Column(nullable = false)
@@ -72,6 +71,8 @@ public class User implements UserDetails {
     @Column(name = "is_verified", nullable = false)
     private Boolean isVerified;
 
+    @Column(name = "device_token")
+    private String deviceToken;
 
     //    @JsonIgnore
     @ManyToOne

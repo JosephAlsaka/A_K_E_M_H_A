@@ -1,9 +1,9 @@
-package com.grad.akemha.dto.auth.authRequest;
+package com.grad.akemha.dto.auth.authrequest;
 
 
+import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.entity.enums.Role;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class RegisterRequest {
 
-//    @NotBlank(message = "Please add a user name")
+//    @NotBlank(message = "Please add a username")
 
     @NotBlank(message = "Please add a name")
     private String name;
@@ -26,4 +26,5 @@ public class RegisterRequest {
     private String password;
     private LocalDate dob;
     private Role role;
+    private Gender gender;
 }

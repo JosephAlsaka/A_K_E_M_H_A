@@ -1,17 +1,13 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
-import com.grad.akemha.dto.post.PostRequest;
-import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.dto.supervision.response.SupervisionResponse;
-import com.grad.akemha.entity.Supervision;
+import com.grad.akemha.dto.user.response.UserLessResponse;
 import com.grad.akemha.entity.enums.SupervisionStatus;
 import com.grad.akemha.service.SupervisionService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +36,7 @@ public class SupervisionController {
     public ResponseEntity<BaseResponse<List<SupervisionResponse>>> viewSupervisionRequest(
             @RequestHeader HttpHeaders httpHeaders
     ) {
-        List<SupervisionResponse> supervisionList =supervisionService.viewSupervisionRequest(httpHeaders);
+        List<SupervisionResponse> supervisionList = supervisionService.viewSupervisionRequest(httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Supervision requests successfully", supervisionList));
     }
@@ -49,10 +45,9 @@ public class SupervisionController {
     @PostMapping("/reply/{supervisionId}")
     public ResponseEntity<BaseResponse<String>> replyToSupervisionRequest(
             @PathVariable Long supervisionId,
-            @RequestBody SupervisionStatus supervisionStatus,
             @RequestHeader HttpHeaders httpHeaders
     ) {
-        supervisionService.replyToSupervisionRequest(supervisionId, supervisionStatus, httpHeaders);
+        supervisionService.replyToSupervisionRequest(supervisionId,  httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "The reply arrived successfully", null));
     }
@@ -84,6 +79,23 @@ public class SupervisionController {
     ) {
         supervisionService.deleteApprovedSupervision(supervisionId);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "The supervision deleted successfully",null));
+                (HttpStatus.OK.value(), "The supervision deleted successfully", null));
+    }
+
+
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
+    @GetMapping("/possible_supervisor")
+    public ResponseEntity<BaseResponse<List<UserLessResponse>>> getRandomTenUsers(@RequestHeader HttpHeaders httpHeaders) {
+        List<UserLessResponse> response = supervisionService.returnRandomTenUser(httpHeaders);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
+    @GetMapping("/possible_supervisor/keyword")
+    public ResponseEntity<BaseResponse<List<UserLessResponse>>> getTenUsersByKeyword(@RequestParam String keyword,@RequestHeader HttpHeaders httpHeaders) {
+        List<UserLessResponse> response = supervisionService.returnTenUserByKeyword(keyword,httpHeaders);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 }

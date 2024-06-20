@@ -2,6 +2,7 @@ package com.grad.akemha.controller;
 
 
 import com.grad.akemha.dto.BaseResponse;
+import com.grad.akemha.dto.medical_record.AllMedicalRecordResponse;
 import com.grad.akemha.dto.medical_record.MedicalRecordRequest;
 import com.grad.akemha.dto.medical_record.MedicalRecordResponse;
 import com.grad.akemha.entity.MedicalRecord;
@@ -23,7 +24,7 @@ public class MedicalRecordController {
     private final MedicalRecordService medicalRecordService;
 
     // Read
-    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping()
     public ResponseEntity<BaseResponse<MedicalRecordResponse>> getMedicalRecord(
             @RequestHeader HttpHeaders httpHeaders) {
@@ -33,23 +34,23 @@ public class MedicalRecordController {
                 (HttpStatus.OK.value(), "Medical Record Found successfully", response));
     }
 
-    @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
-    @GetMapping("/history/{id}")
-    public ResponseEntity<BaseResponse<List<MedicalRecordResponse>>> getAllMedicalRecord(@PathVariable Long id) {
-        List<MedicalRecord> medicalRecordList = medicalRecordService.getAllMedicalRecord(id);
-        List<MedicalRecordResponse> response = medicalRecordList.stream().map(MedicalRecordResponse::new).toList();
-        return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "All MedicalRecord", response));
-    }
-
     @PreAuthorize("hasRole('USER')")
     @PostMapping()
-    public ResponseEntity<BaseResponse<MedicalRecordResponse>> createMedicalRecord(
+    public ResponseEntity<BaseResponse<String>> createMedicalRecord(
             @Valid @RequestBody MedicalRecordRequest medicalRecordRequest,
             @RequestHeader HttpHeaders httpHeaders) {
-        MedicalRecordResponse response = medicalRecordService.createMedicalRecord(medicalRecordRequest, httpHeaders);
+        String response = medicalRecordService.createMedicalRecord(medicalRecordRequest, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.CREATED.value(), "Medical Record created successfully", response));
+    }
+
+    @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
+    @GetMapping("/history/{id}")
+    public ResponseEntity<BaseResponse<List<AllMedicalRecordResponse>>> getAllMedicalRecord(@PathVariable Long id) {
+        List<MedicalRecord> medicalRecordList = medicalRecordService.getAllMedicalRecord(id);
+        List<AllMedicalRecordResponse> response = medicalRecordList.stream().map(AllMedicalRecordResponse::new).toList();
+        return ResponseEntity.ok().body(new BaseResponse<>
+                (HttpStatus.OK.value(), "All Medical Records", response));
     }
 
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")

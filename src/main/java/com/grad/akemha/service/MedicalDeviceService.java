@@ -20,10 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 
 @Service
 public class MedicalDeviceService {
@@ -66,8 +63,11 @@ public class MedicalDeviceService {
         medicalDevice.setCount(request.getCount());
         medicalDevice.setReservedCount(0);
         if (request.getImage() != null) {
-            medicalDevice.setImageUrl(cloudinaryService.uploadFile(request.getImage(), "Devices", user.getId().toString()));
+            Map<String, String> cloudinaryMap = cloudinaryService.uploadOneFile(request.getImage(), "Devices", user.getId().toString());
+            medicalDevice.setImageUrl(cloudinaryMap.get("image_url"));
+            medicalDevice.setImagePublicId(cloudinaryMap.get("public_id"));
         }
+
         medicalDeviceRepository.save(medicalDevice);
     }
 
@@ -102,6 +102,7 @@ public class MedicalDeviceService {
 
     public void deleteDevice(Long medicalDeviceId) {
         MedicalDevice medicalDevice = medicalDeviceRepository.findById(medicalDeviceId).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
+        cloudinaryService.destroyOneFile(medicalDevice.getImagePublicId());
         medicalDeviceRepository.delete(medicalDevice);
     }
 

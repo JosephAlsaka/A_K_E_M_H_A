@@ -95,9 +95,9 @@ public class ChatController {
             @PathVariable Long consultationId
     ) {
         List<Message> messageList = messageService.getMessagesByConsultationId(consultationId);
-        User user = userRepository.findById(1L).orElseThrow();
+//        User user = userRepository.findById(1L).orElseThrow();
 
-        List<MessageResponse> messageResponseList = messageList.stream().map(message -> new MessageResponse(message, user)).toList();
+        List<MessageResponse> messageResponseList = messageList.stream().map(message -> new MessageResponse(message, userRepository.findById(message.getUserId()).orElseThrow())).toList();
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "messages", messageResponseList));
     }
 }

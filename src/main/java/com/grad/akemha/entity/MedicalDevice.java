@@ -32,6 +32,9 @@ public class MedicalDevice {
     @Column(name = "image_url", nullable = true)
     private String imageUrl;
 
+    @Column(name = "image_public_id", nullable = true)
+    private String imagePublicId;
+
     @JsonIgnore
     @ToString.Exclude
     @OneToMany(mappedBy = "medicalDevice", cascade = CascadeType.ALL)

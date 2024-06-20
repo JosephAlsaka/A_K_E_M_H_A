@@ -1,5 +1,6 @@
 package com.grad.akemha.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,11 +21,15 @@ public class Medicine {
 
     @Column
     private String name;
+    @Column
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "medicine")
+    @JsonIgnore
+    @ToString.Exclude
+    @OneToMany(mappedBy = "medicine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Alarm> alarms;
 }

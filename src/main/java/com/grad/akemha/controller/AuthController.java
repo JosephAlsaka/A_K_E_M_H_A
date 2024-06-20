@@ -76,7 +76,7 @@ public class AuthController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "User Verified successfully", response));
     }
 
-    @GetMapping("/logout")
+    @DeleteMapping("/logout")
     public ResponseEntity<BaseResponse<String>> logout(
             @RequestHeader HttpHeaders httpHeaders
     ) throws Exception {

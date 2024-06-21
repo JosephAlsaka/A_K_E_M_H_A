@@ -12,13 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
 import com.grad.akemha.entity.Post;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -42,30 +40,18 @@ public class PostController {
     }
 
 
-
-//    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
-//    @GetMapping()
-//    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
-//            // this page is for pagination //this may be an Integer instead of int
-//            @RequestParam(name = "page", defaultValue = "0") int page
-//    ) {
-//        List<Post> posts = postService.getAllPosts(page);
-//        List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
-//
-//        return ResponseEntity.ok().body(new BaseResponse<>
-//                (HttpStatus.OK.value(), "All Posts", response));
-//    }
-
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping()
     public ResponseEntity<BaseResponse<Page<PostResponse>>> getAllPosts(
             // this page is for pagination //this may be an Integer instead of int
             @RequestParam(name = "page", defaultValue = "0") int page
     ) {
+
         Page<Post> postPage= (Page<Post>) postService.getAllPosts(page);
         Page<PostResponse> responsePage = postPage.map(PostResponse::new);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "All Posts", responsePage));
+
     }
 
 
@@ -79,7 +65,6 @@ public class PostController {
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.CREATED.value(), "Post created successfully", response));
     }
-
 
     // Update
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
@@ -95,7 +80,6 @@ public class PostController {
                 (HttpStatus.OK.value(), "Post updated successfully", response));
     }
 
-
     // Delete
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
     @DeleteMapping("/{id}")
@@ -105,7 +89,6 @@ public class PostController {
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Post deleted successfully", response));
     }
-
 
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
     @PostMapping("/add_like/{postId}")
@@ -127,5 +110,18 @@ public class PostController {
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "Removed like from the Post successfully", response));
 
+    }
+
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllDoctorsPosts(
+            @PathVariable Long doctorId,
+            @RequestParam(name = "page", defaultValue = "0") int page
+    ) {
+        List<Post> posts = postService.getAllDoctorsPosts(doctorId,page);
+        List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
+
+        return ResponseEntity.ok().body(new BaseResponse<>
+                (HttpStatus.OK.value(), "All Posts", response));
     }
 }

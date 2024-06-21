@@ -37,6 +37,8 @@ public class UserFullResponse {
         this.phoneNumber = user.getPhoneNumber();
         this.gender = user.getGender();
         this.role = user.getRole();
+        this.dob = user.getDob();
+        this.profileImage = user.getProfileImage();
         if (user.getRole() == Role.DOCTOR) {
             this.description = user.getDescription();
             this.location = user.getLocation();

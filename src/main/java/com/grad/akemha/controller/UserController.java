@@ -10,6 +10,7 @@ import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.service.ConsultationService;
 import com.grad.akemha.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -116,7 +118,16 @@ public class UserController {
 
 
     @PostMapping("/beneficiary")
-    public ResponseEntity<BaseResponse<?>> addBeneficiary(@RequestBody AddBeneficiaryRequest request) {
+    public ResponseEntity<BaseResponse<?>> addBeneficiary(@Valid @RequestBody AddBeneficiaryRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(error -> {
+                errorMessage.append(error.getDefaultMessage()).append("; ");
+            });
+            errorMessage.delete(errorMessage.length() - 2, errorMessage.length() - 1); // Remove the last "; "
+            return ResponseEntity.badRequest()
+                    .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), errorMessage.toString(), null));
+        }
         userService.addBeneficiary(request);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiary added successfully", null));
     }

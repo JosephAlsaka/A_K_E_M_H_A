@@ -7,10 +7,12 @@ import com.grad.akemha.dto.medicalDevice.ReserveDeviceRequest;
 import com.grad.akemha.entity.DeviceReservation;
 import com.grad.akemha.entity.MedicalDevice;
 import com.grad.akemha.service.MedicalDeviceService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,14 +25,23 @@ public class MedicalDeviceController {
     MedicalDeviceService medicalDeviceService;
 
     @GetMapping()
-    public ResponseEntity<BaseResponse<List<MedicalDevice>>> getDevices( @RequestParam(name = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<BaseResponse<List<MedicalDevice>>> getDevices(@RequestParam(name = "page", defaultValue = "0") Integer page) {
         List<MedicalDevice> devices = medicalDeviceService.getDevices(page);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "devices", devices));
     }
 
 
     @PostMapping()
-    public ResponseEntity<BaseResponse<?>> addDevice(@ModelAttribute AddDeviceRequest request, @RequestHeader HttpHeaders httpHeaders) {
+    public ResponseEntity<BaseResponse<?>> addDevice(@Valid @ModelAttribute AddDeviceRequest request, BindingResult bindingResult, @RequestHeader HttpHeaders httpHeaders) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(error -> {
+                errorMessage.append(error.getDefaultMessage()).append("; ");
+            });
+            errorMessage.delete(errorMessage.length() - 2, errorMessage.length() - 1); // Remove the last "; "
+            return ResponseEntity.badRequest()
+                    .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), errorMessage.toString(), null));
+        }
         medicalDeviceService.addDevice(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device added successfully", null));
     }
@@ -63,6 +74,7 @@ public class MedicalDeviceController {
         medicalDeviceService.deleteDeviceReservation(deviceReservationId, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reservation canceled successfully", null));
     }
+
     @PostMapping("delivery/{deviceReservationId}")
     public ResponseEntity<BaseResponse<String>> deviceDelivery(@PathVariable Long deviceReservationId) {
         medicalDeviceService.deviceDelivery(deviceReservationId);
@@ -74,9 +86,10 @@ public class MedicalDeviceController {
         medicalDeviceService.deviceRewind(deviceReservationId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device rewind successfully", null));
     }
+
     @PatchMapping("changQuantity/{medicalDeviceId}")
     public ResponseEntity<BaseResponse<String>> changQuantity(@RequestBody ChangeQuantityRequest request, @PathVariable Long medicalDeviceId) {
-        medicalDeviceService.changQuantity(medicalDeviceId,request.getQuantity());
+        medicalDeviceService.changQuantity(medicalDeviceId, request.getQuantity());
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "quantity changed successfully", null));
     }
 }

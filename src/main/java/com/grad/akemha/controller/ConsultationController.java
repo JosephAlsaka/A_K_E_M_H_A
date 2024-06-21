@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/consultation")
-public class ConsultationController {
+public class    ConsultationController {
     @Autowired
     private ConsultationService consultationService;
 

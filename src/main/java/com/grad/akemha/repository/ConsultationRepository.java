@@ -32,7 +32,9 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
     List<Consultation> findAllByConsultationAnswerIsNullAndSpecializationId(Long specializationId);
 
     List<Consultation> findAllBySpecializationIsPublicTrue();
-    List<Consultation> findAllByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(Long specializationId, Pageable pageable);
+
+    @Query("SELECT c FROM Consultation c WHERE c.consultationAnswer IS NULL AND (c.specialization.id = :specializationId OR c.specialization.isPublic = TRUE)")
+    List<Consultation> findByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(@Param("specializationId") Long specializationId, Pageable pageable);
 
     List<Consultation> findAllByDoctorId(Long doctorId, Pageable pageable);
 

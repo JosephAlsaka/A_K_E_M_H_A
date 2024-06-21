@@ -26,10 +26,6 @@ import java.util.concurrent.ExecutionException;
 public class PostController {
 
     private final PostService postService;
-<<<<<<< HEAD
-
-=======
->>>>>>> a78ea9fd5e3673aff69f4525ebf1075d4f5c3c31
 
     // Read
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
@@ -43,42 +39,18 @@ public class PostController {
 
     }
 
-<<<<<<< HEAD
-=======
 
-
-//    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
-//    @GetMapping()
-//    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
-//            // this page is for pagination //this may be an Integer instead of int
-//            @RequestParam(name = "page", defaultValue = "0") int page
-//    ) {
-//        List<Post> posts = postService.getAllPosts(page);
-//        List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
-//
-//        return ResponseEntity.ok().body(new BaseResponse<>
-//                (HttpStatus.OK.value(), "All Posts", response));
-//    }
-
->>>>>>> a78ea9fd5e3673aff69f4525ebf1075d4f5c3c31
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping()
     public ResponseEntity<BaseResponse<Page<PostResponse>>> getAllPosts(
             // this page is for pagination //this may be an Integer instead of int
             @RequestParam(name = "page", defaultValue = "0") int page
     ) {
-<<<<<<< HEAD
-        List<Post> posts = postService.getAllPosts(page);
-        List<PostResponse> response = posts.stream().map(PostResponse::new).toList();
 
-        return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "All Posts", response));
-=======
         Page<Post> postPage= (Page<Post>) postService.getAllPosts(page);
         Page<PostResponse> responsePage = postPage.map(PostResponse::new);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "All Posts", responsePage));
->>>>>>> a78ea9fd5e3673aff69f4525ebf1075d4f5c3c31
     }
 
 

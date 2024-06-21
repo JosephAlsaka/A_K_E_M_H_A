@@ -31,7 +31,7 @@ public class WhatsAppService {
 
     public void sendVerificationCode(User user) throws IOException {
         String code = generateVerificationCode();
-
+        System.out.println(code);
         RequestBody body = new FormBody.Builder()
                 .add("token", "6etg7c2xxcpdaxan")
                 .add("to", user.getPhoneNumber())

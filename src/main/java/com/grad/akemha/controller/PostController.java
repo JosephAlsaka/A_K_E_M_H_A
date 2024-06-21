@@ -27,7 +27,6 @@ public class PostController {
 
     private final PostService postService;
 
-
     // Read
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping("/{id}")

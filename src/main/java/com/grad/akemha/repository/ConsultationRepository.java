@@ -3,6 +3,7 @@ package com.grad.akemha.repository;
 import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.enums.ConsultationStatus;
+import com.grad.akemha.entity.enums.ConsultationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +21,8 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
     List<Consultation> findByKeywordInConsultationText(String keyword); //TODO make the search in title also.
 
     Page<Consultation> findAllByConsultationAnswerIsNotNull(Pageable pageable);
+    Page<Consultation> findAllByConsultationAnswerIsNotNullAndConsultationTypeNot(ConsultationType consultationType, Pageable pageable);
+
 
     List<Consultation> findAllByConsultationAnswerIsNotNullAndSpecializationId(Long specializationId, Pageable pageable);
 

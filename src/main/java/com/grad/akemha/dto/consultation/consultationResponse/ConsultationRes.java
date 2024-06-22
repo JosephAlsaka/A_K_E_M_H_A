@@ -19,7 +19,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConsultationRes {
-    private ConsultationRepository repository;
     private Long id;
     private String consultationText;
     private String consultationAnswer;

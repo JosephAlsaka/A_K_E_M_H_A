@@ -137,6 +137,14 @@ public class ConsultationService {
         return consultationResponseList;
     }
 
+    public List<ConsultationRes> getAllAnsweredConsultationsExceptPrivate(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Page<Consultation> consultationPage = consultationRepository.findAllByConsultationAnswerIsNotNullAndConsultationTypeNot(ConsultationType.PRIVATE, pageable);
+//        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNull(pageable);
+        List<ConsultationRes> consultationResponseList = consultationPage.stream().map(consultation -> new ConsultationRes(consultation)).toList();
+        return consultationResponseList;
+    }
+
     public List<ConsultationRes> getPersonalNullConsultations(HttpHeaders httpHeaders) {
         Long beneficiaryId = Long.parseLong(jwtService.extractUserId(httpHeaders));
         List<Consultation> consultationList = consultationRepository.findByBeneficiaryIdAndConsultationStatus(beneficiaryId, ConsultationStatus.NULL);
@@ -158,7 +166,10 @@ public class ConsultationService {
 //        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNullAndSpecializationId(doctor.getSpecialization().getId());
 //        List<Consultation> consultationListTwo = consultationRepository.findAllBySpecializationIsPublicTrue();
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").ascending());
-        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(doctor.getSpecialization().getId(),pageable);
+        System.out.println("after service pageable");
+
+        List<Consultation> consultationList = consultationRepository.findByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(doctor.getSpecialization().getId(),pageable);
+        System.out.println("after service consultationList");
 
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
@@ -193,4 +204,6 @@ public class ConsultationService {
     public long getAnsweredConsultationByDoctorCount(Long doctorId){
         return consultationRepository.countAnsweredConsultationsByDoctorId(doctorId);
     }
+
+
 }

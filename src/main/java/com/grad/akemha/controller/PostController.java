@@ -51,7 +51,8 @@ public class PostController {
         Page<PostResponse> responsePage = postPage.map(PostResponse::new);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "All Posts", responsePage));
-  }
+
+    }
 
 
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")

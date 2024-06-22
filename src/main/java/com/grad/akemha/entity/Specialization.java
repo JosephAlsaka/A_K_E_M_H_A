@@ -26,6 +26,9 @@ public class Specialization {
     @Column(name = "is_public")
     private Boolean isPublic;
 
+    @Column(name = "image_url", nullable = false)
+    private String imageUrl;
+
     @JsonIgnore
     @OneToMany(mappedBy = "specialization", cascade = CascadeType.ALL)
     private List<Consultation> consultations;

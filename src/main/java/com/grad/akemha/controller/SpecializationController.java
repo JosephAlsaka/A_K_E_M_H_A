@@ -6,7 +6,9 @@ import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.service.SpecializationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,16 +27,16 @@ public class SpecializationController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
     }
 
-//    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("/{specializationId}") // TODO: note: all consultation will be deleted because of casecade. solve it later
     public ResponseEntity<BaseResponse<Specialization>> deleteSpecializationById(@PathVariable Long specializationId) {
         Specialization response = specializationService.deleteSpecializationById(specializationId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", response));
     }
 
-//    @PreAuthorize("hasRole('OWNER')")
-    @PostMapping
-    public ResponseEntity<BaseResponse<Specialization>> addSpecialization(@RequestBody SpecializationRequest request) {
+    @PreAuthorize("hasRole('OWNER')")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BaseResponse<Specialization>> addSpecialization(@ModelAttribute SpecializationRequest request) {
         Specialization savedSpecialization = specializationService.addSpecialization(request);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", savedSpecialization));
     }

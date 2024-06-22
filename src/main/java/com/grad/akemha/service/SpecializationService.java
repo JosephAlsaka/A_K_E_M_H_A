@@ -2,8 +2,11 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.specializationDTO.SpecializationRequest;
 import com.grad.akemha.entity.Specialization;
+import com.grad.akemha.exception.CloudinaryException;
+import com.grad.akemha.exception.ForbiddenException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
 import com.grad.akemha.repository.SpecializationRepository;
+import com.grad.akemha.service.cloudinary.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,8 @@ import java.util.Optional;
 public class SpecializationService {
     @Autowired
     SpecializationRepository specializationRepository;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     public List<Specialization> getSpecializations() {
         return specializationRepository.findAll();
@@ -26,15 +31,27 @@ public class SpecializationService {
             specializationRepository.deleteById(specializationId);
             return specialization;
         } else {
-//            throw new NotFoundException("specialization id " + id + " is not found") //TODO
             throw new UserNotFoundException("specialization id " + specializationId + " is not found");
         }
     }
 
     public Specialization addSpecialization(SpecializationRequest request) {
+        if (request.specializationType() == null) {
+            throw new ForbiddenException("specializationType Data is Null");
+        }
+        if (request.isPublic() == null) {
+            throw new ForbiddenException("specialization isPublic Data is Null");
+        }
+
+        String specializationImage = cloudinaryService.uploadFile(request.image(), "Specialization", "admin");
+        if (specializationImage == null) {
+            throw new CloudinaryException("Image upload failed");
+        }
+
         Specialization specialization = new Specialization();
         specialization.setIsPublic(request.isPublic());
         specialization.setSpecializationType(request.specializationType());
+        specialization.setImageUrl(specializationImage);
         return specializationRepository.save(specialization);
     }
 }

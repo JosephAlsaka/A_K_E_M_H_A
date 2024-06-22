@@ -80,7 +80,7 @@ public class ConsultationService {
     public List<ConsultationRes> getAnsweredConsultationsBySpecializationId(Long specializationId, Integer page) {
         if (specializationRepository.findById(specializationId).isPresent()) {
             Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-            List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndSpecializationId(specializationId, pageable);
+            List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndSpecializationIdAndConsultationTypeNot(specializationId,ConsultationType.PRIVATE, pageable);
             List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
             return consultationResponseList;
         } else {

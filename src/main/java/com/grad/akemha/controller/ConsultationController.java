@@ -60,7 +60,7 @@ public class    ConsultationController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
     @GetMapping("/answered/beneficiary")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAllAnsweredConsultationsExceptPrivate(  //this API is for beneficiary
             @RequestParam(name = "page", defaultValue = "0") Integer page
@@ -70,7 +70,7 @@ public class    ConsultationController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping("/{specializationId}")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getConsultationsBySpecialization(
             @PathVariable Long specializationId,
@@ -82,7 +82,7 @@ public class    ConsultationController {
 
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping("/answered/{specializationId}")
-    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAnsweredConsultationsBySpecializationId(
+    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAnsweredConsultationsBySpecializationId( //answered + not private + by specialization
             @PathVariable Long specializationId,
             @RequestParam(name = "page", defaultValue = "0") Integer page) {
         List<ConsultationRes> response = consultationService.getAnsweredConsultationsBySpecializationId(specializationId, page);
@@ -183,7 +183,7 @@ public class    ConsultationController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('DOCTOR')")
     @GetMapping("/getDoctorAnsweredConsultations")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getDoctorAnsweredConsultations(
             @RequestHeader HttpHeaders httpHeaders,

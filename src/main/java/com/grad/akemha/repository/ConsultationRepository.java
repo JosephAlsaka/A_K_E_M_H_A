@@ -24,8 +24,7 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
     Page<Consultation> findAllByConsultationAnswerIsNotNullAndConsultationTypeNot(ConsultationType consultationType, Pageable pageable);
 
 
-    List<Consultation> findAllByConsultationAnswerIsNotNullAndSpecializationId(Long specializationId, Pageable pageable);
-
+    List<Consultation> findAllByConsultationAnswerIsNotNullAndSpecializationIdAndConsultationTypeNot(Long specializationId, ConsultationType consultationType, Pageable pageable);
     List<Consultation> findBySpecializationId(Long specializationId, Pageable pageable);
 
     List<Consultation> findByBeneficiaryIdAndConsultationStatus(Long beneficiaryId, ConsultationStatus consultationStatus);

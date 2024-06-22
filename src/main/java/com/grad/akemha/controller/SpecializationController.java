@@ -21,6 +21,7 @@ public class SpecializationController {
     @Autowired
     private SpecializationService specializationService;
 
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping()
     public ResponseEntity<BaseResponse<List<Specialization>>> getSpecializations() {
         List<Specialization> specializations = specializationService.getSpecializations();

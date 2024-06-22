@@ -56,12 +56,19 @@ public class PostService {
     }
 
 
-    public List<Post> getAllPosts(int page) {
+
+    //    public List<Post> getAllPosts(int page) {
+//        // this page size indicates of number of data retrieved
+//        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+//        Page<Post> postPage = postRepository.findAll(pageable);
+//        return postPage.getContent();
+//    }
+    public Page<Post> getAllPosts(int page) {
         // this page size indicates of number of data retrieved
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        Page<Post> postPage = postRepository.findAll(pageable);
-        return postPage.getContent();
+        return postRepository.findAll(pageable);
     }
+
 
     // Create
     public PostResponse createPost(@NotNull PostRequest postRequest,
@@ -123,6 +130,7 @@ public class PostService {
         if (optionalPost.isPresent()) {
             Post post = optionalPost.get();
             String userId = jwtService.extractUserId(httpHeaders);
+
 
             if (description != null
                     && !Objects.equals(description, post.getDescription())) {
@@ -242,5 +250,11 @@ public class PostService {
             throw new NotFoundException("No Post in that id: " + id);
         }
 
+    }
+
+    public List<Post> getAllDoctorsPosts(Long doctorId, int page) {
+        // this page size indicates of number of data retrieved
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        return postRepository.findAllByUserId(doctorId, pageable);
     }
 }

@@ -27,7 +27,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Validated
 public class AuthController {
-    //s
+    //   s
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthenticationService authService;
@@ -76,7 +76,7 @@ public class AuthController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "User Verified successfully", response));
     }
 
-    @GetMapping("/logout")
+    @DeleteMapping("/logout")
     public ResponseEntity<BaseResponse<String>> logout(
             @RequestHeader HttpHeaders httpHeaders
     ) throws Exception {

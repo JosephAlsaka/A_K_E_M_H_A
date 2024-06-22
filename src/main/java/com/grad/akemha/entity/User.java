@@ -36,7 +36,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true, name = "phone_number")
+    @Column(unique = true, name = "phone_number")
     private String phoneNumber; // for beneficiary and doctor
 
     @Column(nullable = false)

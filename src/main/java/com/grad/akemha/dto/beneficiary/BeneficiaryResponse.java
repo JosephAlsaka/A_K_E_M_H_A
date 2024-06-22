@@ -22,6 +22,7 @@ public class BeneficiaryResponse {
     private LocalDate dob;
 
     private Gender gender;
+    private boolean isActive;
 
     public BeneficiaryResponse(User user) {
         this.id = user.getId();
@@ -31,5 +32,6 @@ public class BeneficiaryResponse {
         this.profileImage = user.getProfileImage();
         this.dob = user.getDob();
         this.gender = user.getGender();
+        this.isActive = user.getIsActive();
     }
 }

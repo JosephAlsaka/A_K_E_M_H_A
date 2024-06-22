@@ -3,6 +3,7 @@ package com.grad.akemha.service;
 import com.grad.akemha.dto.activity.ActivityRequest;
 import com.grad.akemha.dto.activity.ActivityResponse;
 import com.grad.akemha.entity.Activity;
+import com.grad.akemha.entity.Post;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.exception.ForbiddenException;
 import com.grad.akemha.exception.NotFoundException;
@@ -48,11 +49,17 @@ public class ActivityService {
     }
 
 
-    public List<Activity> getAllActivities(int page) {
+//    public List<Activity> getAllActivities(int page) {
+//        // this page size indicates of number of data retrieved, // the descending to fetch the latest posts to older posts
+//        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+//        Page<Activity> activityPage = activityRepository.findAll(pageable);
+//        return activityPage.getContent();
+//    }
+
+    public Page<Activity> getAllActivities(int page) {
         // this page size indicates of number of data retrieved, // the descending to fetch the latest posts to older posts
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        Page<Activity> activityPage = activityRepository.findAll(pageable);
-        return activityPage.getContent();
+        return activityRepository.findAll(pageable);
     }
 
     // Create

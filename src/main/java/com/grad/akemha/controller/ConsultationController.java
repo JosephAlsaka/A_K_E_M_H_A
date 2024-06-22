@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/consultation")
-public class ConsultationController {
+public class    ConsultationController {
     @Autowired
     private ConsultationService consultationService;
 
@@ -50,7 +50,7 @@ public class ConsultationController {
 
 
 
-    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping("/answered")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAllAnsweredConsultations(
             @RequestParam(name = "page", defaultValue = "0") Integer page
@@ -60,7 +60,17 @@ public class ConsultationController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
+    @GetMapping("/answered/beneficiary")
+    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAllAnsweredConsultationsExceptPrivate(  //this API is for beneficiary
+            @RequestParam(name = "page", defaultValue = "0") Integer page
+    ) { //ConsultationResponse
+        List<ConsultationRes> response = consultationService.getAllAnsweredConsultationsExceptPrivate(page);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
+    }
+
+    @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping("/{specializationId}")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getConsultationsBySpecialization(
             @PathVariable Long specializationId,
@@ -72,7 +82,7 @@ public class ConsultationController {
 
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping("/answered/{specializationId}")
-    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAnsweredConsultationsBySpecializationId(
+    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAnsweredConsultationsBySpecializationId( //answered + not private + by specialization
             @PathVariable Long specializationId,
             @RequestParam(name = "page", defaultValue = "0") Integer page) {
         List<ConsultationRes> response = consultationService.getAnsweredConsultationsBySpecializationId(specializationId, page);
@@ -156,6 +166,7 @@ public class ConsultationController {
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getPendingConsultationsForDoctor(
             @RequestHeader HttpHeaders httpHeaders,
             @RequestParam(name = "page", defaultValue = "0") Integer page) { // P.12
+        System.out.println("before service");
         List<ConsultationRes> response = consultationService.getPendingConsultationsForDoctor(httpHeaders, page);
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
@@ -172,7 +183,7 @@ public class ConsultationController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('DOCTOR')")
     @GetMapping("/getDoctorAnsweredConsultations")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getDoctorAnsweredConsultations(
             @RequestHeader HttpHeaders httpHeaders,

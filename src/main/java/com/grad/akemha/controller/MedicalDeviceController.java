@@ -64,7 +64,16 @@ public class MedicalDeviceController {
     }
 
     @PostMapping("reserve")
-    public ResponseEntity<BaseResponse<?>> reserveDevice(@RequestBody ReserveDeviceRequest request, @RequestHeader HttpHeaders httpHeaders) {
+    public ResponseEntity<BaseResponse<?>> reserveDevice(@Valid @RequestBody ReserveDeviceRequest request, BindingResult bindingResult, @RequestHeader HttpHeaders httpHeaders) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            bindingResult.getFieldErrors().forEach(error -> {
+                errorMessage.append(error.getDefaultMessage()).append("; ");
+            });
+            errorMessage.delete(errorMessage.length() - 2, errorMessage.length() - 1); // Remove the last "; "
+            return ResponseEntity.badRequest()
+                    .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), errorMessage.toString(), null));
+        }
         medicalDeviceService.reserveDevice(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reserved successfully", null));
     }

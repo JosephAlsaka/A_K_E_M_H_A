@@ -39,20 +39,6 @@ public class ActivityController {
 
     }
 
-
-//    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
-//    @GetMapping()
-//    public ResponseEntity<BaseResponse<List<ActivityResponse>>> getAllActivities(
-//            // this page is for pagination //this may be an Integer instead of int
-//            @RequestParam(name = "page", defaultValue = "0") int page
-//    ) {
-//        List<Activity> activities = activityService.getAllActivities(page);
-//        List<ActivityResponse> response = activities.stream().map(ActivityResponse::new).toList();
-//
-//        return ResponseEntity.ok().body(new BaseResponse<>
-//                (HttpStatus.OK.value(), "All Activities", response));
-//    }
-
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping()
     public ResponseEntity<BaseResponse<Page<ActivityResponse>>> getAllActivities(

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ import java.util.List;
 public class MedicalDeviceController {
     @Autowired
     MedicalDeviceService medicalDeviceService;
-
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping()
     public ResponseEntity<BaseResponse<List<MedicalDevice>>> getDevices(@RequestParam(name = "page", defaultValue = "0") Integer page) {
         List<MedicalDevice> devices = medicalDeviceService.getDevices(page);
@@ -33,6 +34,7 @@ public class MedicalDeviceController {
     }
 
 
+    @PreAuthorize("hasRole('OWNER')")
     @PostMapping()
     public ResponseEntity<BaseResponse<?>> addDevice(@Valid @ModelAttribute AddDeviceRequest request, BindingResult bindingResult, @RequestHeader HttpHeaders httpHeaders) {
         if (bindingResult.hasErrors()) {
@@ -47,26 +49,26 @@ public class MedicalDeviceController {
         medicalDeviceService.addDevice(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device added successfully", null));
     }
-
+    @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("/{medicalDeviceId}")
     public ResponseEntity<BaseResponse<String>> deleteDevice(@PathVariable Long medicalDeviceId) {
         medicalDeviceService.deleteDevice(medicalDeviceId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device deleted successfully", null));
     }
-
+    @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/reservation/{medicalDeviceId}")
     public ResponseEntity<BaseResponse<List<DeviceReservation>>> getReservations(@PathVariable Long medicalDeviceId) {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reservations", medicalDeviceService.getReservations(medicalDeviceId)));
     }
 
-
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/user")
     public ResponseEntity<BaseResponse<List<ReservationResponse>>> getUserReservations(@RequestHeader HttpHeaders httpHeaders) {
         List<DeviceReservation> reservations=medicalDeviceService.getUserReservations(httpHeaders);
         List<ReservationResponse> response = reservations.stream().map(ReservationResponse::new).toList();
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), " user device reservations", response));
     }
-
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("reserve")
     public ResponseEntity<BaseResponse<?>> reserveDevice(@Valid @RequestBody ReserveDeviceRequest request, BindingResult bindingResult, @RequestHeader HttpHeaders httpHeaders) {
         if (bindingResult.hasErrors()) {
@@ -81,25 +83,26 @@ public class MedicalDeviceController {
         medicalDeviceService.reserveDevice(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reserved successfully", null));
     }
-
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("reserve/{deviceReservationId}")
     public ResponseEntity<BaseResponse<?>> deleteDeviceReservation(@PathVariable Long deviceReservationId, @RequestHeader HttpHeaders httpHeaders) {
         medicalDeviceService.deleteDeviceReservation(deviceReservationId, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reservation canceled successfully", null));
     }
 
+    @PreAuthorize("hasRole('OWNER')")
     @PostMapping("delivery/{deviceReservationId}")
     public ResponseEntity<BaseResponse<String>> deviceDelivery(@PathVariable Long deviceReservationId) {
         medicalDeviceService.deviceDelivery(deviceReservationId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device delivered successfully", null));
     }
-
+    @PreAuthorize("hasRole('OWNER')")
     @PostMapping("rewind/{deviceReservationId}")
     public ResponseEntity<BaseResponse<String>> deviceRewind(@PathVariable Long deviceReservationId) {
         medicalDeviceService.deviceRewind(deviceReservationId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device rewind successfully", null));
     }
-
+    @PreAuthorize("hasRole('OWNER')")
     @PatchMapping("changQuantity/{medicalDeviceId}")
     public ResponseEntity<BaseResponse<String>> changQuantity(@RequestBody ChangeQuantityRequest request, @PathVariable Long medicalDeviceId) {
         medicalDeviceService.changQuantity(medicalDeviceId, request.getQuantity());

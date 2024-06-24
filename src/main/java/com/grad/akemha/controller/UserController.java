@@ -35,14 +35,7 @@ public class UserController {
     @Autowired
     private ConsultationService consultationService;
 
-//
-//    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
-//    @GetMapping()
-//    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAllConsultations() { //ConsultationResponse
-//        List<ConsultationRes> response = consultationService.getAllConsultations();
-//        return ResponseEntity.ok()
-//                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
-//    }
+
 
     @PreAuthorize("hasRole('USER')")
     @PatchMapping(value = "/information/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only beneficiary
@@ -96,19 +89,7 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
-
-    //    @GetMapping("/beneficiary")
-//    public ResponseEntity<BaseResponse<List<BeneficiaryResponse>>> getBeneficiaries(@RequestParam(name = "page", defaultValue = "0") int page) {
-//        List<User> beneficiaries = userService.getBeneficiaries(page);
-//        List<BeneficiaryResponse> response = beneficiaries.stream().map(BeneficiaryResponse::new).toList();
-//        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiaries", response));
-//    }
-//    @GetMapping("/beneficiary")
-//    public ResponseEntity<BaseResponse<List<BeneficiaryResponse>>> getBeneficiaries(@RequestParam(name = "page", defaultValue = "0") int page) {
-//        List<User> beneficiaries = userService.getBeneficiaries(page);
-//        List<BeneficiaryResponse> response = beneficiaries.stream().map(BeneficiaryResponse::new).toList();
-//        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiaries", response));
-//    }
+    @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/beneficiary")
     public ResponseEntity<BaseResponse<Page<BeneficiaryResponse>>> getBeneficiaries(@RequestParam(name = "page", defaultValue = "0") int page) {
         Page<User> beneficiariesPage = userService.getBeneficiaries(page);
@@ -116,7 +97,7 @@ public class UserController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiaries", responsePage));
     }
 
-
+    @PreAuthorize("hasRole('OWNER')")
     @PostMapping("/beneficiary")
     public ResponseEntity<BaseResponse<?>> addBeneficiary(@Valid @RequestBody AddBeneficiaryRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -131,7 +112,7 @@ public class UserController {
         userService.addBeneficiary(request);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiary added successfully", null));
     }
-
+    @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("beneficiary/{userId}")
     public ResponseEntity<BaseResponse<String>> deleteBeneficiary(@PathVariable Long userId) {
         userService.deleteBeneficiary(userId);

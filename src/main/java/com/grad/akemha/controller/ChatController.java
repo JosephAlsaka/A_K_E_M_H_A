@@ -10,17 +10,16 @@ import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.ConsultationRepository;
 import com.grad.akemha.repository.MessageRepository;
 import com.grad.akemha.repository.UserRepository;
+import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,6 +38,9 @@ public class ChatController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtService jwtService;
     //    @Autowired
 //    ChatMessageModelRepository chatMessageModelRepository;
 //    two methods.
@@ -69,18 +71,20 @@ public class ChatController {
     @SendTo("/topic/consultation/{consultationId}/messages")
     @MessageExceptionHandler()
     public MessageResponse sendMessageWithWebsocket(@DestinationVariable String consultationId,
-                                         @Payload MessageRequest message) {
+                                                    @Payload MessageRequest message) {
         log.info("new message arrived in chat with id {}", consultationId);
         System.out.println(message);
+//        Long senderId = Long.parseLong(jwtService.extractUserId(httpHeaders));
+//        System.out.println("senderId is" + senderId);
         Consultation consultation = consultationRepository.findById(Long.valueOf(consultationId)).orElseThrow(() -> new NotFoundException("not found"));
         Message savedMessage = Message.builder()
                 .textMsg(message.getTextMsg())
                 .consultation(consultation)
-                .userId(1L) //TODO
+                .userId(message.getUserId())
                 .build();
         messageRepository.save(savedMessage);
 
-        User user = userRepository.findById(1L).orElseThrow();
+        User user = userRepository.findById(message.getUserId()).orElseThrow();
         MessageResponse messageResponse = new MessageResponse(savedMessage, user);
         return messageResponse;
 //        var messages = this.chats.getOrDefault(chatId);

@@ -93,7 +93,7 @@ public class ChatController {
 //        return messages;
     }
 
-   //TODO: get list of messages by consultationId.
+   //get list of messages by consultationId.
     @GetMapping("/consultation/messages/{consultationId}")
     public ResponseEntity<BaseResponse<List<MessageResponse>>> getMessagesByConsultationId(
             @PathVariable Long consultationId

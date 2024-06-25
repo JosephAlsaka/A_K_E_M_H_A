@@ -54,4 +54,8 @@ public class SpecializationService {
         specialization.setImageUrl(specializationImage);
         return specializationRepository.save(specialization);
     }
+
+    public List<Specialization> getSpecializationsNotPublic() {
+        return specializationRepository.findByIsPublicFalse();
+    }
 }

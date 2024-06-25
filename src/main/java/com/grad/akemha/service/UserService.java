@@ -1,10 +1,8 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.beneficiary.AddBeneficiaryRequest;
-import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
-import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;
@@ -13,6 +11,7 @@ import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
+import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
@@ -23,9 +22,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,16 +33,14 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private final PasswordEncoder passwordEncoder;
+    private final SpecializationRepository specializationRepository;
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private JwtService jwtService;
-
     @Autowired
     private CloudinaryService cloudinaryService;
-    private final PasswordEncoder passwordEncoder;
-
 
     public User editUserInformation(String name, String phoneNumber, String password, LocalDate dob, MultipartFile profileImg, Gender gender, HttpHeaders httpHeaders) {
         Long userId = Long.parseLong(jwtService.extractUserId(httpHeaders));
@@ -89,7 +87,7 @@ public class UserService {
         return user;
     }
 
-    public User editDoctorInformation(String name, String phoneNumber, String password, LocalDate dob, MultipartFile profileImg, Gender gender, String description, String location, String openingTimes, HttpHeaders httpHeaders) {
+    public User editDoctorInformation(String name, String phoneNumber, String password, LocalDate dob, MultipartFile profileImg, Gender gender, String description, String location, String openingTimes, String specializationId, HttpHeaders httpHeaders) {
         Long doctorId = Long.parseLong(jwtService.extractUserId(httpHeaders));
         User doctor = userRepository.findById(doctorId).orElseThrow(() -> new NotFoundException("user Id: " + doctorId + " is not found"));
         User doctorAfterEditing = editBasicPersonalInformation(name, phoneNumber, password, dob, profileImg, gender, doctorId, doctor);
@@ -101,6 +99,12 @@ public class UserService {
         }
         if (openingTimes != null) {
             doctorAfterEditing.setOpeningTimes(openingTimes);
+        }
+
+        if (specializationId != null) {
+            Specialization specialization = specializationRepository.findById(Long.valueOf(specializationId)).orElseThrow
+                    (() -> new NotFoundException("Specializtion Id: " + specializationId + " is not found"));
+            doctorAfterEditing.setSpecialization(specialization);
         }
         User userResponse = userRepository.save(doctorAfterEditing);
         return userResponse;
@@ -142,10 +146,12 @@ public class UserService {
         user.setGender(request.getGender());
         userRepository.save(user);
     }
+
     public void deleteBeneficiary(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
         userRepository.delete(user);
     }
+
     private boolean userAlreadyExists(String email) {
         return userRepository.existsByEmail(email);
     }

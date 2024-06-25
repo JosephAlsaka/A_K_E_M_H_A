@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('DOCTOR')")
-    @PatchMapping(value = "/information/doctor/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only beneficiary
+    @PatchMapping(value = "/information/doctor/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only doctor
     public ResponseEntity<BaseResponse<User>> editDoctorInformation(@RequestParam(value = "name", required = false) String name,
                                                                     @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
                                                                     @RequestParam(value = "password", required = false) String password,
@@ -67,9 +67,10 @@ public class UserController {
                                                                     @RequestParam(value = "description", required = false) String description,
                                                                     @RequestParam(value = "location", required = false) String location,
                                                                     @RequestParam(value = "openingTimes", required = false) String openingTimes,
+                                                                    @RequestParam(value = "specializationId", required = false) String specializationId,
                                                                     @RequestHeader HttpHeaders httpHeaders) {
         try {
-            User response = userService.editDoctorInformation(name, phoneNumber, password, dob, profileImg, gender, description, location, openingTimes, httpHeaders);
+            User response = userService.editDoctorInformation(name, phoneNumber, password, dob, profileImg, gender, description, location, openingTimes,specializationId, httpHeaders);
             return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
         } catch (NumberFormatException e) {
             System.out.println("Invalid input: " + e.getMessage());

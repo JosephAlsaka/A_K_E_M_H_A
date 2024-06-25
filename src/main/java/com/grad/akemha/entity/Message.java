@@ -19,7 +19,10 @@ public class Message {
     //TODO user_id ?
     @Column(name = "user_id", nullable = false)
     private Long userId;
-    @Column(name = "text_msg", nullable = false)
+//    @Column(name = "text_msg", nullable = false)
+////    private String textMsg;
+
+    @Column(name = "text_msg", nullable = false,columnDefinition = "TEXT")
     private String textMsg;
 
     @ManyToOne

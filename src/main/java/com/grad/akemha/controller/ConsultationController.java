@@ -28,15 +28,6 @@ public class    ConsultationController {
     private ConsultationService consultationService;
 
 
-//    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
-//    @GetMapping()
-//    public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAllConsultations(
-//            @RequestParam(name = "page", defaultValue = "0") Integer page) { //ConsultationResponse
-//        List<ConsultationRes> response = consultationService.getAllConsultations(page);
-//        return ResponseEntity.ok()
-//                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
-//    }
-
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping()
     public ResponseEntity<BaseResponse<Page<ConsultationRes>>> getAllConsultations(

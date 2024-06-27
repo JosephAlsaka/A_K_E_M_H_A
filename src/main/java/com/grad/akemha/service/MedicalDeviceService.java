@@ -95,6 +95,13 @@ public class MedicalDeviceService {
                     .user(user)
                     .medicalDevice(medicalDevice)
                     .build();
+            if(request.getQuantity()==2)
+            {
+                DeviceReservation reservation2 = DeviceReservation.builder()
+                        .user(user)
+                        .medicalDevice(medicalDevice)
+                        .build();
+            }
             deviceReservationRepository.save(reservation);
             medicalDeviceRepository.save(medicalDevice);
         } else {

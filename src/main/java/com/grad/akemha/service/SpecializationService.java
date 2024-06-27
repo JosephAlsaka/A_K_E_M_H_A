@@ -9,7 +9,7 @@ import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +21,7 @@ public class SpecializationService {
     private CloudinaryService cloudinaryService;
 
     public List<Specialization> getSpecializations() {
-        return specializationRepository.findAll();
+        return specializationRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
     public Specialization deleteSpecializationById(Long specializationId) {

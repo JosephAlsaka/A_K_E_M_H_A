@@ -63,7 +63,9 @@ public class Consultation {
     @JoinColumn(name = "consultation_id")
     private List<Image> images;
 
-    @OneToMany
-    @JoinColumn(name = "consultation_id")
-    private List<Message> messages;
+//    @OneToMany
+//    @JoinColumn(name = "consultation_id")
+////    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL)
+//    private List<Message> messages;
+
 }

@@ -11,6 +11,7 @@ import com.grad.akemha.repository.DeviceReservationRepository;
 import com.grad.akemha.repository.MedicalDeviceRepository;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,8 +51,9 @@ public class MedicalDeviceService {
 
     public List<DeviceReservation> getUserReservations(HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
-        return deviceReservationRepository.findByUserAndStatusIn(user, Arrays.asList(null, DeviceReservationStatus.TAKEN));
+        return deviceReservationRepository.findByUserAndStatusIn(user, Arrays.asList(null,DeviceReservationStatus.TAKEN));
     }
+
 
     public void addDevice(AddDeviceRequest request, HttpHeaders httpHeaders) {
         if (deviceAlreadyExists(request.getName())) {

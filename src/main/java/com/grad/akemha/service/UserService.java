@@ -1,6 +1,9 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.beneficiary.AddBeneficiaryRequest;
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
+import com.grad.akemha.dto.beneficiary.UserRestrictionResponse;
+import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
 import com.grad.akemha.entity.Specialization;
@@ -26,6 +29,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -37,10 +42,14 @@ public class UserService {
     private final SpecializationRepository specializationRepository;
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private JwtService jwtService;
+
     @Autowired
     private CloudinaryService cloudinaryService;
+    private final PasswordEncoder passwordEncoder;
+
 
     public User editUserInformation(String name, String phoneNumber, String password, LocalDate dob, MultipartFile profileImg, Gender gender, HttpHeaders httpHeaders) {
         Long userId = Long.parseLong(jwtService.extractUserId(httpHeaders));
@@ -159,5 +168,21 @@ public class UserService {
     public List<User> getDoctors() {
         return userRepository.findAllByRole(Role.DOCTOR);
     }
+
+
+    public UserRestrictionResponse userRestriction(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setIsActive(!user.getIsActive());
+        userRepository.save(user);
+        return new UserRestrictionResponse(user);
+    }
+
+    public List<StatisticCountResponse> getBeneficiaryCountByMonth() {
+        return userRepository.countUserByMonth(Role.USER);
+    }
+    public List<StatisticTypeResponse> countUsersByGender() {
+        return userRepository.countUsersByGender(Role.USER);
+    }
+
 
 }

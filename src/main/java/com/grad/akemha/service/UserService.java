@@ -48,7 +48,6 @@ public class UserService {
 
     @Autowired
     private CloudinaryService cloudinaryService;
-    private final PasswordEncoder passwordEncoder;
 
 
     public User editUserInformation(String name, String phoneNumber, String password, LocalDate dob, MultipartFile profileImg, Gender gender, HttpHeaders httpHeaders) {

@@ -37,7 +37,9 @@ public class SecurityConfig {
                                         "/v2/api-docs",
                                         "/v3/api-docs/**",
                                         "/api/health",
-                                        "/api/image/**"
+                                        "/api/image/**",
+                                        "/ws/**",
+                                "/consultation/messages/**"
                                 )
                                 .permitAll() // .authorizeRequests().antMatchers("/api/**", "/h2-console/**").permitAll()
 //                        .requestMatchers("/api/product/**").hasRole("OWNER")

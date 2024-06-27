@@ -1,8 +1,8 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
-import com.grad.akemha.dto.doctor.DoctorResponse;
 import com.grad.akemha.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +52,13 @@ public class DoctorController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor deleted successfully", null));
     }
 
+
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/statistic")
+    public ResponseEntity<BaseResponse<List<StatisticCountResponse>>> statistic() {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",doctorService.getDoctorCountByMonth()));
+
+    }
 
 }
 

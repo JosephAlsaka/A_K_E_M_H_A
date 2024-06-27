@@ -1,5 +1,7 @@
 package com.grad.akemha.repository;
 
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
+import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Role;
 import org.springframework.data.domain.Page;
@@ -43,5 +45,31 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 2. retrieve 10 random users
     @Query(value = "SELECT * FROM User WHERE role <> 'OWNER' AND id <> :userId ORDER BY RAND() LIMIT 10",nativeQuery = true)
     List<User> findRandomUsers(@Param("userId") Long userId);
+
+
+    @Query("SELECT new com.grad.akemha.dto.statistic.StatisticCountResponse(YEAR(u.creationDate), MONTH(u.creationDate), COUNT(u)) " +
+            "FROM User u " +
+            "WHERE u.role = :role " +
+            "GROUP BY YEAR(u.creationDate), MONTH(u.creationDate) " +
+            "ORDER BY YEAR(u.creationDate), MONTH(u.creationDate)")
+    List<StatisticCountResponse> countUserByMonth(@Param("role") Role role);
+//    @Query("SELECT new com.grad.akemha.dto.statistic.StatisticTypeResponse(u.gender, COUNT(u)) " +
+//            "FROM User u " +
+//            "WHERE u.role = :role " +
+//            "GROUP BY u.gender")
+//    List<StatisticTypeResponse> countUsersByGender(@Param("role") Role role);
+
+
+    @Query("SELECT new com.grad.akemha.dto.statistic.StatisticTypeResponse(" +
+            "u.gender AS gender, " +
+            "COUNT(u) AS count, " +
+            "CONCAT(ROUND(COUNT(u) * 100.0 / (SELECT COUNT(u) FROM User u WHERE u.role = :role), 2), '%') AS percent) " +
+            "FROM User u " +
+            "WHERE u.role = :role " +
+            "GROUP BY u.gender")
+    List<StatisticTypeResponse> countUsersByGender(@Param("role") Role role);
+
+
+
 
 }

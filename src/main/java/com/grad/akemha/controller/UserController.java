@@ -2,8 +2,11 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.beneficiary.AddBeneficiaryRequest;
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.beneficiary.BeneficiaryResponse;
+import com.grad.akemha.dto.beneficiary.UserRestrictionResponse;
 import com.grad.akemha.dto.doctor.DoctorResponseMobile;
+import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
 import com.grad.akemha.entity.User;
@@ -34,7 +37,6 @@ public class UserController {
     private UserService userService;
     @Autowired
     private ConsultationService consultationService;
-
 
 
     @PreAuthorize("hasRole('USER')")
@@ -89,6 +91,7 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
+
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/beneficiary")
     public ResponseEntity<BaseResponse<Page<BeneficiaryResponse>>> getBeneficiaries(@RequestParam(name = "page", defaultValue = "0") int page) {
@@ -112,6 +115,7 @@ public class UserController {
         userService.addBeneficiary(request);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiary added successfully", null));
     }
+
     @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("beneficiary/{userId}")
     public ResponseEntity<BaseResponse<String>> deleteBeneficiary(@PathVariable Long userId) {
@@ -132,4 +136,27 @@ public class UserController {
         }
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctors", responseList));
     }
+
+    @PreAuthorize("hasRole('OWNER')")
+
+    @PatchMapping("beneficiary/restriction/{userId}")
+    public ResponseEntity<BaseResponse<UserRestrictionResponse>> userRestriction(@PathVariable Long userId) {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", userService.userRestriction(userId)));
+
+    }
+
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("beneficiary/statistic")
+    public ResponseEntity<BaseResponse<List<StatisticCountResponse>>> getBeneficiaryCountByMonth() {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",userService.getBeneficiaryCountByMonth()));
+
+    }
+
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("beneficiary/statistic/gender")
+    public ResponseEntity<BaseResponse<List<StatisticTypeResponse>>> countUsersByGender() {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",userService.countUsersByGender()));
+
+    }
+
 }

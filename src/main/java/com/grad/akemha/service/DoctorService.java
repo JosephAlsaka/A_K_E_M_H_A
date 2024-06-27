@@ -1,8 +1,7 @@
 package com.grad.akemha.service;
 
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
-import com.grad.akemha.dto.doctor.DoctorResponse;
-import com.grad.akemha.entity.Post;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Role;
@@ -67,7 +66,9 @@ public class DoctorService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
         userRepository.delete(user);
     }
-
+    public List<StatisticCountResponse> getDoctorCountByMonth() {
+        return userRepository.countUserByMonth(Role.DOCTOR);
+    }
 
 }
 

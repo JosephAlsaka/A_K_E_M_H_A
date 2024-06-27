@@ -30,6 +30,7 @@ public class ConsultationRes {
     private ConsultationType consultationType;
     private Date createTime;
     private Date updateAnswerTime;
+    private String title;
 
     public ConsultationRes(Consultation consultation) {
         this.id = consultation.getId();
@@ -41,6 +42,7 @@ public class ConsultationRes {
         this.createTime = consultation.getCreateTime();
         this.updateAnswerTime = consultation.getUpdateAnswerTime();
         this.specialization = consultation.getSpecialization();
+        this.title = consultation.getTitle();
         if (consultation.getConsultationType() != ConsultationType.ANONYMOUS) {
             this.beneficiary = new UserInConsultationRes(consultation.getBeneficiary().getId(),consultation.getBeneficiary().getName(), consultation.getBeneficiary().getProfileImage(), consultation.getBeneficiary().getGender());
         }

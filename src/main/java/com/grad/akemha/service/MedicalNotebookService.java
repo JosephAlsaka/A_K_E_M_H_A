@@ -2,10 +2,8 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.medicine.AddAlarmRequest;
 import com.grad.akemha.dto.medicine.AddMedicineRequest;
-import com.grad.akemha.entity.Alarm;
-import com.grad.akemha.entity.AlarmHistory;
-import com.grad.akemha.entity.Medicine;
-import com.grad.akemha.entity.User;
+import com.grad.akemha.dto.medicine.MedicineResponse;
+import com.grad.akemha.entity.*;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
 import com.grad.akemha.repository.AlarmHistoryRepository;
 import com.grad.akemha.repository.AlarmRepository;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 
 @Service
@@ -35,17 +34,15 @@ public class MedicalNotebookService {
     @Autowired
     private AlarmHistoryRepository alarmHistoryRepository;
 
-    public Page<Medicine> getMedicine(HttpHeaders httpHeaders, Integer page) {
+    public List<Medicine> getMedicine(HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
-        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        return medicineRepository.findByUser(user, pageable);
+        return medicineRepository.findByUser(user);
     }
 
-    public Page<Alarm> getAlarm(Long medicineId, HttpHeaders httpHeaders, Integer page) {
-        User user = jwtService.extractUserFromToken(httpHeaders);
+    public List<Alarm> getAlarm(Long medicineId, HttpHeaders httpHeader) {
+        User user = jwtService.extractUserFromToken(httpHeader);
         Medicine medicine = medicineRepository.findByIdAndUser(medicineId, user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        return alarmRepository.findByMedicine(medicine, pageable);
+        return alarmRepository.findByMedicine(medicine);
     }
 
 

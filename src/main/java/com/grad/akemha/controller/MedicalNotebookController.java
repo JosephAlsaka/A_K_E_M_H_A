@@ -17,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @PreAuthorize("hasRole('USER')")
 @RequestMapping("/api/medicine")
@@ -24,25 +26,25 @@ public class MedicalNotebookController {
 
     @Autowired
     MedicalNotebookService medicalNotebookService;
-    @PreAuthorize("hasRole('USER')")
+
     @GetMapping()
-    public ResponseEntity<BaseResponse<Page<MedicineResponse>>> getMedicine(@RequestParam(name = "page", defaultValue = "0") int page, @RequestHeader HttpHeaders httpHeaders) {
-        Page<Medicine> medicinePage = medicalNotebookService.getMedicine(httpHeaders, page);
-        Page<MedicineResponse> responsePage = medicinePage.map(MedicineResponse::new);
+    public ResponseEntity<BaseResponse<List<MedicineResponse>>> getMedicine(@RequestHeader HttpHeaders httpHeaders) {
+        List<Medicine> medicines = medicalNotebookService.getMedicine(httpHeaders);
+        List<MedicineResponse> responsePage = medicines.stream().map(MedicineResponse::new).toList();
+
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "medicines", responsePage));
     }
-    @PreAuthorize("hasRole('USER')")
+
     @GetMapping("/alarm/{medicineId}")
-    public ResponseEntity<BaseResponse<Page<Alarm>>> getAlarm(@PathVariable Long medicineId, @RequestParam(name = "page", defaultValue = "0") int page, @RequestHeader HttpHeaders httpHeaders) {
-        Page<Alarm> medicinePage = medicalNotebookService.getAlarm(medicineId, httpHeaders, page);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "alarms", medicinePage));
+    public ResponseEntity<BaseResponse<List<Alarm>>> getAlarm(@PathVariable Long medicineId,@RequestHeader HttpHeaders httpHeaders) {
+        List<Alarm> alarms = medicalNotebookService.getAlarm(medicineId, httpHeaders);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "alarms", alarms));
     }
-    @PreAuthorize("hasRole('USER')")
+
     @PostMapping()
     public ResponseEntity<BaseResponse<Void>> addMedicine(
             @Valid @RequestBody AddMedicineRequest request,
-            BindingResult bindingResult,
-            @RequestHeader HttpHeaders httpHeaders) {
+            @RequestHeader HttpHeaders httpHeaders,BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
@@ -57,10 +59,10 @@ public class MedicalNotebookController {
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "Medicine added successfully", null));
     }
-    @PreAuthorize("hasRole('USER')")
+
     @PostMapping("alarm")
     public ResponseEntity<BaseResponse<?>> addAlarm(@Valid @RequestBody AddAlarmRequest request,
-                                                    BindingResult bindingResult, @RequestHeader HttpHeaders httpHeaders) {
+                                                    @RequestHeader HttpHeaders httpHeaders,BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
             bindingResult.getFieldErrors().forEach(error -> {
@@ -73,22 +75,22 @@ public class MedicalNotebookController {
         medicalNotebookService.addAlarm(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "alarm added successfully", null));
     }
-    @PreAuthorize("hasRole('USER')")
+
     @DeleteMapping("/{medicineId}")
     public ResponseEntity<BaseResponse<?>> deleteMedicine(@PathVariable Long medicineId, @RequestHeader HttpHeaders httpHeaders) {
         medicalNotebookService.deleteMedicine(medicineId, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "medicine delete successfully", null));
     }
-    @PreAuthorize("hasRole('USER')")
+
     @DeleteMapping("alarm/{alarmId}")
     public ResponseEntity<BaseResponse<?>> deleteAlarm(@PathVariable Long alarmId, @RequestHeader HttpHeaders httpHeaders) {
         medicalNotebookService.deleteAlarm(alarmId, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "alarm delete successfully", null));
     }
-    @PreAuthorize("hasRole('USER')")
+
     @PostMapping("/take/{AlarmId}")
     public ResponseEntity<BaseResponse<?>> takeMedicine(@PathVariable Long AlarmId,
-                                                     @RequestHeader HttpHeaders httpHeaders) {
+                                                        @RequestHeader HttpHeaders httpHeaders) {
         medicalNotebookService.takeMedicine(AlarmId, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", null));
     }

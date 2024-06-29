@@ -3,10 +3,12 @@ package com.grad.akemha.service;
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.dto.notification.NotificationRequestTopic;
-import com.grad.akemha.entity.*;
+import com.grad.akemha.entity.Consultation;
+import com.grad.akemha.entity.Image;
+import com.grad.akemha.entity.Specialization;
+import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.ConsultationStatus;
 import com.grad.akemha.entity.enums.ConsultationType;
-import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.ConsultationRepository;
@@ -71,10 +73,10 @@ public class ConsultationService {
     }
 
 
-    public List<ConsultationRes> getConsultationsBySpecializationId(Long specializationId,Integer page) {
+    public List<ConsultationRes> getConsultationsBySpecializationId(Long specializationId, Integer page) {
         if (specializationRepository.findById(specializationId).isPresent()) {
             Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-            List<Consultation> consultationList = consultationRepository.findBySpecializationId(specializationId,pageable);
+            List<Consultation> consultationList = consultationRepository.findBySpecializationId(specializationId, pageable);
             List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
             return consultationResponseList;
         } else {
@@ -86,7 +88,7 @@ public class ConsultationService {
     public List<ConsultationRes> getAnsweredConsultationsBySpecializationId(Long specializationId, Integer page) {
         if (specializationRepository.findById(specializationId).isPresent()) {
             Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-            List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndSpecializationIdAndConsultationTypeNot(specializationId,ConsultationType.PRIVATE, pageable);
+            List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNotNullAndSpecializationIdAndConsultationTypeNot(specializationId, ConsultationType.PRIVATE, pageable);
             List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
             return consultationResponseList;
         } else {
@@ -122,17 +124,14 @@ public class ConsultationService {
 
         Consultation consultation = Consultation.builder().title(title).consultationText(consultationText).specialization(specialization).consultationStatus(ConsultationStatus.NULL).beneficiary(beneficiary).consultationType(consultationType).images(images).createTime(new Date()).build();
         consultationRepository.save(consultation);
-
         // modifying body to be small
         String notificationBody = shortenString(consultation.getTitle());
-        sendConsultationNotification(specialization.toString(), "New Consultation",notificationBody);
-
-//        NotificationRequestTopic notificationRequestTopic = new NotificationRequestTopic("New Consultation", notificationBody, "posts");
-//        fcmService.sendMessageToTopic(notificationRequestTopic);
+        sendConsultationNotification(specialization.getSpecializationType(), "New Consultation", notificationBody);
 
         return consultation;
     }
 
+    @SneakyThrows
     public Consultation answerConsultation(AnswerConsultationRequest request, HttpHeaders httpHeaders) {
         Long doctorId = Long.parseLong(jwtService.extractUserId(httpHeaders));
         User doctor = userRepository.findById(doctorId).orElseThrow(() -> new NotFoundException("doctor Id: " + doctorId + " is not found"));
@@ -141,6 +140,12 @@ public class ConsultationService {
         consultation.setConsultationAnswer(request.answer());
         consultation.setConsultationStatus(ConsultationStatus.ARCHIVED);
         consultationRepository.save(consultation);
+
+        // modifying body to be small
+        String notificationBody = shortenString(consultation.getTitle());
+        String topic = "answered_" + consultation.getBeneficiary().getId().toString();
+        sendConsultationNotification(topic, "تمت الإجابة على استشارتك", notificationBody);
+
         return consultation;
     }
 
@@ -183,7 +188,7 @@ public class ConsultationService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").ascending());
         System.out.println("after service pageable");
 
-        List<Consultation> consultationList = consultationRepository.findByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(doctor.getSpecialization().getId(),pageable);
+        List<Consultation> consultationList = consultationRepository.findByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(doctor.getSpecialization().getId(), pageable);
         System.out.println("after service consultationList");
 
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
@@ -200,7 +205,7 @@ public class ConsultationService {
     public List<ConsultationRes> getDoctorAnsweredConsultations(HttpHeaders httpHeaders, Integer page) {
         Long doctorId = Long.parseLong(jwtService.extractUserId(httpHeaders));
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        List<Consultation> consultationList = consultationRepository.findAllByDoctorId(doctorId,pageable);
+        List<Consultation> consultationList = consultationRepository.findAllByDoctorId(doctorId, pageable);
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;
     }
@@ -216,10 +221,9 @@ public class ConsultationService {
         return consultation;
     }
 
-    public long getAnsweredConsultationByDoctorCount(Long doctorId){
+    public long getAnsweredConsultationByDoctorCount(Long doctorId) {
         return consultationRepository.countAnsweredConsultationsByDoctorId(doctorId);
     }
-
 
 
     private String shortenString(String input) {
@@ -231,9 +235,9 @@ public class ConsultationService {
         }
     }
 
-    public void sendConsultationNotification(String specification, String title, String body) throws ExecutionException, InterruptedException {
+    public void sendConsultationNotification(String topic, String title, String body) throws ExecutionException, InterruptedException {
         NotificationRequestTopic request = new NotificationRequestTopic();
-        request.setTopic(specification);
+        request.setTopic(topic);
         request.setTitle(title);
         request.setBody(body);
         fcmService.sendMessageToTopic(request);

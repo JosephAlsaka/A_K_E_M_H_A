@@ -236,6 +236,7 @@ public class ConsultationService {
     }
 
     public void sendConsultationNotification(String topic, String title, String body) throws ExecutionException, InterruptedException {
+        //this methods using for sending Notification
         NotificationRequestTopic request = new NotificationRequestTopic();
         request.setTopic(topic);
         request.setTitle(title);

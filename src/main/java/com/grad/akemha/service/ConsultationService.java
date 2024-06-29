@@ -2,6 +2,7 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
+import com.grad.akemha.dto.notification.NotificationRequestTopic;
 import com.grad.akemha.entity.*;
 import com.grad.akemha.entity.enums.ConsultationStatus;
 import com.grad.akemha.entity.enums.ConsultationType;
@@ -14,6 +15,7 @@ import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +50,9 @@ public class ConsultationService {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private FCMService fcmService;
 
 //    public List<ConsultationRes> getAllConsultations(Integer page) {
 //        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
@@ -94,6 +100,7 @@ public class ConsultationService {
         return consultationResponseList;
     }
 
+    @SneakyThrows
     public Consultation postConsultation(HttpHeaders httpHeaders, String title, String consultationText, Long specializationId, ConsultationType consultationType, List<MultipartFile> files) {
         Long beneficiaryId = Long.parseLong(jwtService.extractUserId(httpHeaders));
         User beneficiary = userRepository.findById(beneficiaryId).orElseThrow(() -> new NotFoundException("beneficiary Id: " + beneficiaryId + " is not found"));
@@ -115,6 +122,14 @@ public class ConsultationService {
 
         Consultation consultation = Consultation.builder().title(title).consultationText(consultationText).specialization(specialization).consultationStatus(ConsultationStatus.NULL).beneficiary(beneficiary).consultationType(consultationType).images(images).createTime(new Date()).build();
         consultationRepository.save(consultation);
+
+        // modifying body to be small
+        String notificationBody = shortenString(consultation.getTitle());
+        sendConsultationNotification(specialization.toString(), "New Consultation",notificationBody);
+
+//        NotificationRequestTopic notificationRequestTopic = new NotificationRequestTopic("New Consultation", notificationBody, "posts");
+//        fcmService.sendMessageToTopic(notificationRequestTopic);
+
         return consultation;
     }
 
@@ -206,4 +221,21 @@ public class ConsultationService {
     }
 
 
+
+    private String shortenString(String input) {
+        final int maxLength = 50;
+        if (input.length() > maxLength) {
+            return input.substring(0, maxLength) + "...";
+        } else {
+            return input + "...";
+        }
+    }
+
+    public void sendConsultationNotification(String specification, String title, String body) throws ExecutionException, InterruptedException {
+        NotificationRequestTopic request = new NotificationRequestTopic();
+        request.setTopic(specification);
+        request.setTitle(title);
+        request.setBody(body);
+        fcmService.sendMessageToTopic(request);
+    }
 }

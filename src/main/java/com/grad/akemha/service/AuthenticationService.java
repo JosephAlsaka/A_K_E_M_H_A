@@ -79,6 +79,14 @@ public class AuthenticationService {
                 userRepository.save(user);
                 fcmService.subscribeToTopic(request.getDeviceToken(), "all");
                 fcmService.subscribeToTopic(request.getDeviceToken(), "posts");
+
+                //TODO
+                // Subscribe to specification-related topics
+                if (user.getRole().toString().equals("DOCTOR")) {
+                    String specialization = user.getSpecialization().toString();
+                    fcmService.subscribeToTopic(request.getDeviceToken(), specialization);
+                }
+
             }
             boolean result = passwordEncoder.matches(request.getPassword(), user.getPassword());
             if (!result) {

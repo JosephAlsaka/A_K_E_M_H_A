@@ -41,6 +41,10 @@ public class MedicalDeviceService {
         Page<MedicalDevice> devicePage = medicalDeviceRepository.findAll(pageable);
         return devicePage.getContent();
     }
+    public Page<MedicalDevice> getDevicesAdmin(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        return medicalDeviceRepository.findAll(pageable);
+    }
 
     public List<DeviceReservation> getReservations(Long medicalDeviceId) {
         MedicalDevice medicalDevice = medicalDeviceRepository.findById(medicalDeviceId).orElseThrow(() -> new DeviceNotFoundException("Device not found"));

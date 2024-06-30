@@ -5,12 +5,13 @@ import com.grad.akemha.dto.medicalDevice.AddDeviceRequest;
 import com.grad.akemha.dto.medicalDevice.ChangeQuantityRequest;
 import com.grad.akemha.dto.medicalDevice.ReservationResponse;
 import com.grad.akemha.dto.medicalDevice.ReserveDeviceRequest;
-import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.entity.DeviceReservation;
 import com.grad.akemha.entity.MedicalDevice;
+import com.grad.akemha.entity.Post;
 import com.grad.akemha.service.MedicalDeviceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,15 @@ public class MedicalDeviceController {
     public ResponseEntity<BaseResponse<List<MedicalDevice>>> getDevices(@RequestParam(name = "page", defaultValue = "0") Integer page) {
         List<MedicalDevice> devices = medicalDeviceService.getDevices(page);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "devices", devices));
+    }
+
+
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/admin")
+    public ResponseEntity<BaseResponse<Page<MedicalDevice>>> getDevicesAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page) {
+        Page<MedicalDevice> devicePage= (Page<MedicalDevice>) medicalDeviceService.getDevicesAdmin(page);
+        return ResponseEntity.ok().body(new BaseResponse<>
+                (HttpStatus.OK.value(), "All devices", devicePage));
     }
 
 

@@ -166,10 +166,8 @@ public class ConsultationService {
 //        List<Consultation> consultationList = consultationRepository.findAllByConsultationAnswerIsNullAndSpecializationId(doctor.getSpecialization().getId());
 //        List<Consultation> consultationListTwo = consultationRepository.findAllBySpecializationIsPublicTrue();
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").ascending());
-        System.out.println("after service pageable");
 
         List<Consultation> consultationList = consultationRepository.findByConsultationAnswerIsNullAndSpecializationIdOrSpecializationIsPublicTrue(doctor.getSpecialization().getId(),pageable);
-        System.out.println("after service consultationList");
 
         List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
         return consultationResponseList;

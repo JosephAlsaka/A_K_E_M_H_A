@@ -157,7 +157,6 @@ public class    ConsultationController {
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getPendingConsultationsForDoctor(
             @RequestHeader HttpHeaders httpHeaders,
             @RequestParam(name = "page", defaultValue = "0") Integer page) { // P.12
-        System.out.println("before service");
         List<ConsultationRes> response = consultationService.getPendingConsultationsForDoctor(httpHeaders, page);
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));

@@ -3,12 +3,15 @@ package com.grad.akemha.service;
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.dto.notification.NotificationRequestTopic;
+import com.grad.akemha.dto.statistic.SpecializationConsultationCountResponse;
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.Image;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.ConsultationStatus;
 import com.grad.akemha.entity.enums.ConsultationType;
+import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.ConsultationRepository;
@@ -240,5 +243,12 @@ public class ConsultationService {
         request.setTitle(title);
         request.setBody(body);
         fcmService.sendMessageToTopic(request);
+    }
+
+    public List<StatisticCountResponse> countConsultationsByMonth() {
+        return consultationRepository.countConsultationsByMonth();
+    }
+    public List<SpecializationConsultationCountResponse> countConsultationsBySpecialization() {
+        return consultationRepository.countConsultationsBySpecialization();
     }
 }

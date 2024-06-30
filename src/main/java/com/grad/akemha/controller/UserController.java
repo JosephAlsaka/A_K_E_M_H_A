@@ -148,7 +148,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('OWNER')")
-    @GetMapping("beneficiary/statistic")
+    @GetMapping("beneficiary/statistic/{year}")
     public ResponseEntity<BaseResponse<List<StatisticCountResponse>>> getBeneficiaryCountByMonth() {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",userService.getBeneficiaryCountByMonth()));
 
@@ -157,14 +157,12 @@ public class UserController {
     @GetMapping("beneficiary/statistic/gender")
     public ResponseEntity<BaseResponse<List<StatisticTypeResponse>>> countUsersByGender() {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",userService.countUsersByGender()));
-
     }
 
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("beneficiary/statistic/age")
     public ResponseEntity<BaseResponse<List<AgeRangeStatisticResponse>>> countUsersByAgeRangeAndRole() {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",userService.countUsersByAgeRangeAndRole()));
-
     }
 
 

@@ -4,6 +4,9 @@ import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.beneficiary.BeneficiaryResponse;
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
+import com.grad.akemha.dto.statistic.SpecializationConsultationCountResponse;
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
+import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.ConsultationType;
@@ -204,5 +207,15 @@ public class    ConsultationController {
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
         }
+    }
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/statistic/count")
+    public ResponseEntity<BaseResponse<List<StatisticCountResponse>>> statistic() {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",consultationService.countConsultationsByMonth()));
+    }
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/statistic/specialization")
+    public ResponseEntity<BaseResponse<List<SpecializationConsultationCountResponse>>> countConsultationsBySpecialization() {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",consultationService.countConsultationsBySpecialization()));
     }
 }

@@ -1,5 +1,7 @@
 package com.grad.akemha.repository;
 
+import com.grad.akemha.dto.statistic.SpecializationConsultationCountResponse;
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.enums.ConsultationStatus;
@@ -43,4 +45,20 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
     // to get the count of answered consultation by doctor
     @Query("SELECT COUNT(c) FROM Consultation c WHERE c.consultationStatus IN ('ARCHIVED', 'ACTIVE') AND c.doctor.id = :doctorId")
     long countAnsweredConsultationsByDoctorId(@Param("doctorId") Long doctorId);
+
+    @Query("SELECT new com.grad.akemha.dto.statistic.StatisticCountResponse(" +
+            "YEAR(u.createTime), " +
+            "MONTH(u.createTime), " +
+            "COUNT(u)) " +
+            "FROM Consultation u " +
+            "GROUP BY YEAR(u.createTime), MONTH(u.createTime) " +
+            "ORDER BY YEAR(u.createTime), MONTH(u.createTime)")
+    List<StatisticCountResponse> countConsultationsByMonth();
+    @Query("SELECT new com.grad.akemha.dto.statistic.SpecializationConsultationCountResponse(" +
+            "s.specializationType, COUNT(c)) " +
+            "FROM Consultation c " +
+            "JOIN c.specialization s " +
+            "GROUP BY s.specializationType")
+    List<SpecializationConsultationCountResponse> countConsultationsBySpecialization();
+
 }

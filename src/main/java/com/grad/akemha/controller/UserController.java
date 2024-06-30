@@ -12,6 +12,7 @@ import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;
+import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.service.ConsultationService;
 import com.grad.akemha.service.UserService;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -148,8 +150,8 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('OWNER')")
-    @GetMapping("beneficiary/statistic/{year}")
-    public ResponseEntity<BaseResponse<List<StatisticCountResponse>>> getBeneficiaryCountByMonth() {
+    @GetMapping("beneficiary/statistic")
+    public ResponseEntity<BaseResponse<Map<Integer, List<Map<String, Object>>>>> getBeneficiaryCountByMonth() {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",userService.getBeneficiaryCountByMonth()));
 
     }

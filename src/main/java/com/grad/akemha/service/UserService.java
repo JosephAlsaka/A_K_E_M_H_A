@@ -34,7 +34,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -179,8 +182,26 @@ public class UserService {
         return new UserRestrictionResponse(user);
     }
 
-    public List<StatisticCountResponse> getBeneficiaryCountByMonth() {
-        return userRepository.countUserByMonth(Role.USER);
+//    public List<StatisticCountResponse> getBeneficiaryCountByMonth() {
+//        return userRepository.countUserByMonth(Role.USER);
+//    }
+    public Map<Integer, List<Map<String, Object>>> getBeneficiaryCountByMonth() {
+        List<StatisticCountResponse> responses = userRepository.countUserByMonth(Role.USER);
+        Map<Integer, List<Map<String, Object>>> result = new HashMap<>();
+
+        for (StatisticCountResponse response : responses) {
+            int year = response.getYear();
+            Map<String, Object> data = new HashMap<>();
+            data.put("month", response.getMonth());
+            data.put("count", response.getCount());
+
+            if (!result.containsKey(year)) {
+                result.put(year, new ArrayList<>());
+            }
+            result.get(year).add(data);
+        }
+
+        return result;
     }
     public List<StatisticTypeResponse> countUsersByGender() {
         return userRepository.countUsersByGender(Role.USER);

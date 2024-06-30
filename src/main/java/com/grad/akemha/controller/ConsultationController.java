@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -210,9 +211,11 @@ public class    ConsultationController {
     }
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/statistic/count")
-    public ResponseEntity<BaseResponse<List<StatisticCountResponse>>> statistic() {
+    public ResponseEntity<BaseResponse<Map<Integer, List<Map<String, Object>>>>> statistic() {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",consultationService.countConsultationsByMonth()));
     }
+
+
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/statistic/specialization")
     public ResponseEntity<BaseResponse<List<SpecializationConsultationCountResponse>>> countConsultationsBySpecialization() {

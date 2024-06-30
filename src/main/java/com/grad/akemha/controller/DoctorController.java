@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -55,7 +56,7 @@ public class DoctorController {
 
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/statistic")
-    public ResponseEntity<BaseResponse<List<StatisticCountResponse>>> statistic() {
+    public ResponseEntity<BaseResponse<Map<Integer, List<Map<String, Object>>>>> statistic() {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",doctorService.getDoctorCountByMonth()));
 
     }

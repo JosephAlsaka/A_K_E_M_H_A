@@ -48,7 +48,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findRandomUsers(@Param("userId") Long userId);
 
 
-    @Query("SELECT new com.grad.akemha.dto.statistic.StatisticCountResponse(YEAR(u.creationDate), MONTH(u.creationDate), COUNT(u)) " +
+    @Query("SELECT new com.grad.akemha.dto.statistic.StatisticCountResponse(" +
+            "YEAR(u.creationDate), MONTH(u.creationDate), COUNT(u)) " +
             "FROM User u " +
             "WHERE u.role = :role " +
             "GROUP BY YEAR(u.creationDate), MONTH(u.creationDate) " +

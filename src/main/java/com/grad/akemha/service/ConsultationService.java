@@ -30,9 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -245,8 +243,27 @@ public class ConsultationService {
         fcmService.sendMessageToTopic(request);
     }
 
-    public List<StatisticCountResponse> countConsultationsByMonth() {
-        return consultationRepository.countConsultationsByMonth();
+//    public List<StatisticCountResponse> countConsultationsByMonth() {
+//        return consultationRepository.countConsultationsByMonth();
+//    }
+
+    public Map<Integer, List<Map<String, Object>>> countConsultationsByMonth() {
+        List<StatisticCountResponse> responses = consultationRepository.countConsultationsByMonth();
+        Map<Integer, List<Map<String, Object>>> result = new HashMap<>();
+
+        for (StatisticCountResponse response : responses) {
+            int year = response.getYear();
+            Map<String, Object> data = new HashMap<>();
+            data.put("month", response.getMonth());
+            data.put("count", response.getCount());
+
+            if (!result.containsKey(year)) {
+                result.put(year, new ArrayList<>());
+            }
+            result.get(year).add(data);
+        }
+
+        return result;
     }
     public List<SpecializationConsultationCountResponse> countConsultationsBySpecialization() {
         return consultationRepository.countConsultationsBySpecialization();

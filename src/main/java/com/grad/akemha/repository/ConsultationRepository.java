@@ -47,9 +47,7 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
     long countAnsweredConsultationsByDoctorId(@Param("doctorId") Long doctorId);
 
     @Query("SELECT new com.grad.akemha.dto.statistic.StatisticCountResponse(" +
-            "YEAR(u.createTime), " +
-            "MONTH(u.createTime), " +
-            "COUNT(u)) " +
+            "YEAR(u.createTime), MONTH(u.createTime), COUNT(u)) " +
             "FROM Consultation u " +
             "GROUP BY YEAR(u.createTime), MONTH(u.createTime) " +
             "ORDER BY YEAR(u.createTime), MONTH(u.createTime)")

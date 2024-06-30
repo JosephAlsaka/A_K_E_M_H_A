@@ -19,7 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -68,8 +71,24 @@ public class DoctorService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
         userRepository.delete(user);
     }
-    public List<StatisticCountResponse> getDoctorCountByMonth() {
-        return userRepository.countUserByMonth(Role.DOCTOR);
+
+    public Map<Integer, List<Map<String, Object>>> getDoctorCountByMonth() {
+        List<StatisticCountResponse> responses = userRepository.countUserByMonth(Role.USER);
+        Map<Integer, List<Map<String, Object>>> result = new HashMap<>();
+
+        for (StatisticCountResponse response : responses) {
+            int year = response.getYear();
+            Map<String, Object> data = new HashMap<>();
+            data.put("month", response.getMonth());
+            data.put("count", response.getCount());
+
+            if (!result.containsKey(year)) {
+                result.put(year, new ArrayList<>());
+            }
+            result.get(year).add(data);
+        }
+
+        return result;
     }
 
 }

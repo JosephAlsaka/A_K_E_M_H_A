@@ -50,7 +50,7 @@ public class AuthenticationService {
             throw new EmailAlreadyExistsException("User already exists");
         }
 
-        var user = User.builder().name(request.getName()).email(request.getEmail()).phoneNumber(request.getPhoneNumber()).dob(request.getDob()).password(passwordEncoder.encode(request.getPassword())).role(request.getRole()).isActive(true).isVerified(false).creationDate(LocalDateTime.now()).build();
+        var user = User.builder().name(request.getName()).email(request.getEmail()).gender(request.getGender()).phoneNumber(request.getPhoneNumber()).dob(request.getDob()).password(passwordEncoder.encode(request.getPassword())).role(request.getRole()).isActive(true).isVerified(false).creationDate(LocalDateTime.now()).build();
 
         userRepository.save(user);
 

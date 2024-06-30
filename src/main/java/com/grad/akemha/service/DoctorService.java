@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -53,6 +54,7 @@ public class DoctorService {
         user.setIsVerified(true);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setGender(request.getGender());
+        user.setCreationDate(LocalDateTime.now());
         Specialization specialization = specializationRepository.findBySpecializationType(request.getSpecialization());
         user.setSpecialization(specialization);
         userRepository.save(user);

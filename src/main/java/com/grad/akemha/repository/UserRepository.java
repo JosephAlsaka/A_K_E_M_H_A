@@ -1,5 +1,6 @@
 package com.grad.akemha.repository;
 
+import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.entity.User;
@@ -53,11 +54,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "GROUP BY YEAR(u.creationDate), MONTH(u.creationDate) " +
             "ORDER BY YEAR(u.creationDate), MONTH(u.creationDate)")
     List<StatisticCountResponse> countUserByMonth(@Param("role") Role role);
-//    @Query("SELECT new com.grad.akemha.dto.statistic.StatisticTypeResponse(u.gender, COUNT(u)) " +
-//            "FROM User u " +
-//            "WHERE u.role = :role " +
-//            "GROUP BY u.gender")
-//    List<StatisticTypeResponse> countUsersByGender(@Param("role") Role role);
 
 
     @Query("SELECT new com.grad.akemha.dto.statistic.StatisticTypeResponse(" +
@@ -68,6 +64,25 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE u.role = :role " +
             "GROUP BY u.gender")
     List<StatisticTypeResponse> countUsersByGender(@Param("role") Role role);
+
+
+    @Query("SELECT new com.grad.akemha.dto.statistic.AgeRangeStatisticResponse(" +
+            "CASE " +
+            "WHEN TIMESTAMPDIFF(YEAR, u.dob, CURRENT_DATE) < 18 THEN 'أصغر من 18' " +
+            "WHEN TIMESTAMPDIFF(YEAR, u.dob, CURRENT_DATE) BETWEEN 18 AND 60 THEN 'من 18 إلى 60' " +
+            "WHEN TIMESTAMPDIFF(YEAR, u.dob, CURRENT_DATE) > 60 THEN 'أكبر من 60' " +
+            "END, " +
+            "COUNT(u)) " +
+            "FROM User u " +
+            "WHERE u.role = :role " +
+            "GROUP BY " +
+            "CASE " +
+            "WHEN TIMESTAMPDIFF(YEAR, u.dob, CURRENT_DATE) < 18 THEN 'أصغر من 18' " +
+            "WHEN TIMESTAMPDIFF(YEAR, u.dob, CURRENT_DATE) BETWEEN 18 AND 60 THEN 'من 18 إلى 60' " +
+            "WHEN TIMESTAMPDIFF(YEAR, u.dob, CURRENT_DATE) > 60 THEN 'أكبر من 60' " +
+            "END")
+    List<AgeRangeStatisticResponse> countUsersByAgeRangeAndRole(@Param("role") Role role);
+
 
 
 

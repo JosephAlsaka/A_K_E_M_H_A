@@ -1,6 +1,7 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.beneficiary.AddBeneficiaryRequest;
+import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.beneficiary.UserRestrictionResponse;
 import com.grad.akemha.dto.statistic.StatisticTypeResponse;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -141,6 +143,7 @@ public class UserService {
         user.setIsVerified(true);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setGender(request.getGender());
+        user.setCreationDate(LocalDateTime.now());
         userRepository.save(user);
     }
 
@@ -170,6 +173,9 @@ public class UserService {
     }
     public List<StatisticTypeResponse> countUsersByGender() {
         return userRepository.countUsersByGender(Role.USER);
+    }
+    public List<AgeRangeStatisticResponse> countUsersByAgeRangeAndRole() {
+        return userRepository.countUsersByAgeRangeAndRole(Role.USER);
     }
 
 

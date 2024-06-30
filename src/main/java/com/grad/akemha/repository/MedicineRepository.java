@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     Optional<Medicine> findByIdAndUser (Long id, User user);
 
-    Page<Medicine> findByUser(User user, Pageable pageable);
+    List<Medicine> findByUser(User user);
 
 }

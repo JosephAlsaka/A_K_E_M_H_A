@@ -41,4 +41,12 @@ public class SpecializationController {
         Specialization savedSpecialization = specializationService.addSpecialization(request);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", savedSpecialization));
     }
+
+
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @GetMapping("/doctor_specializations")
+    public ResponseEntity<BaseResponse<List<Specialization>>> getSpecializationsNotPublic() {
+        List<Specialization> specializations = specializationService.getSpecializationsNotPublic();
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
+    }
 }

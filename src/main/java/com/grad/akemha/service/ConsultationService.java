@@ -103,7 +103,7 @@ public class ConsultationService {
         return consultationResponseList;
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     public Consultation postConsultation(HttpHeaders httpHeaders, String title, String consultationText, Long specializationId, ConsultationType consultationType, List<MultipartFile> files) {
         Long beneficiaryId = Long.parseLong(jwtService.extractUserId(httpHeaders));
         User beneficiary = userRepository.findById(beneficiaryId).orElseThrow(() -> new NotFoundException("beneficiary Id: " + beneficiaryId + " is not found"));
@@ -126,13 +126,13 @@ public class ConsultationService {
         Consultation consultation = Consultation.builder().title(title).consultationText(consultationText).specialization(specialization).consultationStatus(ConsultationStatus.NULL).beneficiary(beneficiary).consultationType(consultationType).images(images).createTime(new Date()).build();
         consultationRepository.save(consultation);
         // modifying body to be small
-        String notificationBody = shortenString(consultation.getTitle());
-        sendConsultationNotification(specialization.getSpecializationType(), "New Consultation", notificationBody);
+//        String notificationBody = shortenString(consultation.getTitle());
+//        sendConsultationNotification(specialization.getSpecializationType(), "New Consultation", notificationBody);
 
         return consultation;
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     public Consultation answerConsultation(AnswerConsultationRequest request, HttpHeaders httpHeaders) {
         Long doctorId = Long.parseLong(jwtService.extractUserId(httpHeaders));
         User doctor = userRepository.findById(doctorId).orElseThrow(() -> new NotFoundException("doctor Id: " + doctorId + " is not found"));
@@ -143,9 +143,9 @@ public class ConsultationService {
         consultationRepository.save(consultation);
 
         // modifying body to be small
-        String notificationBody = shortenString(consultation.getTitle());
-        String topic = "answered_" + consultation.getBeneficiary().getId().toString();
-        sendConsultationNotification(topic, "تمت الإجابة على استشارتك", notificationBody);
+//        String notificationBody = shortenString(consultation.getTitle());
+//        String topic = "answered_" + consultation.getBeneficiary().getId().toString();
+//        sendConsultationNotification(topic, "تمت الإجابة على استشارتك", notificationBody);
 
         return consultation;
     }
@@ -234,6 +234,7 @@ public class ConsultationService {
         }
     }
 
+    // sami
     public void sendConsultationNotification(String topic, String title, String body) throws ExecutionException, InterruptedException {
         //this methods using for sending Notification
         NotificationRequestTopic request = new NotificationRequestTopic();

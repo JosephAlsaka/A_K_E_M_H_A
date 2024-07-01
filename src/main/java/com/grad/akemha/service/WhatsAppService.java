@@ -33,7 +33,7 @@ public class WhatsAppService {
         String code = generateVerificationCode();
 
         RequestBody body = new FormBody.Builder()
-                .add("token", "6etg7c2xxcpdaxan")
+                .add("token", "75ofifvy5vodgox5")
                 .add("to", user.getPhoneNumber())
                 .add("body", "Your Akemha Code:\n" + code)
                 .build();

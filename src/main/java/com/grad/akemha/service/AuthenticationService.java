@@ -8,6 +8,7 @@ import com.grad.akemha.dto.auth.authresponse.AuthResponse;
 import com.grad.akemha.entity.Token;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.VerificationCode;
+import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.ForbiddenException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
@@ -50,7 +51,7 @@ public class AuthenticationService {
             throw new EmailAlreadyExistsException("User already exists");
         }
 
-        var user = User.builder().name(request.getName()).email(request.getEmail()).gender(request.getGender()).phoneNumber(request.getPhoneNumber()).dob(request.getDob()).password(passwordEncoder.encode(request.getPassword())).role(request.getRole()).isActive(true).isVerified(false).creationDate(LocalDateTime.now()).build();
+        var user = User.builder().name(request.getName()).email(request.getEmail()).gender(request.getGender()).phoneNumber(request.getPhoneNumber()).dob(request.getDob()).password(passwordEncoder.encode(request.getPassword())).role(Role.USER).isActive(true).isVerified(false).creationDate(LocalDateTime.now()).build();
 
         userRepository.save(user);
 

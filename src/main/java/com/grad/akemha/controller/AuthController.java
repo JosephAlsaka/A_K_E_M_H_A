@@ -66,6 +66,14 @@ public class AuthController {
 //        }
 //    }
     }
+    @PostMapping("/login/admin")
+    public ResponseEntity<BaseResponse<AuthResponse>> loginAdmin(
+            @RequestBody LoginRequest request
+    ) {
+        AuthResponse response = authService.loginAdmin(request);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "User logged successfully", response));
+    }
 
     @PostMapping("/verify_account")
     public ResponseEntity<BaseResponse<AuthResponse>> verifyAccount(

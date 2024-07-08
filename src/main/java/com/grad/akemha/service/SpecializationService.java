@@ -1,7 +1,10 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.specializationDTO.SpecializationRequest;
+import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
+import com.grad.akemha.dto.statistic.SpecializationUserCountResponse;
 import com.grad.akemha.entity.Specialization;
+import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.ForbiddenException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
@@ -57,5 +60,10 @@ public class SpecializationService {
 
     public List<Specialization> getSpecializationsNotPublic() {
         return specializationRepository.findByIsPublicFalse();
+    }
+
+
+    public List<SpecializationUserCountResponse> countUsersBySpecialization() {
+        return specializationRepository.countUsersBySpecialization();
     }
 }

@@ -1,14 +1,10 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
-import com.grad.akemha.dto.beneficiary.BeneficiaryResponse;
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.dto.statistic.SpecializationConsultationCountResponse;
-import com.grad.akemha.dto.statistic.StatisticCountResponse;
-import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.entity.Consultation;
-import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.ConsultationType;
 import com.grad.akemha.service.ConsultationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +23,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/consultation")
-public class    ConsultationController {
+public class ConsultationController {
     @Autowired
     private ConsultationService consultationService;
 
@@ -37,12 +33,11 @@ public class    ConsultationController {
     public ResponseEntity<BaseResponse<Page<ConsultationRes>>> getAllConsultations(
             @RequestParam(name = "page", defaultValue = "0") Integer page) { //ConsultationResponse
 
-        Page<Consultation> consultationPage=consultationService.getAllConsultations(page);
+        Page<Consultation> consultationPage = consultationService.getAllConsultations(page);
         Page<ConsultationRes> responsePage = consultationPage.map(ConsultationRes::new);
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", responsePage));
     }
-
 
 
     @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
@@ -58,7 +53,7 @@ public class    ConsultationController {
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
     @GetMapping("/answered/beneficiary")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAllAnsweredConsultationsExceptPrivate(  //this API is for beneficiary
-            @RequestParam(name = "page", defaultValue = "0") Integer page
+                                                                                                          @RequestParam(name = "page", defaultValue = "0") Integer page
     ) { //ConsultationResponse
         List<ConsultationRes> response = consultationService.getAllAnsweredConsultationsExceptPrivate(page);
         return ResponseEntity.ok()
@@ -75,11 +70,22 @@ public class    ConsultationController {
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
     }
 
+
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/admin/{specializationId}")
+    public ResponseEntity<BaseResponse<Page<ConsultationRes>>> adminGetConsultationsBySpecialization(
+            @PathVariable Long specializationId,
+            @RequestParam(name = "page", defaultValue = "0") Integer page) {
+        Page<ConsultationRes> consultationResPage  = consultationService.adminGetConsultationsBySpecialization(specializationId, page);
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "Successfully retrieved consultations", consultationResPage ));
+    }
+
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping("/answered/{specializationId}")
     public ResponseEntity<BaseResponse<List<ConsultationRes>>> getAnsweredConsultationsBySpecializationId( //answered + not private + by specialization
-            @PathVariable Long specializationId,
-            @RequestParam(name = "page", defaultValue = "0") Integer page) {
+                                                                                                           @PathVariable Long specializationId,
+                                                                                                           @RequestParam(name = "page", defaultValue = "0") Integer page) {
         List<ConsultationRes> response = consultationService.getAnsweredConsultationsBySpecializationId(specializationId, page);
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
@@ -112,8 +118,8 @@ public class    ConsultationController {
             @RequestParam(value = "consultationType", required = true) ConsultationType consultationType,
             @RequestParam(value = "files", required = false) List<MultipartFile> files,
             @RequestHeader HttpHeaders httpHeaders) {
-                try {
-                    Consultation response = consultationService.postConsultation(httpHeaders, title, consultationText, specializationId, consultationType, files);
+        try {
+            Consultation response = consultationService.postConsultation(httpHeaders, title, consultationText, specializationId, consultationType, files);
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.OK.value(), "Consultation added successfully", response));
         } catch (NumberFormatException e) {
@@ -193,7 +199,7 @@ public class    ConsultationController {
             @PathVariable Long consultationId) {
         consultationService.deleteConsultation(consultationId);
         return ResponseEntity.ok()
-                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully",null));
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", null));
     }
 
     @PreAuthorize("hasRole('OWNER') or hasRole('DOCTOR')")
@@ -209,16 +215,17 @@ public class    ConsultationController {
                     .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
         }
     }
+
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/statistic/count")
     public ResponseEntity<BaseResponse<Map<Integer, List<Map<String, Object>>>>> statistic() {
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",consultationService.countConsultationsByMonth()));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", consultationService.countConsultationsByMonth()));
     }
 
 
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/statistic/specialization")
     public ResponseEntity<BaseResponse<List<SpecializationConsultationCountResponse>>> countConsultationsBySpecialization() {
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",consultationService.countConsultationsBySpecialization()));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", consultationService.countConsultationsBySpecialization()));
     }
 }

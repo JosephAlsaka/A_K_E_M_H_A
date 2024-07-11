@@ -29,6 +29,14 @@ public class SpecializationController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @GetMapping("/consultations")
+    public ResponseEntity<BaseResponse<List<Specialization>>> getSpecializationsWithConsultation() {
+        List<Specialization> specializations = specializationService.getSpecializationsWithConsultation();
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
+    }
+
+
     @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("/{specializationId}")
     // TODO: note: all consultation will be deleted because of casecade. solve it later

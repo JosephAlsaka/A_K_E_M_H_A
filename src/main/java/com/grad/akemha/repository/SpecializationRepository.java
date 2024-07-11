@@ -20,4 +20,7 @@ public interface SpecializationRepository extends JpaRepository<Specialization, 
             "FROM Specialization s LEFT JOIN s.users u " +
             "GROUP BY s.specializationType")
     List<SpecializationUserCountResponse> countUsersBySpecialization();
+
+
+    List<Specialization> findByConsultationsIsNotEmpty();
 }

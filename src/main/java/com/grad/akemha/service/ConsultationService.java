@@ -11,7 +11,6 @@ import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.ConsultationStatus;
 import com.grad.akemha.entity.enums.ConsultationType;
-import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.ConsultationRepository;
@@ -77,9 +76,20 @@ public class ConsultationService {
     public List<ConsultationRes> getConsultationsBySpecializationId(Long specializationId, Integer page) {
         if (specializationRepository.findById(specializationId).isPresent()) {
             Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-            List<Consultation> consultationList = consultationRepository.findBySpecializationId(specializationId, pageable);
+            Page<Consultation> consultationList =  consultationRepository.findBySpecializationId(specializationId, pageable);
             List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
             return consultationResponseList;
+        } else {
+            throw new NotFoundException("SpecializationId " + specializationId + " is not found");
+        }
+
+    }
+
+    public Page<ConsultationRes> adminGetConsultationsBySpecialization(Long specializationId, Integer page) {
+        if (specializationRepository.findById(specializationId).isPresent()) {
+            Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+            Page<Consultation> consultationPage  =  consultationRepository.findBySpecializationId(specializationId, pageable);
+            return consultationPage.map(ConsultationRes::new);
         } else {
             throw new NotFoundException("SpecializationId " + specializationId + " is not found");
         }

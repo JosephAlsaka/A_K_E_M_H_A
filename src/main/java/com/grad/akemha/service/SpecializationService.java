@@ -29,6 +29,9 @@ public class SpecializationService {
     public List<Specialization> getSpecializationsWithConsultation() {
         return specializationRepository.findByConsultationsIsNotEmpty();
     }
+    public List<Specialization> getSpecializationsWithDoctor() {
+        return specializationRepository.findByUsersIsNotEmpty();
+    }
 
     public Specialization deleteSpecializationById(Long specializationId) {
         Optional<Specialization> optionalSpecialization = specializationRepository.findById(specializationId);

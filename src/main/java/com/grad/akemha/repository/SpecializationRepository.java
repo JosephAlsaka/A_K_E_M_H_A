@@ -23,4 +23,5 @@ public interface SpecializationRepository extends JpaRepository<Specialization, 
 
 
     List<Specialization> findByConsultationsIsNotEmpty();
+    List<Specialization> findByUsersIsNotEmpty();
 }

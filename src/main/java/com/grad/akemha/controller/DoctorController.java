@@ -2,6 +2,7 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
+import com.grad.akemha.entity.DoctorRequest;
 import com.grad.akemha.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,26 @@ public class DoctorController {
     public ResponseEntity<BaseResponse<Map<Integer, List<Map<String, Object>>>>> statistic() {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", doctorService.getDoctorCountByMonth()));
 
+    }
+
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/doctor_request")
+    public ResponseEntity<BaseResponse<Page<DoctorRequest>>> doctorRequest(@RequestParam(name = "page", defaultValue = "0") Integer page) {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor requests", doctorService.doctorRequest(page)));
+    }
+
+    //TODO
+    @PreAuthorize("hasRole('OWNER')")
+    @PostMapping("/doctor_request")
+    public ResponseEntity<BaseResponse<Page<DoctorRequest>>> answerDoctorRequest(@RequestParam(name = "page", defaultValue = "0") Integer page) {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor requests", doctorService.doctorRequest(page)));
+    }
+
+    //TODO
+    @PreAuthorize("hasRole('OWNER')")
+    @DeleteMapping("/doctor_request")
+    public ResponseEntity<BaseResponse<Page<DoctorRequest>>> deleteDoctorRequest(@RequestParam(name = "page", defaultValue = "0") Integer page) {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor requests", doctorService.doctorRequest(page)));
     }
 
 

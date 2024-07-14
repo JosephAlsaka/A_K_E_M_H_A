@@ -1,5 +1,7 @@
 package com.grad.akemha.entity;
 
+import com.grad.akemha.entity.enums.DeviceReservationStatus;
+import com.grad.akemha.entity.enums.DoctorRequestStatus;
 import com.grad.akemha.entity.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,4 +38,8 @@ public class DoctorRequest {
 
     @Column(name = "cv_public_id", nullable = false)
     private String cvPublicId;
+
+    @Enumerated(EnumType.STRING)
+    @Column()
+    private DoctorRequestStatus status;
 }

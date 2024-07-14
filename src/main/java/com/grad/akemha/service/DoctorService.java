@@ -144,6 +144,11 @@ public class DoctorService {
         return result;
     }
 
+    public Page<DoctorRequest> doctorRequest(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        return doctorRequestRepository.findByStatusOrNull(null, pageable);
+    }
+
 }
 
 

@@ -41,7 +41,7 @@ public class SecurityConfig {
                                         "/ws/**",
                                         "/consultation/messages/**",
                                         "/api/user/doctor_request",
-                                        "/api/specialization"
+                                        "/api/specialization/new_doctor_specializations"
                                 )
                                 .permitAll() // .authorizeRequests().antMatchers("/api/**", "/h2-console/**").permitAll()
 //                        .requestMatchers("/api/product/**").hasRole("OWNER")

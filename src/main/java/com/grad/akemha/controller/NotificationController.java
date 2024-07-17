@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/notification")
-@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class NotificationController {

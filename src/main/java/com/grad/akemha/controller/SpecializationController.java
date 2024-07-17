@@ -68,6 +68,12 @@ public class SpecializationController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
     }
 
+    @GetMapping("/new_doctor_specializations")
+    public ResponseEntity<BaseResponse<List<Specialization>>> getSpecializationsNotPublicWithoutToken() {
+        List<Specialization> specializations = specializationService.getSpecializationsNotPublic();
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
+    }
+
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/statistic")
     public ResponseEntity<BaseResponse<List<SpecializationUserCountResponse>>> countUsersBySpecialization() {

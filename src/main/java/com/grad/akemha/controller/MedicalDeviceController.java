@@ -5,6 +5,9 @@ import com.grad.akemha.dto.medicalDevice.AddDeviceRequest;
 import com.grad.akemha.dto.medicalDevice.ChangeQuantityRequest;
 import com.grad.akemha.dto.medicalDevice.ReservationResponse;
 import com.grad.akemha.dto.medicalDevice.ReserveDeviceRequest;
+import com.grad.akemha.dto.statistic.DeviceReservationCountResponse;
+import com.grad.akemha.dto.statistic.SpecializationUserCountResponse;
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.entity.DeviceReservation;
 import com.grad.akemha.entity.MedicalDevice;
 import com.grad.akemha.entity.Post;
@@ -20,6 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -27,6 +31,7 @@ import java.util.List;
 public class MedicalDeviceController {
     @Autowired
     MedicalDeviceService medicalDeviceService;
+
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping()
     public ResponseEntity<BaseResponse<List<MedicalDevice>>> getDevices(@RequestParam(name = "page", defaultValue = "0") Integer page) {
@@ -38,7 +43,7 @@ public class MedicalDeviceController {
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/admin")
     public ResponseEntity<BaseResponse<Page<MedicalDevice>>> getDevicesAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page) {
-        Page<MedicalDevice> devicePage= (Page<MedicalDevice>) medicalDeviceService.getDevicesAdmin(page);
+        Page<MedicalDevice> devicePage = (Page<MedicalDevice>) medicalDeviceService.getDevicesAdmin(page);
         return ResponseEntity.ok().body(new BaseResponse<>
                 (HttpStatus.OK.value(), "All devices", devicePage));
     }
@@ -59,12 +64,14 @@ public class MedicalDeviceController {
         medicalDeviceService.addDevice(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device added successfully", null));
     }
+
     @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("/{medicalDeviceId}")
     public ResponseEntity<BaseResponse<String>> deleteDevice(@PathVariable Long medicalDeviceId) {
         medicalDeviceService.deleteDevice(medicalDeviceId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device deleted successfully", null));
     }
+
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/reservation/{medicalDeviceId}")
     public ResponseEntity<BaseResponse<List<DeviceReservation>>> getReservations(@PathVariable Long medicalDeviceId) {
@@ -74,10 +81,11 @@ public class MedicalDeviceController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/user")
     public ResponseEntity<BaseResponse<List<ReservationResponse>>> getUserReservations(@RequestHeader HttpHeaders httpHeaders) {
-        List<DeviceReservation> reservations=medicalDeviceService.getUserReservations(httpHeaders);
+        List<DeviceReservation> reservations = medicalDeviceService.getUserReservations(httpHeaders);
         List<ReservationResponse> response = reservations.stream().map(ReservationResponse::new).toList();
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), " user device reservations", response));
     }
+
     @PreAuthorize("hasRole('USER')")
     @PostMapping("reserve")
     public ResponseEntity<BaseResponse<?>> reserveDevice(@Valid @RequestBody ReserveDeviceRequest request, BindingResult bindingResult, @RequestHeader HttpHeaders httpHeaders) {
@@ -93,6 +101,7 @@ public class MedicalDeviceController {
         medicalDeviceService.reserveDevice(request, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device reserved successfully", null));
     }
+
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("reserve/{deviceReservationId}")
     public ResponseEntity<BaseResponse<?>> deleteDeviceReservation(@PathVariable Long deviceReservationId, @RequestHeader HttpHeaders httpHeaders) {
@@ -106,16 +115,24 @@ public class MedicalDeviceController {
         medicalDeviceService.deviceDelivery(deviceReservationId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device delivered successfully", null));
     }
+
     @PreAuthorize("hasRole('OWNER')")
     @PostMapping("rewind/{deviceReservationId}")
     public ResponseEntity<BaseResponse<String>> deviceRewind(@PathVariable Long deviceReservationId) {
         medicalDeviceService.deviceRewind(deviceReservationId);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device rewind successfully", null));
     }
+
     @PreAuthorize("hasRole('OWNER')")
     @PatchMapping("changQuantity/{medicalDeviceId}")
     public ResponseEntity<BaseResponse<String>> changQuantity(@RequestBody ChangeQuantityRequest request, @PathVariable Long medicalDeviceId) {
         medicalDeviceService.changQuantity(medicalDeviceId, request.getQuantity());
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "quantity changed successfully", null));
+    }
+
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/statistic")
+    public ResponseEntity<BaseResponse<Map<Integer, List<Map<String, Object>>>>> countReservationsByMonth() {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", medicalDeviceService.countReservationsByMonth()));
     }
 }

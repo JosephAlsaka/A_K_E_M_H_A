@@ -2,6 +2,9 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.medicalDevice.AddDeviceRequest;
 import com.grad.akemha.dto.medicalDevice.ReserveDeviceRequest;
+import com.grad.akemha.dto.statistic.DeviceReservationCountResponse;
+import com.grad.akemha.dto.statistic.SpecializationUserCountResponse;
+import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.entity.DeviceReservation;
 import com.grad.akemha.entity.MedicalDevice;
 import com.grad.akemha.entity.User;
@@ -157,5 +160,26 @@ public class MedicalDeviceService {
         MedicalDevice medicalDevice = medicalDeviceRepository.findById(medicalDeviceId).orElseThrow(() -> new DeviceNotFoundException("Device not found"));
         medicalDevice.setCount(quantity);
         medicalDeviceRepository.save(medicalDevice);
+    }
+
+
+
+    public Map<Integer, List<Map<String, Object>>> countReservationsByMonth() {
+        List<DeviceReservationStatus> statuses = Arrays.asList(DeviceReservationStatus.TAKEN, DeviceReservationStatus.END);
+        List<DeviceReservationCountResponse> responses = deviceReservationRepository.countReservationsByMonth(statuses);
+
+        Map<Integer, List<Map<String, Object>>> result = new HashMap<>();
+
+        for (DeviceReservationCountResponse response : responses) {
+            int year = response.getYear();
+            result.putIfAbsent(year, new ArrayList<>());
+            Map<String, Object> monthData = new HashMap<>();
+            monthData.put("deviceName", response.getDeviceName());
+            monthData.put("month", response.getMonth());
+            monthData.put("count", response.getCount());
+            result.get(year).add(monthData);
+        }
+
+        return result;
     }
 }

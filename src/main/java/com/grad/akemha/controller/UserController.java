@@ -9,9 +9,11 @@ import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
+import com.grad.akemha.entity.DoctorRequest;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.service.ConsultationService;
+import com.grad.akemha.service.DoctorService;
 import com.grad.akemha.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,8 @@ public class UserController {
     @Autowired
     private ConsultationService consultationService;
 
+    @Autowired
+    private DoctorService doctorService;
 
     @PreAuthorize("hasRole('USER')")
     @PatchMapping(value = "/information/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only beneficiary
@@ -156,6 +160,7 @@ public class UserController {
 
 
     @PreAuthorize("hasRole('OWNER')")
+
     @PatchMapping("beneficiary/restriction/{userId}")
     public ResponseEntity<BaseResponse<UserRestrictionResponse>> userRestriction(@PathVariable Long userId) {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", userService.userRestriction(userId)));
@@ -181,5 +186,22 @@ public class UserController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", userService.countUsersByAgeRangeAndRole()));
     }
 
+    @PostMapping(value = "/doctor_request", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BaseResponse<?>> addDoctorRequest(@RequestParam(value = "aboutMe", required = true) String aboutMe,
+                                                            @RequestParam(value = "email", required = true) String email,
+                                                            @RequestParam(value = "specializationId", required = true) Long specializationId,
+                                                            @RequestParam(value = "gender", required = true) Gender gender,
+                                                            @RequestParam(value = "cv", required = false) MultipartFile cv) {
+        try {
+            DoctorRequest response = doctorService.addDoctorRequest(email, aboutMe, specializationId, cv, gender);
+            return ResponseEntity.ok()
+                    .body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request added successfully", response));
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input: " + e.getMessage());
+            return ResponseEntity.ok()
+                    .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
+        }
+
+    }
 
 }

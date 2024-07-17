@@ -111,6 +111,43 @@ public class AuthenticationService {
         }
     }
 
+    public AuthResponse loginAdmin(LoginRequest request) throws BadCredentialsException {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
+            // adding a condition when the user is trying to log in, and he is not verified
+            if (user.getRole()!=Role.OWNER) {
+                throw new ForbiddenException("wrong role");
+            }
+            if (!user.getIsVerified()) {
+                throw new ForbiddenException("The User is not verified");
+            }
+            if (deviceTokenService.saveDeviceTokenIfNotExists(request.getDeviceToken(), user)) {
+                user.setDeviceToken(request.getDeviceToken());
+                userRepository.save(user);
+                fcmService.subscribeToTopic(request.getDeviceToken(), "all");
+                fcmService.subscribeToTopic(request.getDeviceToken(), "posts");
+
+
+            }
+            boolean result = passwordEncoder.matches(request.getPassword(), user.getPassword());
+            if (!result) {
+                throw new WrongPasswordException("The password is wrong");
+            }
+            var jwtToken = jwtService.generateToken(user);
+            // to save token in token entity
+            saveUserToken(user, jwtToken);
+            return AuthResponse.builder()
+                    .token(jwtToken)
+                    .id(user.getId())
+                    .userEmail(user.getEmail())
+                    .role(user.getRole().toString())
+                    .build();
+        } catch (BadCredentialsException e) {
+            throw new UserNotFoundException("User not found");
+        }
+    }
+
 
     public AuthResponse verifyAccount(VerificationRequest verificationRequest) throws Exception {
         Optional<User> optionalUser = userRepository.findById(verificationRequest.getUserId());

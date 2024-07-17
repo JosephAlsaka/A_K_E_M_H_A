@@ -1,14 +1,23 @@
 package com.grad.akemha.service;
 
+import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
+import com.grad.akemha.entity.Consultation;
+import com.grad.akemha.entity.DoctorRequest;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
+import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.entity.enums.Role;
+import com.grad.akemha.exception.CloudinaryException;
+import com.grad.akemha.exception.ForbiddenException;
+import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
+import com.grad.akemha.repository.DoctorRequestRepository;
 import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
+import com.grad.akemha.service.cloudinary.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,13 +42,26 @@ public class DoctorService {
 
     @Autowired
     SpecializationRepository specializationRepository;
+    @Autowired
+    DoctorRequestRepository doctorRequestRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryService cloudinaryService;
 
 
     public Page<User> getDoctors(Integer page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
         return userRepository.findByRole(Role.DOCTOR, pageable);
+    }
+
+    public Page<User> getDoctorsBySpecialization(Long specializationId, Integer page) {
+        if (specializationRepository.findById(specializationId).isPresent()) {
+            Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+            Page<User> userPage  =  userRepository.findBySpecializationIdAndRole(specializationId, pageable,Role.DOCTOR);
+            return userPage;
+        } else {
+            throw new NotFoundException("SpecializationId " + specializationId + " is not found");
+        }
     }
 //    public DoctorResponse getDoctors(Integer page) {
 //        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
@@ -61,6 +84,36 @@ public class DoctorService {
         Specialization specialization = specializationRepository.findBySpecializationType(request.getSpecialization());
         user.setSpecialization(specialization);
         userRepository.save(user);
+    }
+
+
+    public DoctorRequest addDoctorRequest(String email, String aboutMe, Long specializationId, MultipartFile cv, Gender gender) {
+        if (email == null) {
+            throw new ForbiddenException("email can't be Null");
+        }
+        if (aboutMe == null) {
+            throw new ForbiddenException("aboutMe can't be Null");
+        }
+        if (gender == null) {
+            throw new ForbiddenException("gender can't be Null");
+        }
+        if (specializationId == null) {
+            throw new ForbiddenException("specialization can't be Null");
+        }
+        if (cv == null) {
+            throw new CloudinaryException("cv upload failed");
+        }
+        Specialization specialization = specializationRepository.findById(specializationId).orElseThrow(() -> new NotFoundException("specialization Id: " + specializationId + " is not found"));
+        DoctorRequest doctorRequest = new DoctorRequest();
+        doctorRequest.setEmail(email);
+        Map<String, String> cloudinaryMap = cloudinaryService.uploadOneFile(cv, "CVs", email.toString());
+        doctorRequest.setCv(cloudinaryMap.get("image_url"));
+        doctorRequest.setCvPublicId(cloudinaryMap.get("public_id"));
+        doctorRequest.setGender(gender);
+        doctorRequest.setSpecialization(specialization);
+        doctorRequest.setAboutMe(aboutMe);
+        doctorRequestRepository.save(doctorRequest);
+        return doctorRequest;
     }
 
     private boolean userAlreadyExists(String email) {
@@ -89,6 +142,11 @@ public class DoctorService {
         }
 
         return result;
+    }
+
+    public Page<DoctorRequest> doctorRequest(Integer page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        return doctorRequestRepository.findByStatusOrNull(null, pageable);
     }
 
 }

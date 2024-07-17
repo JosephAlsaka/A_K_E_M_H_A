@@ -1,9 +1,9 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.beneficiary.AddBeneficiaryRequest;
+import com.grad.akemha.dto.beneficiary.UserRestrictionResponse;
 import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.statistic.StatisticCountResponse;
-import com.grad.akemha.dto.beneficiary.UserRestrictionResponse;
 import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
@@ -29,8 +29,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -174,6 +172,14 @@ public class UserService {
         return userRepository.findAllByRole(Role.DOCTOR);
     }
 
+    // search doctors by keyword
+    public List<User> doctorsByKeyword(String keyword, HttpHeaders httpHeaders) {
+        User user = jwtService.extractUserFromToken(httpHeaders);
+        Long userId = user.getId();
+//        List<User> userList = userRepository.findDoctorsByName(keyword, userId);
+        return userRepository.findDoctorsByName(keyword, userId);
+    }
+
 
     public UserRestrictionResponse userRestriction(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -182,7 +188,7 @@ public class UserService {
         return new UserRestrictionResponse(user);
     }
 
-//    public List<StatisticCountResponse> getBeneficiaryCountByMonth() {
+    //    public List<StatisticCountResponse> getBeneficiaryCountByMonth() {
 //        return userRepository.countUserByMonth(Role.USER);
 //    }
     public Map<Integer, List<Map<String, Object>>> getBeneficiaryCountByMonth() {
@@ -203,9 +209,11 @@ public class UserService {
 
         return result;
     }
+
     public List<StatisticTypeResponse> countUsersByGender() {
         return userRepository.countUsersByGender(Role.USER);
     }
+
     public List<AgeRangeStatisticResponse> countUsersByAgeRangeAndRole() {
         return userRepository.countUsersByAgeRangeAndRole(Role.USER);
     }

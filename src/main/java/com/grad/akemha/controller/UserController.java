@@ -2,17 +2,15 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.beneficiary.AddBeneficiaryRequest;
-import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
-import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.beneficiary.BeneficiaryResponse;
 import com.grad.akemha.dto.beneficiary.UserRestrictionResponse;
 import com.grad.akemha.dto.doctor.DoctorResponseMobile;
+import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;
-import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.service.ConsultationService;
 import com.grad.akemha.service.UserService;
 import jakarta.validation.Valid;
@@ -68,7 +66,7 @@ public class UserController {
                                                                     @RequestParam(value = "specializationId", required = false) String specializationId,
                                                                     @RequestHeader HttpHeaders httpHeaders) {
         try {
-            User response = userService.editDoctorInformation(name, phoneNumber, password, dob, profileImg, gender, description, location, openingTimes,specializationId, httpHeaders);
+            User response = userService.editDoctorInformation(name, phoneNumber, password, dob, profileImg, gender, description, location, openingTimes, specializationId, httpHeaders);
             return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", response));
         } catch (NumberFormatException e) {
             System.out.println("Invalid input: " + e.getMessage());
@@ -128,6 +126,7 @@ public class UserController {
     }
 
 
+    // get all doctors
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
     @GetMapping("/doctors")
     public ResponseEntity<BaseResponse<List<DoctorResponseMobile>>> getDoctors() {
@@ -141,8 +140,22 @@ public class UserController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctors", responseList));
     }
 
-    @PreAuthorize("hasRole('OWNER')")
+    // search doctors
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
+    @GetMapping("/doctors/keyword")
+    public ResponseEntity<BaseResponse<List<DoctorResponseMobile>>> getDoctorsByKeyword(
+            @RequestParam String keyword,
+            @RequestHeader HttpHeaders httpHeaders) {
+        List<User> doctorsList = userService.doctorsByKeyword(keyword, httpHeaders);
+        List<DoctorResponseMobile> responseList = doctorsList.stream().map(DoctorResponseMobile::new).toList();
+        for (DoctorResponseMobile response : responseList) {
+            response.setAnsweredConsultation(consultationService.getAnsweredConsultationByDoctorCount(response.getId()));
+        }
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "searched doctors", responseList));
+    }
 
+
+    @PreAuthorize("hasRole('OWNER')")
     @PatchMapping("beneficiary/restriction/{userId}")
     public ResponseEntity<BaseResponse<UserRestrictionResponse>> userRestriction(@PathVariable Long userId) {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", userService.userRestriction(userId)));
@@ -152,19 +165,20 @@ public class UserController {
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("beneficiary/statistic")
     public ResponseEntity<BaseResponse<Map<Integer, List<Map<String, Object>>>>> getBeneficiaryCountByMonth() {
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",userService.getBeneficiaryCountByMonth()));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", userService.getBeneficiaryCountByMonth()));
 
     }
+
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("beneficiary/statistic/gender")
     public ResponseEntity<BaseResponse<List<StatisticTypeResponse>>> countUsersByGender() {
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",userService.countUsersByGender()));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", userService.countUsersByGender()));
     }
 
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("beneficiary/statistic/age")
     public ResponseEntity<BaseResponse<List<AgeRangeStatisticResponse>>> countUsersByAgeRangeAndRole() {
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic",userService.countUsersByAgeRangeAndRole()));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", userService.countUsersByAgeRangeAndRole()));
     }
 
 

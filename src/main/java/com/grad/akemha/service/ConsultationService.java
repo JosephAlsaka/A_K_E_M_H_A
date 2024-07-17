@@ -2,6 +2,7 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
+import com.grad.akemha.dto.notification.NotificationRequestToken;
 import com.grad.akemha.dto.notification.NotificationRequestTopic;
 import com.grad.akemha.dto.statistic.SpecializationConsultationCountResponse;
 import com.grad.akemha.dto.statistic.StatisticCountResponse;
@@ -143,9 +144,21 @@ public class ConsultationService {
         consultationRepository.save(consultation);
 
         // modifying body to be small
-//        String notificationBody = shortenString(consultation.getTitle());
+        String notificationBody = shortenString(request.answer());
 //        String topic = "answered_" + consultation.getBeneficiary().getId().toString();
 //        sendConsultationNotification(topic, "تمت الإجابة على استشارتك", notificationBody);
+
+        NotificationRequestToken tokenRequest = new NotificationRequestToken();
+        tokenRequest.setTitle("تمت الإجابة على استشارتك");
+        tokenRequest.setBody(notificationBody);
+        tokenRequest.setDeviceToken(consultation.getBeneficiary().getDeviceToken());
+        try {
+            fcmService.sendMessageToToken(tokenRequest);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
 
         return consultation;
     }

@@ -90,6 +90,12 @@ public class DoctorController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor requests", doctorService.doctorRequest(page)));
     }
 
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/doctor_request/non_answered")
+    public ResponseEntity<BaseResponse<Long>> doctorRequestNonAnswered() {
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor requests", doctorService.doctorRequestNonAnswered()));
+    }
+
 
 }
 

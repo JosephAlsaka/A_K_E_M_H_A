@@ -14,4 +14,8 @@ public interface DoctorRequestRepository extends JpaRepository<DoctorRequest, Lo
     @Query("SELECT dr FROM DoctorRequest dr WHERE (:status IS NULL AND dr.status IS NULL) OR dr.status = :status")
     Page<DoctorRequest> findByStatusOrNull(@Param("status") DoctorRequestStatus status, Pageable pageable);
 
+
+    @Query("SELECT COUNT(dr) FROM DoctorRequest dr WHERE (:status IS NULL AND dr.status IS NULL) OR dr.status = :status")
+    long countByStatusOrNull(@Param("status") DoctorRequestStatus status);
+
 }

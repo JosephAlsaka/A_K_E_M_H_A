@@ -149,6 +149,10 @@ public class DoctorService {
         return doctorRequestRepository.findByStatusOrNull(null, pageable);
     }
 
+    public long doctorRequestNonAnswered() {
+        return doctorRequestRepository.countByStatusOrNull(null);
+    }
+
 }
 
 

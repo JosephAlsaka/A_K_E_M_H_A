@@ -2,14 +2,13 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.beneficiary.AddBeneficiaryRequest;
-import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.beneficiary.BeneficiaryResponse;
 import com.grad.akemha.dto.beneficiary.UserRestrictionResponse;
 import com.grad.akemha.dto.doctor.DoctorResponseMobile;
+import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.statistic.StatisticTypeResponse;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
-import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.DoctorRequest;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Gender;
@@ -43,7 +42,7 @@ public class UserController {
     private ConsultationService consultationService;
 
     @Autowired
-    DoctorService doctorService;
+    private DoctorService doctorService;
 
     @PreAuthorize("hasRole('USER')")
     @PatchMapping(value = "/information/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only beneficiary
@@ -131,6 +130,7 @@ public class UserController {
     }
 
 
+    // get all doctors
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
     @GetMapping("/doctors")
     public ResponseEntity<BaseResponse<List<DoctorResponseMobile>>> getDoctors() {
@@ -143,6 +143,21 @@ public class UserController {
         }
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctors", responseList));
     }
+
+    // search doctors
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
+    @GetMapping("/doctors/keyword")
+    public ResponseEntity<BaseResponse<List<DoctorResponseMobile>>> getDoctorsByKeyword(
+            @RequestParam String keyword,
+            @RequestHeader HttpHeaders httpHeaders) {
+        List<User> doctorsList = userService.doctorsByKeyword(keyword, httpHeaders);
+        List<DoctorResponseMobile> responseList = doctorsList.stream().map(DoctorResponseMobile::new).toList();
+        for (DoctorResponseMobile response : responseList) {
+            response.setAnsweredConsultation(consultationService.getAnsweredConsultationByDoctorCount(response.getId()));
+        }
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "searched doctors", responseList));
+    }
+
 
     @PreAuthorize("hasRole('OWNER')")
 
@@ -171,13 +186,12 @@ public class UserController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", userService.countUsersByAgeRangeAndRole()));
     }
 
-    @PostMapping(value="/doctor_request",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/doctor_request", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<?>> addDoctorRequest(@RequestParam(value = "aboutMe", required = true) String aboutMe,
                                                             @RequestParam(value = "email", required = true) String email,
                                                             @RequestParam(value = "specializationId", required = true) Long specializationId,
                                                             @RequestParam(value = "gender", required = true) Gender gender,
                                                             @RequestParam(value = "cv", required = false) MultipartFile cv) {
-
         try {
             DoctorRequest response = doctorService.addDoctorRequest(email, aboutMe, specializationId, cv, gender);
             return ResponseEntity.ok()

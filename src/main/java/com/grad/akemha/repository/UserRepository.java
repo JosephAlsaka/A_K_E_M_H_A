@@ -89,6 +89,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
 
-
+    // search for doctors
+    @Query("SELECT u FROM User u WHERE u.role <> 'OWNER' AND u.role <> 'USER' AND u.id <> :userId AND u.name LIKE %:keyword% ORDER BY CASE " +
+            "WHEN u.name LIKE :keyword THEN 1 " +
+            "WHEN u.name LIKE :keyword% THEN 2 " +
+            "WHEN u.name LIKE %:keyword THEN 3 " +
+            "ELSE 4 END, u.name ASC")
+    List<User> findDoctorsByName(@Param("keyword") String keyword,@Param("userId") Long userId);
 
 }

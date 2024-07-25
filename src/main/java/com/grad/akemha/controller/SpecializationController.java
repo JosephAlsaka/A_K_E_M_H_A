@@ -22,12 +22,28 @@ public class SpecializationController {
     @Autowired
     private SpecializationService specializationService;
 
-    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+//    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping()
     public ResponseEntity<BaseResponse<List<Specialization>>> getSpecializations() {
         List<Specialization> specializations = specializationService.getSpecializations();
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
     }
+
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @GetMapping("/consultations")
+    public ResponseEntity<BaseResponse<List<Specialization>>> getSpecializationsWithConsultation() {
+        List<Specialization> specializations = specializationService.getSpecializationsWithConsultation();
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
+    }
+
+
+    @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
+    @GetMapping("/doctors")
+    public ResponseEntity<BaseResponse<List<Specialization>>> getSpecializationsWithDoctor() {
+        List<Specialization> specializations = specializationService.getSpecializationsWithDoctor();
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
+    }
+
 
     @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("/{specializationId}")
@@ -48,6 +64,12 @@ public class SpecializationController {
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
     @GetMapping("/doctor_specializations")
     public ResponseEntity<BaseResponse<List<Specialization>>> getSpecializationsNotPublic() {
+        List<Specialization> specializations = specializationService.getSpecializationsNotPublic();
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
+    }
+
+    @GetMapping("/new_doctor_specializations")
+    public ResponseEntity<BaseResponse<List<Specialization>>> getSpecializationsNotPublicWithoutToken() {
         List<Specialization> specializations = specializationService.getSpecializationsNotPublic();
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", specializations));
     }

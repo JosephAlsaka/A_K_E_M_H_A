@@ -3,6 +3,7 @@ package com.grad.akemha.repository;
 import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.statistic.StatisticTypeResponse;
+import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.Role;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     Page<User> findByRole(Role role, Pageable pageable);
+    Page<User> findBySpecializationIdAndRole(Long specializationId, Pageable pageable,Role role);
+
 
     List<User> findAllByRole(Role role);
     // to delete users that are not verified
@@ -86,6 +89,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
 
-
+    // search for doctors
+    @Query("SELECT u FROM User u WHERE u.role <> 'OWNER' AND u.role <> 'USER' AND u.id <> :userId AND u.name LIKE %:keyword% ORDER BY CASE " +
+            "WHEN u.name LIKE :keyword THEN 1 " +
+            "WHEN u.name LIKE :keyword% THEN 2 " +
+            "WHEN u.name LIKE %:keyword THEN 3 " +
+            "ELSE 4 END, u.name ASC")
+    List<User> findDoctorsByName(@Param("keyword") String keyword,@Param("userId") Long userId);
 
 }

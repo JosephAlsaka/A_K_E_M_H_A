@@ -2,6 +2,7 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
+import com.grad.akemha.dto.notification.NotificationRequestToken;
 import com.grad.akemha.dto.notification.NotificationRequestTopic;
 import com.grad.akemha.dto.statistic.SpecializationConsultationCountResponse;
 import com.grad.akemha.dto.statistic.StatisticCountResponse;
@@ -11,7 +12,6 @@ import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
 import com.grad.akemha.entity.enums.ConsultationStatus;
 import com.grad.akemha.entity.enums.ConsultationType;
-import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.repository.ConsultationRepository;
@@ -77,9 +77,20 @@ public class ConsultationService {
     public List<ConsultationRes> getConsultationsBySpecializationId(Long specializationId, Integer page) {
         if (specializationRepository.findById(specializationId).isPresent()) {
             Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-            List<Consultation> consultationList = consultationRepository.findBySpecializationId(specializationId, pageable);
+            Page<Consultation> consultationList =  consultationRepository.findBySpecializationId(specializationId, pageable);
             List<ConsultationRes> consultationResponseList = consultationList.stream().map(consultation -> new ConsultationRes(consultation)).toList();
             return consultationResponseList;
+        } else {
+            throw new NotFoundException("SpecializationId " + specializationId + " is not found");
+        }
+
+    }
+
+    public Page<ConsultationRes> adminGetConsultationsBySpecialization(Long specializationId, Integer page) {
+        if (specializationRepository.findById(specializationId).isPresent()) {
+            Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+            Page<Consultation> consultationPage  =  consultationRepository.findBySpecializationId(specializationId, pageable);
+            return consultationPage.map(ConsultationRes::new);
         } else {
             throw new NotFoundException("SpecializationId " + specializationId + " is not found");
         }
@@ -143,9 +154,21 @@ public class ConsultationService {
         consultationRepository.save(consultation);
 
         // modifying body to be small
-//        String notificationBody = shortenString(consultation.getTitle());
+        String notificationBody = shortenString(request.answer());
 //        String topic = "answered_" + consultation.getBeneficiary().getId().toString();
 //        sendConsultationNotification(topic, "تمت الإجابة على استشارتك", notificationBody);
+
+        NotificationRequestToken tokenRequest = new NotificationRequestToken();
+        tokenRequest.setTitle("تمت الإجابة على استشارتك");
+        tokenRequest.setBody(notificationBody);
+        tokenRequest.setDeviceToken(consultation.getBeneficiary().getDeviceToken());
+        try {
+            fcmService.sendMessageToToken(tokenRequest);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
 
         return consultation;
     }

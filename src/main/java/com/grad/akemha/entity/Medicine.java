@@ -13,7 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "medicine")
+@Table(name = "medicine", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "localId"})
+})
 public class Medicine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +25,9 @@ public class Medicine {
     private String name;
     @Column
     private String description;
+
+    @Column(unique = true, nullable = false)
+    private Long localId;
 
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)

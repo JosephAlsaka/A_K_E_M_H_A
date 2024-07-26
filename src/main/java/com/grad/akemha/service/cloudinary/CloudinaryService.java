@@ -6,6 +6,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,4 +84,24 @@ public class CloudinaryService { //for converting the image into URL
         }
 
     }
+
+
+    public Map<String, String> uploadRawFile(File file, String folder, String name) throws IOException {
+        Map<String, Object> uploadParams = ObjectUtils.asMap(
+                "resource_type", "raw",
+                "public_id", folder + "/" + name
+        );
+        Map uploadedFile = cloudinary.uploader().upload(file, uploadParams);
+        Map<String, String> returnedMap = new HashMap<>();
+        returnedMap.put("public_id", (String) uploadedFile.get("public_id"));
+
+        // Generate the URL for the raw file
+        String url = cloudinary.url()
+                .resourceType("raw")
+                .secure(true)
+                .generate((String) uploadedFile.get("public_id"));
+        returnedMap.put("url", url);
+        return returnedMap;
+    }
+
 }

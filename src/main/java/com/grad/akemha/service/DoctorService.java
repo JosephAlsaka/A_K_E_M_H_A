@@ -26,6 +26,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +88,7 @@ public class DoctorService {
     }
 
 
-    public DoctorRequest addDoctorRequest(String email, String aboutMe, Long specializationId, MultipartFile cv, Gender gender) {
+    public DoctorRequest addDoctorRequest(String email, String aboutMe, Long specializationId, MultipartFile cv, Gender gender) throws IOException {
         if (email == null) {
             throw new ForbiddenException("email can't be Null");
         }
@@ -101,11 +104,14 @@ public class DoctorService {
         if (cv == null) {
             throw new CloudinaryException("cv upload failed");
         }
+
+        File file = convertToFile(cv);
+        Map<String, String> cloudinaryMap = cloudinaryService.uploadRawFile(file, "CVs", email.toString());
+        file.delete();
         Specialization specialization = specializationRepository.findById(specializationId).orElseThrow(() -> new NotFoundException("specialization Id: " + specializationId + " is not found"));
         DoctorRequest doctorRequest = new DoctorRequest();
         doctorRequest.setEmail(email);
-        Map<String, String> cloudinaryMap = cloudinaryService.uploadOneFile(cv, "CVs", email.toString());
-        doctorRequest.setCv(cloudinaryMap.get("image_url"));
+        doctorRequest.setCv(cloudinaryMap.get("url"));
         doctorRequest.setCvPublicId(cloudinaryMap.get("public_id"));
         doctorRequest.setGender(gender);
         doctorRequest.setSpecialization(specialization);
@@ -114,6 +120,14 @@ public class DoctorService {
         return doctorRequest;
     }
 
+
+    private File convertToFile(MultipartFile multipartFile) throws IOException {
+        File convFile = new File(multipartFile.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(multipartFile.getBytes());
+        fos.close();
+        return convFile;
+    }
     private boolean userAlreadyExists(String email) {
         return userRepository.existsByEmail(email);
     }

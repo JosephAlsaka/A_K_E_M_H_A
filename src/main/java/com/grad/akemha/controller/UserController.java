@@ -16,6 +16,7 @@ import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.service.ConsultationService;
 import com.grad.akemha.service.DoctorService;
 import com.grad.akemha.service.UserService;
+import com.grad.akemha.service.cloudinary.CloudinaryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,10 +28,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.io.IOException;
+import java.util.Map;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -44,6 +45,10 @@ public class UserController {
 
     @Autowired
     private DoctorService doctorService;
+    @Autowired
+    CloudinaryService cloudinaryService;
+
+
 
     @PreAuthorize("hasRole('USER')")
     @PatchMapping(value = "/information/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only beneficiary
@@ -192,19 +197,22 @@ public class UserController {
                                                             @RequestParam(value = "email", required = true) String email,
                                                             @RequestParam(value = "specializationId", required = true) Long specializationId,
                                                             @RequestParam(value = "gender", required = true) Gender gender,
-                                                            @RequestParam(value = "cv", required = false) MultipartFile cv) {
+                                                            @RequestParam(value = "file", required = false) MultipartFile multipartFile) {
         try {
-            DoctorRequest response = doctorService.addDoctorRequest(email, aboutMe, specializationId, cv, gender);
+            DoctorRequest response = doctorService.addDoctorRequest(email, aboutMe, specializationId, multipartFile, gender);
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request added successfully", response));
         } catch (NumberFormatException e) {
             System.out.println("Invalid input: " + e.getMessage());
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @PostMapping("/change-password")
     public ResponseEntity<BaseResponse<?>> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, @RequestHeader HttpHeaders httpHeaders) {
         userService.changePassword(httpHeaders, changePasswordRequest.getOldPassword(), changePasswordRequest.getNewPassword());
@@ -212,5 +220,6 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(new BaseResponse<>(HttpStatus.OK.value(), "Password changed successfully", null));
     }
+
 
 }

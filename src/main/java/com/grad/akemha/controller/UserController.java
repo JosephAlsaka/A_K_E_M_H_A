@@ -7,6 +7,7 @@ import com.grad.akemha.dto.beneficiary.UserRestrictionResponse;
 import com.grad.akemha.dto.doctor.DoctorResponseMobile;
 import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.statistic.StatisticTypeResponse;
+import com.grad.akemha.dto.user.request.ChangePasswordRequest;
 import com.grad.akemha.dto.user.response.UserFullResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
 import com.grad.akemha.entity.DoctorRequest;
@@ -202,6 +203,14 @@ public class UserController {
                     .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), "failed", null));
         }
 
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<BaseResponse<?>> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, @RequestHeader HttpHeaders httpHeaders) {
+        userService.changePassword(httpHeaders, changePasswordRequest.getOldPassword(), changePasswordRequest.getNewPassword());
+
+        return ResponseEntity.ok()
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "Password changed successfully", null));
     }
 
 }

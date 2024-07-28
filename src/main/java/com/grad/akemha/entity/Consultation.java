@@ -3,6 +3,10 @@ package com.grad.akemha.entity;
 import com.grad.akemha.entity.enums.ConsultationStatus;
 import com.grad.akemha.entity.enums.ConsultationType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.util.Date;
@@ -52,7 +56,7 @@ public class Consultation {
     private Date updateAnswerTime;
 
     @ManyToOne
-    @JoinColumn(name = "beneficiary_id",nullable = false)
+    @JoinColumn(name = "beneficiary_id", nullable = false)
     private User beneficiary;
 
     @ManyToOne
@@ -63,9 +67,13 @@ public class Consultation {
     @JoinColumn(name = "consultation_id")
     private List<Image> images;
 
-//    @OneToMany
+    //    @OneToMany
 //    @JoinColumn(name = "consultation_id")
 ////    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL)
 //    private List<Message> messages;
+    @Column(name = "rating", nullable = true)
+    @DecimalMin(value = "0.5", message = "Rating must be at least 0.5")
+    @DecimalMax(value = "5.0", message = "Rating must be at most 5.0")
+    private Double rating;
 
 }

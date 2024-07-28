@@ -4,8 +4,6 @@ import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.message.request.MessageRequest;
 import com.grad.akemha.dto.message.response.MessageResponse;
 import com.grad.akemha.entity.Message;
-import com.grad.akemha.repository.ConsultationRepository;
-import com.grad.akemha.repository.MessageRepository;
 import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.service.ChatService;
 import com.grad.akemha.service.MessageService;

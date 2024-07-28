@@ -151,12 +151,12 @@ public class MedicineNotebookService {
         alarmRepository.delete(alarm);
     }
 
-    public void takeMedicine(Long alarmId, HttpHeaders httpHeaders) {
+    public void takeMedicine(Long localAlarmId, HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
-        Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(() -> new UserNotFoundException("Alarm not found"));
-        Medicine medicine = medicineRepository.findByIdAndUser(alarm.getMedicine().getId(), user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
+//        Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(() -> new UserNotFoundException("Alarm not found"));
+        Medicine medicine = medicineRepository.findByLocalIdAndUser(localAlarmId, user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
         AlarmHistory alarmHistory=new AlarmHistory();
-        alarmHistory.setAlarm(alarm);
+        alarmHistory.setAlarm(medicine.getAlarms().get(0)); //TODO:
         alarmHistory.setTakeDate(LocalDateTime.now());
         alarmHistoryRepository.save(alarmHistory);
     }

@@ -3,7 +3,6 @@ package com.grad.akemha.controller;
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.supervision.response.SupervisionResponse;
 import com.grad.akemha.dto.user.response.UserLessResponse;
-import com.grad.akemha.entity.enums.SupervisionStatus;
 import com.grad.akemha.service.SupervisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

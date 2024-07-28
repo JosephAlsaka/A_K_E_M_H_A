@@ -13,6 +13,7 @@ import java.util.Optional;
 @Repository
 public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     Optional<Medicine> findByIdAndUser (Long id, User user);
+    Optional<Medicine> findByLocalIdAndUser (Long localId, User user);
     @Transactional
     void deleteByLocalIdAndUser(Long localId, User user);
 

@@ -5,8 +5,8 @@ import com.grad.akemha.entity.Slider;
 import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.ForbiddenException;
 import com.grad.akemha.exception.NotFoundException;
-import com.grad.akemha.repository.SliderRepository;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
+import com.grad.akemha.repository.SliderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

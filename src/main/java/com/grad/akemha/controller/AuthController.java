@@ -7,7 +7,6 @@ import com.grad.akemha.dto.auth.authresponse.AuthResponse;
 import com.grad.akemha.dto.auth.authrequest.VerificationRequest;
 import com.grad.akemha.service.AuthenticationService;
 import com.grad.akemha.service.LogoutService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

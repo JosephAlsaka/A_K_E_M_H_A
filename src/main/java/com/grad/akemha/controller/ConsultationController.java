@@ -2,6 +2,7 @@ package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.consultation.consultationRequest.AnswerConsultationRequest;
+import com.grad.akemha.dto.consultation.consultationRequest.RateConsultationReq;
 import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.dto.statistic.SpecializationConsultationCountResponse;
 import com.grad.akemha.entity.Consultation;
@@ -76,9 +77,9 @@ public class ConsultationController {
     public ResponseEntity<BaseResponse<Page<ConsultationRes>>> adminGetConsultationsBySpecialization(
             @PathVariable Long specializationId,
             @RequestParam(name = "page", defaultValue = "0") Integer page) {
-        Page<ConsultationRes> consultationResPage  = consultationService.adminGetConsultationsBySpecialization(specializationId, page);
+        Page<ConsultationRes> consultationResPage = consultationService.adminGetConsultationsBySpecialization(specializationId, page);
         return ResponseEntity.ok()
-                .body(new BaseResponse<>(HttpStatus.OK.value(), "Successfully retrieved consultations", consultationResPage ));
+                .body(new BaseResponse<>(HttpStatus.OK.value(), "Successfully retrieved consultations", consultationResPage));
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('OWNER') or hasRole('DOCTOR')")
@@ -227,5 +228,14 @@ public class ConsultationController {
     @GetMapping("/statistic/specialization")
     public ResponseEntity<BaseResponse<List<SpecializationConsultationCountResponse>>> countConsultationsBySpecialization() {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "statistic", consultationService.countConsultationsBySpecialization()));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/{id}/rate")
+    public ResponseEntity<BaseResponse<?>> rateConsultation(
+            @PathVariable Long id,
+            @RequestBody RateConsultationReq rate) {
+        consultationService.rateConsultation(id, rate.rating());
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "your ratting is added", null));
     }
 }

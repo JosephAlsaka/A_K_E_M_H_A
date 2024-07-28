@@ -15,10 +15,10 @@ import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
+import com.grad.akemha.service.cloudinary.CloudinaryService;
 import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.security.JwtService;
-import com.grad.akemha.service.cloudinary.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -40,8 +41,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-
-    private final PasswordEncoder passwordEncoder;
     private final SpecializationRepository specializationRepository;
     @Autowired
     private UserRepository userRepository;
@@ -51,6 +50,9 @@ public class UserService {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     public User editUserInformation(String name, String phoneNumber, String password, LocalDate dob, MultipartFile profileImg, Gender gender, HttpHeaders httpHeaders) {
@@ -216,6 +218,19 @@ public class UserService {
 
     public List<AgeRangeStatisticResponse> countUsersByAgeRangeAndRole() {
         return userRepository.countUsersByAgeRangeAndRole(Role.USER);
+    }
+
+    @Transactional
+    public void changePassword(HttpHeaders httpHeaders, String oldPassword, String newPassword) {
+        Long userId = Long.parseLong(jwtService.extractUserId(httpHeaders));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user Id: " + userId + " is not found"));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
 

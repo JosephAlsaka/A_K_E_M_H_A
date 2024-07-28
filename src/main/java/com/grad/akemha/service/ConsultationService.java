@@ -20,7 +20,6 @@ import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.security.JwtService;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -291,5 +290,16 @@ public class ConsultationService {
     }
     public List<SpecializationConsultationCountResponse> countConsultationsBySpecialization() {
         return consultationRepository.countConsultationsBySpecialization();
+    }
+
+    public Consultation rateConsultation(Long consultationId, Double rating) {
+        Optional<Consultation> optionalConsultation = consultationRepository.findById(consultationId);
+        if (optionalConsultation.isPresent()) {
+            Consultation consultation = optionalConsultation.get();
+            consultation.setRating(rating);
+            return consultationRepository.save(consultation);
+        } else {
+            throw new IllegalArgumentException("Consultation not found with id: " + consultationId);
+        }
     }
 }

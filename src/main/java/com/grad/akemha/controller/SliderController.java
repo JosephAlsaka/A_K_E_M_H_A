@@ -1,7 +1,6 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
-import com.grad.akemha.dto.activity.ActivityResponse;
 import com.grad.akemha.dto.slider.request.SliderRequest;
 import com.grad.akemha.entity.Slider;
 import com.grad.akemha.service.SliderService;

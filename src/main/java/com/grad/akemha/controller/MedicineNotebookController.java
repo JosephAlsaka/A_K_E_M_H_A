@@ -1,10 +1,8 @@
 package com.grad.akemha.controller;
 
 import com.grad.akemha.dto.BaseResponse;
-import com.grad.akemha.dto.medicine.AddAlarmRequest;
 import com.grad.akemha.dto.medicine.AddMedicineRequest;
 import com.grad.akemha.dto.medicine.MedicineResponse;
-import com.grad.akemha.entity.Alarm;
 import com.grad.akemha.entity.Medicine;
 import com.grad.akemha.service.MedicineNotebookService;
 import jakarta.validation.Valid;
@@ -104,6 +102,15 @@ public class MedicineNotebookController {
     @PostMapping("/take/{localAlarmId}")
     public ResponseEntity<BaseResponse<?>> takeMedicine(@PathVariable Long localAlarmId,
                                                         @RequestHeader HttpHeaders httpHeaders) {
+        System.out.println("takeMedicine");
+        medicalNotebookService.takeMedicine(localAlarmId, httpHeaders);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", null));
+    }
+
+    @GetMapping("beneficiary/{userId}")
+    public ResponseEntity<BaseResponse<?>> getMedicinesByUserId(@PathVariable Long localAlarmId,
+                                                        @RequestHeader HttpHeaders httpHeaders) {
+        //return the statues is it taken or not depends on take_date in alarm history
         System.out.println("takeMedicine");
         medicalNotebookService.takeMedicine(localAlarmId, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", null));

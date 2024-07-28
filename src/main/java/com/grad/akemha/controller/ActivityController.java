@@ -3,9 +3,7 @@ package com.grad.akemha.controller;
 import com.grad.akemha.dto.BaseResponse;
 import com.grad.akemha.dto.activity.ActivityRequest;
 import com.grad.akemha.dto.activity.ActivityResponse;
-import com.grad.akemha.dto.post.PostResponse;
 import com.grad.akemha.entity.Activity;
-import com.grad.akemha.entity.Post;
 import com.grad.akemha.service.ActivityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")

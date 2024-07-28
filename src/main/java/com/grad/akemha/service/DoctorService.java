@@ -1,9 +1,7 @@
 package com.grad.akemha.service;
 
-import com.grad.akemha.dto.consultation.consultationResponse.ConsultationRes;
 import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
-import com.grad.akemha.entity.Consultation;
 import com.grad.akemha.entity.DoctorRequest;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
@@ -14,10 +12,10 @@ import com.grad.akemha.exception.ForbiddenException;
 import com.grad.akemha.exception.NotFoundException;
 import com.grad.akemha.exception.authExceptions.EmailAlreadyExistsException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
+import com.grad.akemha.service.cloudinary.CloudinaryService;
 import com.grad.akemha.repository.DoctorRequestRepository;
 import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
-import com.grad.akemha.service.cloudinary.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

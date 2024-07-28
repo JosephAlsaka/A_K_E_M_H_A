@@ -1,15 +1,13 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.specializationDTO.SpecializationRequest;
-import com.grad.akemha.dto.statistic.AgeRangeStatisticResponse;
 import com.grad.akemha.dto.statistic.SpecializationUserCountResponse;
 import com.grad.akemha.entity.Specialization;
-import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.CloudinaryException;
 import com.grad.akemha.exception.ForbiddenException;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
-import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.service.cloudinary.CloudinaryService;
+import com.grad.akemha.repository.SpecializationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort;

@@ -5,6 +5,7 @@ import com.grad.akemha.dto.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.DoctorRequest;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
+import com.grad.akemha.entity.enums.DoctorRequestStatus;
 import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.CloudinaryException;
@@ -48,6 +49,8 @@ public class DoctorService {
 
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
+
+
 
 
     public Page<User> getDoctors(Integer page) {
@@ -159,6 +162,12 @@ public class DoctorService {
     public Page<DoctorRequest> doctorRequest(Integer page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
         return doctorRequestRepository.findByStatusOrNull(null, pageable);
+    }
+
+    public void rejectDoctorRequest(Long requestId) {
+        DoctorRequest doctorRequest = doctorRequestRepository.findById(requestId).orElseThrow(() -> new UserNotFoundException("request not found"));
+        doctorRequest.setStatus(DoctorRequestStatus.REJECTED);
+        doctorRequestRepository.save(doctorRequest);
     }
 
     public long doctorRequestNonAnswered() {

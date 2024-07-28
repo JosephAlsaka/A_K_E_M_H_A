@@ -40,6 +40,6 @@ public class DoctorRequest {
     private String cvPublicId;
 
     @Enumerated(EnumType.STRING)
-    @Column()
+    @Column(length = 10)
     private DoctorRequestStatus status;
 }

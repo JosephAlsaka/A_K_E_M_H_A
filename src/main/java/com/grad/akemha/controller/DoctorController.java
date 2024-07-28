@@ -33,7 +33,7 @@ public class DoctorController {
 
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping("/{specializationId}")
-    public ResponseEntity<BaseResponse<Page<User>>> getDoctorsBySpecialization( @PathVariable Long specializationId,@RequestParam(name = "page", defaultValue = "0") int page) {
+    public ResponseEntity<BaseResponse<Page<User>>> getDoctorsBySpecialization(@PathVariable Long specializationId, @RequestParam(name = "page", defaultValue = "0") int page) {
         Page<User> doctorsPage = doctorService.getDoctorsBySpecialization(specializationId, page);
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctors", doctorsPage));
     }
@@ -85,9 +85,10 @@ public class DoctorController {
 
     //TODO
     @PreAuthorize("hasRole('OWNER')")
-    @DeleteMapping("/doctor_request")
-    public ResponseEntity<BaseResponse<Page<DoctorRequest>>> deleteDoctorRequest(@RequestParam(name = "page", defaultValue = "0") Integer page) {
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor requests", doctorService.doctorRequest(page)));
+    @PatchMapping("/doctor_request/{requestId}")
+    public ResponseEntity<BaseResponse<String>> rejectDoctorRequest(@PathVariable Long requestId) {
+        doctorService.rejectDoctorRequest(requestId);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request deleted successfully", null));
     }
 
     @PreAuthorize("hasRole('OWNER')")

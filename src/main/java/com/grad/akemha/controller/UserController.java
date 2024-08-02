@@ -195,11 +195,14 @@ public class UserController {
     @PostMapping(value = "/doctor_request", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<?>> addDoctorRequest(@RequestParam(value = "aboutMe", required = true) String aboutMe,
                                                             @RequestParam(value = "email", required = true) String email,
+                                                            @RequestParam(value = "name", required = true) String name,
+                                                            @RequestParam(value = "deviceToken", required = true) String deviceToken,
                                                             @RequestParam(value = "specializationId", required = true) Long specializationId,
                                                             @RequestParam(value = "gender", required = true) Gender gender,
-                                                            @RequestParam(value = "file", required = false) MultipartFile multipartFile) {
+                                                            @RequestParam(value = "file", required = false) MultipartFile multipartFile
+) {
         try {
-            DoctorRequest response = doctorService.addDoctorRequest(email, aboutMe, specializationId, multipartFile, gender);
+            DoctorRequest response = doctorService.addDoctorRequest(name,email, aboutMe, specializationId, multipartFile, gender,deviceToken);
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request added successfully", response));
         } catch (NumberFormatException e) {

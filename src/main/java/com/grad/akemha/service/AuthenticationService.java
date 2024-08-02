@@ -74,6 +74,9 @@ public class AuthenticationService {
             if (!user.getIsVerified()) {
                 throw new ForbiddenException("The User is not verified");
             }
+            if (!user.getIsActive()) {
+                throw new ForbiddenException("Account is not active");
+            }
 
             if (deviceTokenService.saveDeviceTokenIfNotExists(request.getDeviceToken(), user)) {
                 user.setDeviceToken(request.getDeviceToken());

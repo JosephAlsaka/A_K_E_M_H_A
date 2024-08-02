@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -76,14 +77,13 @@ public class DoctorController {
         return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor requests", doctorService.doctorRequest(page)));
     }
 
-    //TODO
     @PreAuthorize("hasRole('OWNER')")
-    @PostMapping("/doctor_request")
-    public ResponseEntity<BaseResponse<Page<DoctorRequest>>> answerDoctorRequest(@RequestParam(name = "page", defaultValue = "0") Integer page) {
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor requests", doctorService.doctorRequest(page)));
+    @PostMapping("/doctor_request/{requestId}")
+    public ResponseEntity<BaseResponse<Long>> acceptDoctorRequest(@PathVariable Long requestId) throws ExecutionException, InterruptedException {
+
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request accepted successfully", doctorService.acceptDoctorRequest(requestId)));
     }
 
-    //TODO
     @PreAuthorize("hasRole('OWNER')")
     @PatchMapping("/doctor_request/{requestId}")
     public ResponseEntity<BaseResponse<Long>> rejectDoctorRequest(@PathVariable Long requestId) {

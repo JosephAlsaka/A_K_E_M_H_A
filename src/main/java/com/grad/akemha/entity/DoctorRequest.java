@@ -19,6 +19,9 @@ public class DoctorRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String name;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -39,7 +42,12 @@ public class DoctorRequest {
     @Column(name = "cv_public_id", nullable = false)
     private String cvPublicId;
 
+
     @Enumerated(EnumType.STRING)
-    @Column(length = 10)
     private DoctorRequestStatus status;
+
+    @Column(name = "device_token")
+    private String deviceToken;
+
+
 }

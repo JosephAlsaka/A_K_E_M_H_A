@@ -86,9 +86,9 @@ public class DoctorController {
     //TODO
     @PreAuthorize("hasRole('OWNER')")
     @PatchMapping("/doctor_request/{requestId}")
-    public ResponseEntity<BaseResponse<String>> rejectDoctorRequest(@PathVariable Long requestId) {
-        doctorService.rejectDoctorRequest(requestId);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request deleted successfully", null));
+    public ResponseEntity<BaseResponse<Long>> rejectDoctorRequest(@PathVariable Long requestId) {
+
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request deleted successfully", doctorService.rejectDoctorRequest(requestId)));
     }
 
     @PreAuthorize("hasRole('OWNER')")

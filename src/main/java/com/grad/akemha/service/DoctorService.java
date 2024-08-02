@@ -164,10 +164,11 @@ public class DoctorService {
         return doctorRequestRepository.findByStatusOrNull(null, pageable);
     }
 
-    public void rejectDoctorRequest(Long requestId) {
+    public long rejectDoctorRequest(Long requestId) {
         DoctorRequest doctorRequest = doctorRequestRepository.findById(requestId).orElseThrow(() -> new UserNotFoundException("request not found"));
         doctorRequest.setStatus(DoctorRequestStatus.REJECTED);
         doctorRequestRepository.save(doctorRequest);
+        return doctorRequestRepository.countByStatusOrNull(null);
     }
 
     public long doctorRequestNonAnswered() {

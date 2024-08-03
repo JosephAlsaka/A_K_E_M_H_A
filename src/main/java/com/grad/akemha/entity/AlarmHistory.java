@@ -20,9 +20,9 @@ public class AlarmHistory {
     private Long id;
 
     @Column
-    private LocalDateTime takeDate; //TODO , check the type
-
+    private LocalTime takeTime;
     @ManyToOne
-    @JoinColumn(name = "alarm_id")
-    private Alarm alarm;
+    @JoinColumn(name = "alarm_time_id", nullable = false)
+    private AlarmTime alarmTime;
+
 }

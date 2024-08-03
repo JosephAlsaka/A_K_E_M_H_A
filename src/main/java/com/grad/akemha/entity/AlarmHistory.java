@@ -21,5 +21,8 @@ public class AlarmHistory {
 
     @Column
     private LocalTime takeTime;
+    @ManyToOne
+    @JoinColumn(name = "alarm_time_id", nullable = false)
+    private AlarmTime alarmTime;
 
 }

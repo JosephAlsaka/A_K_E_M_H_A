@@ -121,7 +121,7 @@ public class MedicineNotebookController {
 
     @GetMapping("beneficiary/{userId}")
     public ResponseEntity<BaseResponse<?>> getSupervisedMedicineState(@PathVariable Long supervisedId,
-                                                        @RequestHeader HttpHeaders httpHeaders) {
+                                                                      @RequestHeader HttpHeaders httpHeaders) {
         //return the statues is it taken or not depends on take_date in alarm history
         System.out.println("takeMedicine");
         medicalNotebookService.getSupervisedMedicineState(supervisedId, httpHeaders);

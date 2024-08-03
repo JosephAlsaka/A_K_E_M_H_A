@@ -3,8 +3,8 @@ package com.grad.akemha.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @ToString
 @Setter
@@ -20,13 +20,18 @@ public class AlarmTime {
     private Long id;
 
     @Column
-    private LocalTime alarmTime;
+    private LocalTime time;
 
-    @OneToMany
-    @JoinColumn(name = "alarm_history_id")
-    private AlarmHistory alarmHistory;
+    @ManyToOne
+    @JoinColumn(name = "medicine_id", nullable = false)
+    private Medicine medicine;
 
+    @OneToMany(mappedBy = "alarmTime", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AlarmHistory> alarmHistory;
 
-    public AlarmTime(LocalTime time, Medicine medicine) {
+    public AlarmTime(Long id, LocalTime time, Medicine medicine) {
+        this.id = id;
+        this.time = time;
+        this.medicine = medicine;
     }
 }

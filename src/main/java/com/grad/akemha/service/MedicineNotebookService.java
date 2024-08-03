@@ -122,7 +122,7 @@ public class MedicineNotebookService {
 
         boolean alarmMatched = false;
         for (AlarmTime alarmTime : alarmTimes) {
-            if (alarmTime.getAlarmTime().equals(request.getRingingTime())) {
+            if (alarmTime.getTime().equals(request.getRingingTime())) {
                 alarmMatched = true;
                 break;
             }
@@ -138,15 +138,15 @@ public class MedicineNotebookService {
     public void getSupervisedMedicineState(Long supervisedId, HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
         User supervised = userRepository.findById(supervisedId).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
-        if(supervisionRepository.existBySupervisedAndSupervisor(user,supervised))
-        {
+//        if(supervisionRepository.existBySupervisedAndSupervisor(user,supervised))
+//        {
             //TODO
             medicineRepository.findByUser(supervised);
             //if date.now > endDate  skip.
             //list, + takeTime
 //            new respone have the medicine + take time
 
-        }
+//        }
 //    else {
 //
 //        }

@@ -35,20 +35,17 @@ public class Medicine {
     private Long localId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany
-    @JoinColumn(name = "alarm_time_id",nullable = false)
+    @OneToMany(mappedBy = "medicine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlarmTime> alarmTimes;
-
 
     @Column(name = "start_date")
     private LocalDate startDate;
 
     @Column(name = "end_date")
     private LocalDate endDate;
-
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -58,16 +55,15 @@ public class Medicine {
     @Column(nullable = false)
     private AlarmRoutineType alarmRoutineType;
 
-    @Column()
+    @Column
     private String alarmWeekDay;
 
-    @Column()
+    @Column
     private Integer selectedDayInMonth;
 
     public void setAlarmTimes(List<LocalTime> times) {
-        // Convert the list of LocalTime to AlarmTime
         this.alarmTimes = times.stream()
-                .map(time -> new AlarmTime( time, this))
+                .map(time -> new AlarmTime(null, time, this))
                 .collect(Collectors.toList());
     }
 }

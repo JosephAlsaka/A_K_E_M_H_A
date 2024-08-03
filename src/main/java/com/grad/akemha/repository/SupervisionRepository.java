@@ -14,7 +14,7 @@ public interface SupervisionRepository extends JpaRepository<Supervision, Long> 
 
     List<Supervision> findBySupervisionStatusAndSupervised(SupervisionStatus status, User supervised);
     List<Supervision> findBySupervisionStatusAndSupervisor(SupervisionStatus status, User supervised);
-    Boolean existBySupervisedAndSupervisor(User supervised,User supervisor);
+//    Boolean existBySupervisedAndSupervisor(User supervised,User supervisor);
 
 
 }

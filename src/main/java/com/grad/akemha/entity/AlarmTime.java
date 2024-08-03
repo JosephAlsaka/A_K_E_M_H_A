@@ -13,13 +13,20 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "alarm_history")
-public class AlarmHistory {
+@Table(name = "alarm_time")
+public class AlarmTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private LocalTime takeTime;
+    private LocalTime alarmTime;
 
+    @OneToMany
+    @JoinColumn(name = "alarm_history_id")
+    private AlarmHistory alarmHistory;
+
+
+    public AlarmTime(LocalTime time, Medicine medicine) {
+    }
 }

@@ -53,6 +53,9 @@ public class DoctorService {
     private final CloudinaryService cloudinaryService;
 
     private final FCMService fcmService;
+    private final EmailService emailService;
+
+
 
 
     public Page<User> getDoctors(Integer page) {
@@ -197,9 +200,11 @@ public class DoctorService {
         user.setCreationDate(LocalDateTime.now());
         user.setSpecialization(doctorRequest.getSpecialization());
         userRepository.save(user);
+
+
         NotificationRequestToken tokenRequest = new NotificationRequestToken();
-        tokenRequest.setTitle("د.عقمها");
-        tokenRequest.setBody("تمت قبول طلبك بالإنضمام لفريقنا الطبي");
+        tokenRequest.setTitle("تمت الإجابة على استشارتك");
+        tokenRequest.setBody("notificationBody");
         tokenRequest.setDeviceToken(doctorRequest.getDeviceToken());
         try {
             fcmService.sendMessageToToken(tokenRequest);
@@ -208,6 +213,10 @@ public class DoctorService {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
+
+        emailService.sendSimpleEmail(doctorRequest.getEmail(), "subject", "body");
+
+
         return doctorRequestRepository.countByStatusOrNull(null);
     }
 

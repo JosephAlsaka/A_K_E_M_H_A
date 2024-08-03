@@ -138,11 +138,11 @@ public class DoctorService {
 
 
     private File convertToFile(MultipartFile multipartFile) throws IOException {
-        File tempFile = File.createTempFile("tempFile", ".tmp");
-        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-            fos.write(multipartFile.getBytes());
-        }
-        return tempFile;
+        File convFile = new File(multipartFile.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(multipartFile.getBytes());
+        fos.close();
+        return convFile;
     }
 
     private boolean userAlreadyExists(String email) {

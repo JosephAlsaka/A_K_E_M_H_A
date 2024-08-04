@@ -108,8 +108,8 @@ public class MedicineNotebookController {
     }
 
     @GetMapping("beneficiary/{userId}")
-    public ResponseEntity<BaseResponse<?>> getMedicinesByUserId(@PathVariable Long localAlarmId,
-                                                        @RequestHeader HttpHeaders httpHeaders) {
+    public ResponseEntity<BaseResponse<?>> getSupervisedMedicinesStates(@PathVariable Long localAlarmId,
+                                                                @RequestHeader HttpHeaders httpHeaders) {
         //return the statues is it taken or not depends on take_date in alarm history
         System.out.println("takeMedicine");
         medicalNotebookService.takeMedicine(localAlarmId, httpHeaders);

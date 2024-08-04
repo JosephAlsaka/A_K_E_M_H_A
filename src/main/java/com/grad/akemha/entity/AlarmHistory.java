@@ -22,7 +22,7 @@ public class AlarmHistory {
     @Column
     private LocalDateTime takeDate; //TODO , check the type
 
-    @ManyToOne
-    @JoinColumn(name = "alarm_id")
-    private Alarm alarm;
+//    @ManyToOne
+//    @JoinColumn(name = "alarm_id")
+//    private Alarm alarm;
 }

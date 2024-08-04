@@ -2,20 +2,22 @@ package com.grad.akemha.service;
 
 import com.grad.akemha.dto.medicine.AddAlarmRequest;
 import com.grad.akemha.dto.medicine.AddMedicineRequest;
+import com.grad.akemha.dto.medicine.TakeMedicineRequest;
 import com.grad.akemha.entity.*;
 import com.grad.akemha.entity.enums.AlarmRoutine;
 import com.grad.akemha.entity.enums.AlarmRoutineType;
 import com.grad.akemha.exception.authExceptions.UserNotFoundException;
 import com.grad.akemha.repository.AlarmHistoryRepository;
-import com.grad.akemha.repository.AlarmRepository;
 import com.grad.akemha.repository.MedicineRepository;
+import com.grad.akemha.repository.SupervisionRepository;
+import com.grad.akemha.repository.UserRepository;
 import com.grad.akemha.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -24,9 +26,10 @@ public class MedicineNotebookService {
     private JwtService jwtService;
     @Autowired
     private MedicineRepository medicineRepository;
-    @Autowired
-    private AlarmRepository alarmRepository;
 
+    @Autowired
+    private SupervisionRepository supervisionRepository;@Autowired
+    private UserRepository userRepository;
     @Autowired
     private AlarmHistoryRepository alarmHistoryRepository;
 
@@ -35,94 +38,55 @@ public class MedicineNotebookService {
         return medicineRepository.findByUser(user);
     }
 
-    public List<Alarm> getAlarm(Long medicineId, HttpHeaders httpHeader) {
-        User user = jwtService.extractUserFromToken(httpHeader);
-        Medicine medicine = medicineRepository.findByIdAndUser(medicineId, user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
-        return alarmRepository.findByMedicine(medicine);
-    }
+//    public List<Alarm> getAlarm(Long medicineId, HttpHeaders httpHeader) {
+//        User user = jwtService.extractUserFromToken(httpHeader);
+//        Medicine medicine = medicineRepository.findByIdAndUser(medicineId, user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
+//        return alarmRepository.findByMedicine(medicine);
+//    }
 
 
     public void addMedicine(AddMedicineRequest request, HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
-        Medicine medicine = Medicine.builder()
-                .name(request.getMedicamentName())
-                .description("description")
-                .user(user)
-                .localId(request.getId())
-                .build();
+        Medicine medicine = new Medicine();
+        medicine.setName(request.getMedicamentName());
+        medicine.setDescription("request.getMedicamentName()");
+        medicine.setUser(user);
+        medicine.setLocalId(request.getId());
+        medicine.setStartDate(request.getStartDate());
+        medicine.setEndDate(request.getEndDate());
+        medicine.setAlarmTimes(request.getAlarmTimes());
+        if (request.getAlarmRoutine().equalsIgnoreCase(AlarmRoutine.Daily.toString())) {
+            if (request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.Acute.toString())) {
+                medicine.setAlarmRoutine(AlarmRoutine.Daily);
+                medicine.setAlarmRoutineType(AlarmRoutineType.Acute);
+            } else { // Chronic
+                medicine.setAlarmRoutine(AlarmRoutine.Daily);
+                medicine.setAlarmRoutineType(AlarmRoutineType.Chronic);
+            }
+        }
+        if (request.getAlarmRoutine().equals(AlarmRoutine.Weekly)) {
+            if (request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.Acute.toString())) {
+                medicine.setAlarmRoutine(AlarmRoutine.Weekly);
+                medicine.setAlarmRoutineType(AlarmRoutineType.Acute);
+                medicine.setAlarmWeekDay(request.getAlarmWeekDay());
+            } else { // Chronic
+                medicine.setAlarmRoutine(AlarmRoutine.Weekly);
+                medicine.setAlarmRoutineType(AlarmRoutineType.Chronic);
+                medicine.setAlarmWeekDay(request.getAlarmWeekDay());
+            }
+        }
+        if (request.getAlarmRoutine().equals(AlarmRoutine.Monthly)) {
+            if (request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.Acute.toString())) {
+                medicine.setAlarmRoutine(AlarmRoutine.Monthly);
+                medicine.setAlarmRoutineType(AlarmRoutineType.Acute);
+                medicine.setSelectedDayInMonth(request.getSelectedDayInMonth());
+            } else { // Chronic
+                medicine.setAlarmRoutine(AlarmRoutine.Weekly);
+                medicine.setAlarmRoutineType(AlarmRoutineType.Chronic);
+                medicine.setSelectedDayInMonth(request.getSelectedDayInMonth());
+            }
+        }
         medicineRepository.save(medicine);
-
-        if(request.getAlarmRoutine().equalsIgnoreCase(AlarmRoutine.Daily.toString())){
-            if(request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.Acute.toString())){
-                Alarm alarm = Alarm.builder()
-                        .alarmRoutine(AlarmRoutine.Daily)
-                        .alarmRoutineType(AlarmRoutineType.Acute)
-                        .startDate(request.getStartDate())
-                        .endDate(request.getEndDate())
-                        .alarmTime(request.getAlarmTimes().get(0))
-                        .medicine(medicine)
-                        .build();
-                alarmRepository.save(alarm);
-            }else{ // Chronic
-                Alarm alarm = Alarm.builder()
-                        .alarmRoutine(AlarmRoutine.Daily)
-                        .alarmRoutineType(AlarmRoutineType.Chronic)
-                        .startDate(request.getStartDate())
-                        .alarmTime(request.getAlarmTimes().get(0))
-                        .medicine(medicine)
-                        .build();
-                alarmRepository.save(alarm);
-            }
-        }
-        if(request.getAlarmRoutine().equals(AlarmRoutine.Weekly)){
-            if(request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.Acute.toString())){
-                Alarm alarm = Alarm.builder()
-                        .alarmRoutine(AlarmRoutine.Weekly)
-                        .alarmRoutineType(AlarmRoutineType.Acute)
-                        .startDate(request.getStartDate())
-                        .endDate(request.getEndDate())
-                        .alarmTime(request.getAlarmTimes().get(0))
-                        .medicine(medicine)
-                        .alarmWeekDay(request.getAlarmWeekDay())
-                        .build();
-                alarmRepository.save(alarm);
-            }else{ // Chronic
-                Alarm alarm = Alarm.builder()
-                        .alarmRoutine(AlarmRoutine.Weekly)
-                        .alarmRoutineType(AlarmRoutineType.Chronic)
-                        .startDate(request.getStartDate())
-                        .alarmTime(request.getAlarmTimes().get(0))
-                        .medicine(medicine)
-                        .alarmWeekDay(request.getAlarmWeekDay())
-                        .build();
-                alarmRepository.save(alarm);
-            }
-        }
-        if(request.getAlarmRoutine().equals(AlarmRoutine.Monthly)){
-            if(request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.Acute.toString())){
-                Alarm alarm = Alarm.builder()
-                        .alarmRoutine(AlarmRoutine.Weekly)
-                        .alarmRoutineType(AlarmRoutineType.Acute)
-                        .startDate(request.getStartDate())
-                        .endDate(request.getEndDate())
-                        .alarmTime(request.getAlarmTimes().get(0))
-                        .selectedDayInMonth(request.getSelectedDayInMonth())
-                        .medicine(medicine)
-                        .build();
-                alarmRepository.save(alarm);
-            }else{ // Chronic
-                Alarm alarm = Alarm.builder()
-                        .alarmRoutine(AlarmRoutine.Weekly)
-                        .alarmRoutineType(AlarmRoutineType.Chronic)
-                        .startDate(request.getStartDate())
-                        .alarmTime(request.getAlarmTimes().get(0))
-                        .selectedDayInMonth(request.getSelectedDayInMonth())
-                        .medicine(medicine)
-                        .build();
-                alarmRepository.save(alarm);
-            }
-        }
-
     }
 
     public void addAlarm(AddAlarmRequest request, HttpHeaders httpHeaders) {
@@ -144,21 +108,48 @@ public class MedicineNotebookService {
 //        medicineRepository.delete(medicine);
     }
 
-    public void deleteAlarm(Long alarmId, HttpHeaders httpHeaders) {
+//    public void deleteAlarm(Long alarmId, HttpHeaders httpHeaders) {
+//        User user = jwtService.extractUserFromToken(httpHeaders);
+//        Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(() -> new UserNotFoundException("Alarm not found"));
+//        Medicine medicine = medicineRepository.findByIdAndUser(alarm.getMedicine().getId(), user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
+//        alarmRepository.delete(alarm);
+//    }
+
+    public void takeMedicine(Long localAlarmId, TakeMedicineRequest request, HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
-        Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(() -> new UserNotFoundException("Alarm not found"));
-        Medicine medicine = medicineRepository.findByIdAndUser(alarm.getMedicine().getId(), user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
-        alarmRepository.delete(alarm);
+        Medicine medicine = medicineRepository.findByLocalIdAndUser(localAlarmId, user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
+        List<AlarmTime> alarmTimes = medicine.getAlarmTimes();
+
+        boolean alarmMatched = false;
+        for (AlarmTime alarmTime : alarmTimes) {
+            if (alarmTime.getTime().equals(request.getRingingTime())) {
+                alarmMatched = true;
+                break;
+            }
+        }
+        if (alarmMatched) {
+            AlarmHistory alarmHistory = new AlarmHistory();
+            alarmHistory.setTakeTime(request.getTakeTime());
+            alarmHistoryRepository.save(alarmHistory);
+        }
+
     }
 
-    public void takeMedicine(Long localAlarmId, HttpHeaders httpHeaders) {
+    public void getSupervisedMedicineState(Long supervisedId, HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
-//        Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(() -> new UserNotFoundException("Alarm not found"));
-        Medicine medicine = medicineRepository.findByLocalIdAndUser(localAlarmId, user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
-        AlarmHistory alarmHistory=new AlarmHistory();
-        alarmHistory.setAlarm(medicine.getAlarms().get(0)); //TODO:
-        alarmHistory.setTakeDate(LocalDateTime.now());
-        alarmHistoryRepository.save(alarmHistory);
+        User supervised = userRepository.findById(supervisedId).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
+//        if(supervisionRepository.existBySupervisedAndSupervisor(user,supervised))
+//        {
+            //TODO
+            medicineRepository.findByUser(supervised);
+            //if date.now > endDate  skip.
+            //list, + takeTime
+//            new respone have the medicine + take time
+
+//        }
+//    else {
+//
+//        }
     }
 
 

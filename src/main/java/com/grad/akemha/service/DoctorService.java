@@ -1,10 +1,12 @@
 package com.grad.akemha.service;
 
+import com.grad.akemha.dto.notification.NotificationRequestToken;
 import com.grad.akemha.dto.statistic.StatisticCountResponse;
 import com.grad.akemha.dto.doctor.AddDoctorRequest;
 import com.grad.akemha.entity.DoctorRequest;
 import com.grad.akemha.entity.Specialization;
 import com.grad.akemha.entity.User;
+import com.grad.akemha.entity.enums.DoctorRequestStatus;
 import com.grad.akemha.entity.enums.Gender;
 import com.grad.akemha.entity.enums.Role;
 import com.grad.akemha.exception.CloudinaryException;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +52,11 @@ public class DoctorService {
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
 
+    private final FCMService fcmService;
+    private final EmailService emailService;
+
+
+
 
     public Page<User> getDoctors(Integer page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
@@ -58,7 +66,7 @@ public class DoctorService {
     public Page<User> getDoctorsBySpecialization(Long specializationId, Integer page) {
         if (specializationRepository.findById(specializationId).isPresent()) {
             Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-            Page<User> userPage  =  userRepository.findBySpecializationIdAndRole(specializationId, pageable,Role.DOCTOR);
+            Page<User> userPage = userRepository.findBySpecializationIdAndRole(specializationId, pageable, Role.DOCTOR);
             return userPage;
         } else {
             throw new NotFoundException("SpecializationId " + specializationId + " is not found");
@@ -88,7 +96,13 @@ public class DoctorService {
     }
 
 
-    public DoctorRequest addDoctorRequest(String email, String aboutMe, Long specializationId, MultipartFile cv, Gender gender) throws IOException {
+    public DoctorRequest addDoctorRequest(String name, String email, String aboutMe, Long specializationId, MultipartFile cv, Gender gender, String deviceToken) throws IOException {
+        if (name == null) {
+            throw new ForbiddenException("name can't be Null");
+        }
+        if (deviceToken == null) {
+            throw new ForbiddenException("deviceToken can't be Null");
+        }
         if (email == null) {
             throw new ForbiddenException("email can't be Null");
         }
@@ -111,6 +125,8 @@ public class DoctorService {
         Specialization specialization = specializationRepository.findById(specializationId).orElseThrow(() -> new NotFoundException("specialization Id: " + specializationId + " is not found"));
         DoctorRequest doctorRequest = new DoctorRequest();
         doctorRequest.setEmail(email);
+        doctorRequest.setName(name);
+        doctorRequest.setDeviceToken(deviceToken);
         doctorRequest.setCv(cloudinaryMap.get("url"));
         doctorRequest.setCvPublicId(cloudinaryMap.get("public_id"));
         doctorRequest.setGender(gender);
@@ -128,6 +144,7 @@ public class DoctorService {
         fos.close();
         return convFile;
     }
+
     private boolean userAlreadyExists(String email) {
         return userRepository.existsByEmail(email);
     }
@@ -159,6 +176,48 @@ public class DoctorService {
     public Page<DoctorRequest> doctorRequest(Integer page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
         return doctorRequestRepository.findByStatusOrNull(null, pageable);
+    }
+
+    public long rejectDoctorRequest(Long requestId) {
+        DoctorRequest doctorRequest = doctorRequestRepository.findById(requestId).orElseThrow(() -> new UserNotFoundException("request not found"));
+        doctorRequest.setStatus(DoctorRequestStatus.REJECTED);
+        doctorRequestRepository.save(doctorRequest);
+        return doctorRequestRepository.countByStatusOrNull(null);
+    }
+
+    public long acceptDoctorRequest(Long requestId) throws ExecutionException, InterruptedException {
+        DoctorRequest doctorRequest = doctorRequestRepository.findById(requestId).orElseThrow(() -> new UserNotFoundException("request not found"));
+        doctorRequest.setStatus(DoctorRequestStatus.ACCEPTED);
+        doctorRequestRepository.save(doctorRequest);
+
+        User user = new User();
+        user.setName(doctorRequest.getName());
+        user.setEmail(doctorRequest.getEmail());
+        user.setRole(Role.DOCTOR);
+        user.setIsVerified(true);
+        user.setPassword(passwordEncoder.encode(doctorRequest.getEmail()));
+        user.setGender(doctorRequest.getGender());
+        user.setCreationDate(LocalDateTime.now());
+        user.setSpecialization(doctorRequest.getSpecialization());
+        userRepository.save(user);
+
+
+        NotificationRequestToken tokenRequest = new NotificationRequestToken();
+        tokenRequest.setTitle("تمت الإجابة على استشارتك");
+        tokenRequest.setBody("notificationBody");
+        tokenRequest.setDeviceToken(doctorRequest.getDeviceToken());
+        try {
+            fcmService.sendMessageToToken(tokenRequest);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        emailService.sendSimpleEmail(doctorRequest.getEmail(), "subject", "body");
+
+
+        return doctorRequestRepository.countByStatusOrNull(null);
     }
 
     public long doctorRequestNonAnswered() {

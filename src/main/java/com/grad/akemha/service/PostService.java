@@ -56,7 +56,6 @@ public class PostService {
     }
 
 
-
     //    public List<Post> getAllPosts(int page) {
 //        // this page size indicates of number of data retrieved
 //        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
@@ -197,14 +196,14 @@ public class PostService {
 //            likeRepository.existsByUserAndPost(user, post);
 
             if (likeRepository.existsByUserAndPost(user, post)) {
-                throw new ForbiddenException("You can't add more than one like");
+                Like like = likeRepository.findByUserAndPost(user, post).orElseThrow();
+                likeRepository.delete(like);
             } else {
                 Like like = new Like();
                 like.setPost(post);
                 like.setUser(user);
                 likeRepository.save(like);
             }
-
             return PostResponse
                     .builder()
                     .id(post.getId())
@@ -221,36 +220,36 @@ public class PostService {
     }
 
     // remove like
-    public PostResponse removeLike(int id, HttpHeaders httpHeaders) {
-        Optional<Post> optionalPost = postRepository.findById((long) id);
-
-        if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            User user = jwtService.extractUserFromToken(httpHeaders);
-
-            Optional<Like> optionalLike = likeRepository.findByUserAndPost(user, post);
-            if (optionalLike.isPresent()) {
-                Like like = optionalLike.get();
-                likeRepository.delete(like);
-            } else {
-//                throw new NotFoundException("The Like record in the Like table can' be found");
-                throw new NotFoundException("You can't remove like that doesn't exist");
-            }
-
-            return PostResponse
-                    .builder()
-                    .id(post.getId())
-                    .doctor(new DoctorResponse(post.getUser()))
-                    .imageUrl(post.getImageUrl())
-                    .description(post.getDescription())
-                    .likesCount(post.getLikes().size())
-                    .commentsCount(post.getComments().size())
-                    .build();
-        } else {
-            throw new NotFoundException("No Post in that id: " + id);
-        }
-
-    }
+//    public PostResponse removeLike(int id, HttpHeaders httpHeaders) {
+//        Optional<Post> optionalPost = postRepository.findById((long) id);
+//
+//        if (optionalPost.isPresent()) {
+//            Post post = optionalPost.get();
+//            User user = jwtService.extractUserFromToken(httpHeaders);
+//
+//            Optional<Like> optionalLike = likeRepository.findByUserAndPost(user, post);
+//            if (optionalLike.isPresent()) {
+//                Like like = optionalLike.get();
+//                likeRepository.delete(like);
+//            } else {
+////                throw new NotFoundException("The Like record in the Like table can' be found");
+//                throw new NotFoundException("You can't remove like that doesn't exist");
+//            }
+//
+//            return PostResponse
+//                    .builder()
+//                    .id(post.getId())
+//                    .doctor(new DoctorResponse(post.getUser()))
+//                    .imageUrl(post.getImageUrl())
+//                    .description(post.getDescription())
+//                    .likesCount(post.getLikes().size())
+//                    .commentsCount(post.getComments().size())
+//                    .build();
+//        } else {
+//            throw new NotFoundException("No Post in that id: " + id);
+//        }
+//
+//    }
 
     public List<Post> getAllDoctorsPosts(Long doctorId, int page) {
         // this page size indicates of number of data retrieved

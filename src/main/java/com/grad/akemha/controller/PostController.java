@@ -100,17 +100,17 @@ public class PostController {
                 (HttpStatus.OK.value(), "Added like to the Post successfully", response));
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
-    @DeleteMapping("/remove_like/{postId}")
-    public ResponseEntity<BaseResponse<PostResponse>> removeLikeFromPost(
-            @PathVariable int postId,
-            @RequestHeader HttpHeaders httpHeaders) {
-
-        PostResponse response = postService.removeLike(postId, httpHeaders);
-        return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "Removed like from the Post successfully", response));
-
-    }
+//    @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")
+//    @DeleteMapping("/remove_like/{postId}")
+//    public ResponseEntity<BaseResponse<PostResponse>> removeLikeFromPost(
+//            @PathVariable int postId,
+//            @RequestHeader HttpHeaders httpHeaders) {
+//
+//        PostResponse response = postService.removeLike(postId, httpHeaders);
+//        return ResponseEntity.ok().body(new BaseResponse<>
+//                (HttpStatus.OK.value(), "Removed like from the Post successfully", response));
+//
+//    }
 
     @PreAuthorize("hasRole('DOCTOR') or hasRole('OWNER')")
     @GetMapping("/doctor/{doctorId}")

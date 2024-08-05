@@ -92,7 +92,7 @@ public class PostService {
         postRepository.save(post);
         // modifying body to be small
         String notificationBody = shortenString(post.getDescription());
-        NotificationRequestTopic notificationRequestTopic = new NotificationRequestTopic("New Post", notificationBody, "posts");
+        NotificationRequestTopic notificationRequestTopic = new NotificationRequestTopic("منشور جديد", notificationBody, "posts");
         fcmService.sendMessageToTopic(notificationRequestTopic);
 
         return PostResponse
@@ -113,7 +113,7 @@ public class PostService {
         if (input.length() > maxLength) {
             return input.substring(0, maxLength) + "...";
         } else {
-            return input + "...";
+            return input;
         }
     }
 

@@ -1,6 +1,5 @@
 package com.grad.akemha.service;
 
-import com.grad.akemha.dto.medicine.AddAlarmRequest;
 import com.grad.akemha.dto.medicine.AddMedicineRequest;
 import com.grad.akemha.dto.medicine.TakeMedicineRequest;
 import com.grad.akemha.entity.AlarmHistory;
@@ -62,40 +61,40 @@ public class MedicineNotebookService {
         medicine.setEndDate(request.getEndDate());
         medicine.setAlarmTimes(request.getAlarmTimes());
         if (request.getAlarmRoutine().equalsIgnoreCase(AlarmRoutine.DAILY.toString())) {
-            if (request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.Acute.toString())) {
+            if (request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.ACUTE.toString())) {
                 medicine.setAlarmRoutine(AlarmRoutine.DAILY);
-                medicine.setAlarmRoutineType(AlarmRoutineType.Acute);
+                medicine.setAlarmRoutineType(AlarmRoutineType.ACUTE);
             } else { // Chronic
                 medicine.setAlarmRoutine(AlarmRoutine.DAILY);
-                medicine.setAlarmRoutineType(AlarmRoutineType.Chronic);
+                medicine.setAlarmRoutineType(AlarmRoutineType.CHRONIC);
             }
         }
         if (request.getAlarmRoutine().equalsIgnoreCase(AlarmRoutine.WEEKLY.toString())) {
-            if (request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.Acute.toString())) {
+            if (request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.ACUTE.toString())) {
                 medicine.setAlarmRoutine(AlarmRoutine.WEEKLY);
-                medicine.setAlarmRoutineType(AlarmRoutineType.Acute);
+                medicine.setAlarmRoutineType(AlarmRoutineType.ACUTE);
                 medicine.setAlarmWeekDay(request.getAlarmWeekDay());
             } else { // Chronic
                 medicine.setAlarmRoutine(AlarmRoutine.WEEKLY);
-                medicine.setAlarmRoutineType(AlarmRoutineType.Chronic);
+                medicine.setAlarmRoutineType(AlarmRoutineType.CHRONIC);
                 medicine.setAlarmWeekDay(request.getAlarmWeekDay());
             }
         }
         if (request.getAlarmRoutine().equalsIgnoreCase(AlarmRoutine.MONTHLY.toString())) {
-            if (request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.Acute.toString())) {
+            if (request.getAlarmRoutineType().equalsIgnoreCase(AlarmRoutineType.ACUTE.toString())) {
                 medicine.setAlarmRoutine(AlarmRoutine.MONTHLY);
-                medicine.setAlarmRoutineType(AlarmRoutineType.Acute);
+                medicine.setAlarmRoutineType(AlarmRoutineType.ACUTE);
                 medicine.setSelectedDayInMonth(request.getSelectedDayInMonth());
             } else { // Chronic
                 medicine.setAlarmRoutine(AlarmRoutine.MONTHLY);
-                medicine.setAlarmRoutineType(AlarmRoutineType.Chronic);
+                medicine.setAlarmRoutineType(AlarmRoutineType.CHRONIC);
                 medicine.setSelectedDayInMonth(request.getSelectedDayInMonth());
             }
         }
         medicineRepository.save(medicine);
     }
 
-    public void addAlarm(AddAlarmRequest request, HttpHeaders httpHeaders) {
+//    public void addAlarm(AddAlarmRequest request, HttpHeaders httpHeaders) {
 //        User user = jwtService.extractUserFromToken(httpHeaders);
 //        Medicine medicine = medicineRepository.findByIdAndUser(request.getMedicineId(), user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
 //        Alarm alarm = new Alarm();
@@ -104,7 +103,7 @@ public class MedicineNotebookService {
 //        alarm.setEndDate(request.getEndDate());
 //        alarm.setAlarmTime(request.getAlarmTime());
 //        alarmRepository.save(alarm);
-    }
+//    }
 
 
     public void deleteMedicine(Long medicineId, HttpHeaders httpHeaders) {
@@ -149,6 +148,7 @@ public class MedicineNotebookService {
         //TODO
         LocalDate currentDate = LocalDate.now();
         List<Medicine> supervisedMedicineList = medicineRepository.findCurrentMedicinesByUser(supervised, currentDate);
+        System.out.println(supervisedMedicineList);
 
         //if date.now > endDate  skip.
         //list, + takeTime
@@ -171,33 +171,24 @@ public class MedicineNotebookService {
 
         List<Medicine> allMedicines = medicineRepository.findCurrentMedicinesByUser(supervised, today);
 
-        List<Medicine> printList = allMedicines.stream()
-                .filter(medicine -> {
-                    switch (medicine.getAlarmRoutine()) {
-                        case DAILY:
-                            return true;
-                        case WEEKLY:
-                            return medicine.getAlarmWeekDay() != null &&
-                                    medicine.getAlarmWeekDay().equalsIgnoreCase(todayDayOfWeek.name());
-                        case MONTHLY:
-                            return medicine.getSelectedDayInMonth() != null &&
-                                    medicine.getSelectedDayInMonth() == todayDayOfMonth;
-                        default:
-                            return false;
-                    }
-                })
-                .peek(medicine -> {
-                    List<AlarmTime> alarmTimes = medicine.getAlarmTimes();
-                    for (AlarmTime alarmTime : alarmTimes) {
-                        boolean isTaken = alarmHistoryRepository.existsByAlarmTimeAndTakeTimeBetween(
-                                alarmTime,
-                                alarmTime.getTime().atDate(today).toLocalDate().atStartOfDay(),
-                                alarmTime.getTime().atDate(today).plusDays(1).toLocalDate().atStartOfDay()
-                        );
-                        alarmTime.setTaken(isTaken);
-                    }
-                })
-                .collect(Collectors.toList());
+        List<Medicine> printList = allMedicines.stream().filter(medicine -> {
+            switch (medicine.getAlarmRoutine()) {
+                case DAILY:
+                    return true;
+                case WEEKLY:
+                    return medicine.getAlarmWeekDay() != null && medicine.getAlarmWeekDay().equalsIgnoreCase(todayDayOfWeek.name());
+                case MONTHLY:
+                    return medicine.getSelectedDayInMonth() != null && medicine.getSelectedDayInMonth() == todayDayOfMonth;
+                default:
+                    return false;
+            }
+        }).peek(medicine -> {
+            List<AlarmTime> alarmTimes = medicine.getAlarmTimes();
+            for (AlarmTime alarmTime : alarmTimes) {
+                boolean isTaken = alarmHistoryRepository.existsByAlarmTimeAndTakeTimeBetween(alarmTime, alarmTime.getTime().atDate(today).toLocalDate().atStartOfDay(), alarmTime.getTime().atDate(today).plusDays(1).toLocalDate().atStartOfDay());
+                alarmTime.setTaken(isTaken);
+            }
+        }).collect(Collectors.toList());
 
         System.out.println(printList);
 

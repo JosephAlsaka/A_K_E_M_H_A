@@ -155,7 +155,7 @@ public class DoctorService {
     }
 
     public Map<Integer, List<Map<String, Object>>> getDoctorCountByMonth() {
-        List<StatisticCountResponse> responses = userRepository.countUserByMonth(Role.USER);
+        List<StatisticCountResponse> responses = userRepository.countUserByMonth(Role.DOCTOR);
         Map<Integer, List<Map<String, Object>>> result = new HashMap<>();
 
         for (StatisticCountResponse response : responses) {
@@ -223,7 +223,10 @@ public class DoctorService {
     public long doctorRequestNonAnswered() {
         return doctorRequestRepository.countByStatusOrNull(null);
     }
-
+    public List<DoctorRequest> getOldDoctorRequests() {
+        LocalDateTime threshold = LocalDateTime.now().minusDays(10);
+        return doctorRequestRepository.findDoctorRequestsOlderThanAndStatusIsNull(threshold);
+    }
 }
 
 

@@ -29,6 +29,9 @@ public class AlarmTime {
     @OneToMany(mappedBy = "alarmTime", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlarmHistory> alarmHistory;
 
+    @Transient
+    private boolean taken;
+
     public AlarmTime(Long id, LocalTime time, Medicine medicine) {
         this.id = id;
         this.time = time;

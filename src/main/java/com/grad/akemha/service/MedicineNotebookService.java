@@ -168,8 +168,9 @@ public class MedicineNotebookService {
         LocalDate today = LocalDate.now();
         DayOfWeek todayDayOfWeek = today.getDayOfWeek();
         int todayDayOfMonth = today.getDayOfMonth();
-
+        System.out.println("before findCurrentMedicinesByUser");
         List<Medicine> allMedicines = medicineRepository.findCurrentMedicinesByUser(supervised, today);
+        System.out.println("after findCurrentMedicinesByUser");
 
         List<Medicine> printList = allMedicines.stream()
                 .filter(medicine -> {

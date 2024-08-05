@@ -6,6 +6,8 @@ import com.grad.akemha.entity.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @ToString
 @Setter
 @Getter
@@ -48,6 +50,8 @@ public class DoctorRequest {
 
     @Column(name = "device_token")
     private String deviceToken;
+
+    private LocalDateTime timestamp;
 
 
 }

@@ -223,7 +223,10 @@ public class DoctorService {
     public long doctorRequestNonAnswered() {
         return doctorRequestRepository.countByStatusOrNull(null);
     }
-
+    public List<DoctorRequest> getOldDoctorRequests() {
+        LocalDateTime threshold = LocalDateTime.now().minusDays(10);
+        return doctorRequestRepository.findDoctorRequestsOlderThanAndStatusIsNull(threshold);
+    }
 }
 
 

@@ -155,7 +155,7 @@ public class DoctorService {
     }
 
     public Map<Integer, List<Map<String, Object>>> getDoctorCountByMonth() {
-        List<StatisticCountResponse> responses = userRepository.countUserByMonth(Role.USER);
+        List<StatisticCountResponse> responses = userRepository.countUserByMonth(Role.DOCTOR);
         Map<Integer, List<Map<String, Object>>> result = new HashMap<>();
 
         for (StatisticCountResponse response : responses) {

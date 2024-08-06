@@ -1,6 +1,8 @@
 package com.grad.akemha.service;
 
 import com.grad.akemha.dto.medicine.AddMedicineRequest;
+import com.grad.akemha.dto.medicine.MedicineResDTO;
+import com.grad.akemha.dto.medicine.MedicineTodayResDTO;
 import com.grad.akemha.dto.medicine.TakeMedicineRequest;
 import com.grad.akemha.entity.AlarmHistory;
 import com.grad.akemha.entity.AlarmTime;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -124,31 +127,36 @@ public class MedicineNotebookService {
         User user = jwtService.extractUserFromToken(httpHeaders);
         Medicine medicine = medicineRepository.findByLocalIdAndUser(localAlarmId, user).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
         List<AlarmTime> alarmTimes = medicine.getAlarmTimes();
+        AlarmHistory alarmHistory = new AlarmHistory();
 
         boolean alarmMatched = false;
         for (AlarmTime alarmTime : alarmTimes) {
             if (alarmTime.getTime().equals(request.getRingingTime())) {
                 alarmMatched = true;
+                System.out.println("alarmMatched = true");
+                alarmHistory.setAlarmTime(alarmTime);
                 break;
             }
         }
         if (alarmMatched) {
-            AlarmHistory alarmHistory = new AlarmHistory();
             alarmHistory.setTakeTime(request.getTakeTime());
+            System.out.println("if (alarmMatched)");
             alarmHistoryRepository.save(alarmHistory);
         }
-
     }
 
-    public void getSupervisedMedicineState(Long supervisedId, HttpHeaders httpHeaders) {
+    public List<MedicineResDTO> getSupervisedMedicineState(Long supervisedId, HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
         User supervised = userRepository.findById(supervisedId).orElseThrow(() -> new UserNotFoundException("Medicine not found"));
 //        if(supervisionRepository.existBySupervisedAndSupervisor(user,supervised))
 //        {
         //TODO
         LocalDate currentDate = LocalDate.now();
+        System.out.println("before repo");
         List<Medicine> supervisedMedicineList = medicineRepository.findCurrentMedicinesByUser(supervised, currentDate);
-        System.out.println(supervisedMedicineList);
+        System.out.println("after repo");
+        List<MedicineResDTO> supervisedMedicineListRes = supervisedMedicineList.stream().map(medicine -> new MedicineResDTO(medicine)).toList();
+        return supervisedMedicineListRes;
 
         //if date.now > endDate  skip.
         //list, + takeTime
@@ -161,7 +169,7 @@ public class MedicineNotebookService {
     }
 
 
-    public List<Medicine> getSupervisedTodayMedicineState(Long supervisedId, HttpHeaders httpHeaders) {
+    public List<MedicineTodayResDTO> getSupervisedTodayMedicineState(Long supervisedId, HttpHeaders httpHeaders) {
         User user = jwtService.extractUserFromToken(httpHeaders);
         User supervised = userRepository.findById(supervisedId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -175,25 +183,37 @@ public class MedicineNotebookService {
         List<Medicine> printList = allMedicines.stream().filter(medicine -> {
             switch (medicine.getAlarmRoutine()) {
                 case DAILY:
+                    System.out.println("Daily");
                     return true;
                 case WEEKLY:
-                    return medicine.getAlarmWeekDay() != null && medicine.getAlarmWeekDay().equalsIgnoreCase(todayDayOfWeek.name());
+                    System.out.println("WEEKLY");
+                    var salim = medicine.getAlarmWeekDay() != null && medicine.getAlarmWeekDay().equalsIgnoreCase(todayDayOfWeek.name());
+                    System.out.println("WEEKLY2");
+                    return salim;
                 case MONTHLY:
-                    return medicine.getSelectedDayInMonth() != null && medicine.getSelectedDayInMonth() == todayDayOfMonth;
+                    System.out.println("MONTHLY");
+                    var sami = medicine.getSelectedDayInMonth() != null && medicine.getSelectedDayInMonth() == todayDayOfMonth;
+                    System.out.println("MONTHLY2");
+                    return sami;
+
                 default:
                     return false;
             }
         }).peek(medicine -> {
+            System.out.println("peek");
             List<AlarmTime> alarmTimes = medicine.getAlarmTimes();
             for (AlarmTime alarmTime : alarmTimes) {
-                boolean isTaken = alarmHistoryRepository.existsByAlarmTimeAndTakeTimeBetween(alarmTime, alarmTime.getTime().atDate(today).toLocalDate().atStartOfDay(), alarmTime.getTime().atDate(today).plusDays(1).toLocalDate().atStartOfDay());
+//                boolean isTaken = alarmHistoryRepository.existsByAlarmTimeAndTakeTimeBetween(alarmTime, alarmTime.getTime().atDate(today).toLocalDate().atStartOfDay(), alarmTime.getTime().atDate(today).plusDays(1).toLocalDate().atStartOfDay());
+//                alarmTime.setTaken(isTaken);
+                LocalTime startTime = LocalTime.MIN;
+                LocalTime endTime = LocalTime.MAX;
+                boolean isTaken = alarmHistoryRepository.existsByAlarmTimeAndTakeTimeBetween(alarmTime, startTime, endTime);
                 alarmTime.setTaken(isTaken);
             }
         }).collect(Collectors.toList());
 
-        System.out.println(printList);
-
-        return printList;
+        List<MedicineTodayResDTO> supervisedMedicineListRes = printList.stream().map(medicine -> new MedicineTodayResDTO(medicine)).toList();
+        return supervisedMedicineListRes;
     }
 
 }

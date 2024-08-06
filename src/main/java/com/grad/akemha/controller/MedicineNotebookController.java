@@ -122,10 +122,9 @@ public class MedicineNotebookController {
     @GetMapping("beneficiary/{supervisedId}")
     public ResponseEntity<BaseResponse<?>> getSupervisedMedicineState(@PathVariable Long supervisedId,
                                                                       @RequestHeader HttpHeaders httpHeaders) {
-        //return the statues is it taken or not depends on take_date in alarm history
         System.out.println("takeMedicine");
-        medicalNotebookService.getSupervisedMedicineState(supervisedId, httpHeaders);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", null));
+        var supervisedMedicineList = medicalNotebookService.getSupervisedMedicineState(supervisedId, httpHeaders);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", supervisedMedicineList));
     }
 
     @GetMapping("beneficiary/today/{supervisedId}")
@@ -133,7 +132,7 @@ public class MedicineNotebookController {
                                                                       @RequestHeader HttpHeaders httpHeaders) {
         //return the statues is it taken or not depends on take_date in alarm history
         System.out.println("takeMedicine");
-        medicalNotebookService.getSupervisedTodayMedicineState(supervisedId, httpHeaders);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", null));
+        var printList = medicalNotebookService.getSupervisedTodayMedicineState(supervisedId, httpHeaders);
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "successfully", printList));
     }
 }

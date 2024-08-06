@@ -49,6 +49,7 @@ public class PostService {
                     .description(post.getDescription())
                     .likesCount(post.getLikes().size())
                     .commentsCount(post.getComments().size())
+                    .isLiked(false)
                     .build();
         } else {
             throw new NotFoundException("No Post in that Id: " + id + " was found");
@@ -91,7 +92,7 @@ public class PostService {
         postRepository.save(post);
         // modifying body to be small
         String notificationBody = shortenString(post.getDescription());
-        NotificationRequestTopic notificationRequestTopic = new NotificationRequestTopic("New Post", notificationBody, "posts");
+        NotificationRequestTopic notificationRequestTopic = new NotificationRequestTopic("منشور جديد", notificationBody, "posts");
         fcmService.sendMessageToTopic(notificationRequestTopic);
 
         return PostResponse
@@ -102,6 +103,7 @@ public class PostService {
                 .description(post.getDescription())
                 .likesCount(post.getLikes().size())
                 .commentsCount(post.getComments().size())
+                .isLiked(false)
                 .build();
     }
 
@@ -111,7 +113,7 @@ public class PostService {
         if (input.length() > maxLength) {
             return input.substring(0, maxLength) + "...";
         } else {
-            return input + "...";
+            return input;
         }
     }
 
@@ -157,6 +159,7 @@ public class PostService {
                     .description(post.getDescription())
                     .likesCount(post.getLikes().size())
                     .commentsCount(post.getComments().size())
+                    .isLiked(false)
                     .build();
         } else {
             throw new NotFoundException("No Post with That id: " + id + " was found");
@@ -180,6 +183,7 @@ public class PostService {
                     .description(post.getDescription())
                     .likesCount(post.getLikes().size())
                     .commentsCount(post.getComments().size())
+                    .isLiked(false)
                     .build();
         } else {
             throw new NotFoundException("No Post in that id: " + id);
@@ -194,6 +198,7 @@ public class PostService {
             Post post = optionalPost.get();
             User user = jwtService.extractUserFromToken(httpHeaders);
 //            likeRepository.existsByUserAndPost(user, post);
+            Boolean isLiked = false;
 
             if (likeRepository.existsByUserAndPost(user, post)) {
                 Like like = likeRepository.findByUserAndPost(user, post).orElseThrow();
@@ -203,6 +208,7 @@ public class PostService {
                 like.setPost(post);
                 like.setUser(user);
                 likeRepository.save(like);
+                isLiked = true;
             }
             return PostResponse
                     .builder()
@@ -212,6 +218,7 @@ public class PostService {
                     .description(post.getDescription())
                     .likesCount(post.getLikes().size())
                     .commentsCount(post.getComments().size())
+                    .isLiked(isLiked)
                     .build();
         } else {
             throw new NotFoundException("No Post in that id: " + id);

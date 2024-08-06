@@ -53,7 +53,7 @@ public class DoctorController {
                     .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), errorMessage.toString(), null));
         }
         doctorService.addDoctor(request);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor added successfully", null));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تمت إضافة الطبيب بنجاح!", null));
     }
 
     @PreAuthorize("hasRole('OWNER')")

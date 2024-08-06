@@ -31,7 +31,7 @@ public class NotificationController {
     public ResponseEntity<NotificationResponse> sendNotificationToTopic(@RequestBody NotificationRequestTopic requestTopic)
             throws ExecutionException, InterruptedException {
         fcmService.sendMessageToTopic(requestTopic);
-        return new ResponseEntity<>(new NotificationResponse(HttpStatus.OK.value(), "Notification has been sent to topic: " + requestTopic.getTopic()), HttpStatus.OK);
+        return new ResponseEntity<>(new NotificationResponse(HttpStatus.OK.value(), "تم إرسال الإشعار إلى " + requestTopic.getTopic()), HttpStatus.OK);
     }
 
 }

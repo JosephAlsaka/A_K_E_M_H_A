@@ -18,7 +18,7 @@ public class AlarmTimeDTO {
 
     public AlarmTimeDTO(AlarmTime alarmTime) {
         this.time = alarmTime.getTime();
-        if(alarmTime.getAlarmHistory().)
+//        if(alarmTime.getAlarmHistory().)
         this.isTaken = alarmTime.isTaken();
     }
 }

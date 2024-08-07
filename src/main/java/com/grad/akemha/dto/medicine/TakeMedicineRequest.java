@@ -15,8 +15,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class TakeMedicineRequest {
 
-    @NotNull(message = "time can't be Null")
-    private LocalTime takeTime;
+//    @NotNull(message = "time can't be Null")
+//    private LocalTime takeTime;
 
     @NotNull(message = "ringingTime can't be Null")
     private LocalTime ringingTime;

@@ -28,10 +28,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
-import java.util.Map;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -39,16 +40,13 @@ import java.util.List;
 public class UserController {
 
     @Autowired
+    CloudinaryService cloudinaryService;
+    @Autowired
     private UserService userService;
     @Autowired
     private ConsultationService consultationService;
-
     @Autowired
     private DoctorService doctorService;
-    @Autowired
-    CloudinaryService cloudinaryService;
-
-
 
     @PreAuthorize("hasRole('USER')")
     @PatchMapping(value = "/information/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//only beneficiary
@@ -200,9 +198,9 @@ public class UserController {
                                                             @RequestParam(value = "specializationId", required = true) Long specializationId,
                                                             @RequestParam(value = "gender", required = true) Gender gender,
                                                             @RequestParam(value = "file", required = false) MultipartFile multipartFile
-) {
+    ) {
         try {
-            DoctorRequest response = doctorService.addDoctorRequest(name,email, aboutMe, specializationId, multipartFile, gender,deviceToken);
+            DoctorRequest response = doctorService.addDoctorRequest(name, email, aboutMe, specializationId, multipartFile, gender, deviceToken);
             return ResponseEntity.ok()
                     .body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request added successfully", response));
         } catch (NumberFormatException e) {

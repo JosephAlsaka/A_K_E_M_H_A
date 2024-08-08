@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -139,7 +140,7 @@ public class MedicineNotebookService {
             }
         }
         if (alarmMatched) {
-            alarmHistory.setTakeTime(request.getTakeTime());
+            alarmHistory.setTakeTime(LocalDateTime.now());
             System.out.println("if (alarmMatched)");
             alarmHistoryRepository.save(alarmHistory);
         }
@@ -205,8 +206,8 @@ public class MedicineNotebookService {
             for (AlarmTime alarmTime : alarmTimes) {
 //                boolean isTaken = alarmHistoryRepository.existsByAlarmTimeAndTakeTimeBetween(alarmTime, alarmTime.getTime().atDate(today).toLocalDate().atStartOfDay(), alarmTime.getTime().atDate(today).plusDays(1).toLocalDate().atStartOfDay());
 //                alarmTime.setTaken(isTaken);
-                LocalTime startTime = LocalTime.MIN;
-                LocalTime endTime = LocalTime.MAX;
+                LocalDateTime startTime = LocalDateTime.MIN;
+                LocalDateTime endTime = LocalDateTime.MAX;
                 boolean isTaken = alarmHistoryRepository.existsByAlarmTimeAndTakeTimeBetween(alarmTime, startTime, endTime);
                 alarmTime.setTaken(isTaken);
             }

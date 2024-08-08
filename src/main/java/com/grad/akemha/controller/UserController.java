@@ -123,14 +123,14 @@ public class UserController {
                     .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), errorMessage.toString(), null));
         }
         userService.addBeneficiary(request);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiary added successfully", null));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تم إضافة المستفيد بنجاح !", null));
     }
 
     @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("beneficiary/{userId}")
     public ResponseEntity<BaseResponse<String>> deleteBeneficiary(@PathVariable Long userId) {
         userService.deleteBeneficiary(userId);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "beneficiary deleted successfully", null));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تم حذف المستفيد بنجاح !",  null));
     }
 
 

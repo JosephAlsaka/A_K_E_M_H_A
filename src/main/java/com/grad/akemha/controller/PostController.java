@@ -77,7 +77,7 @@ public class PostController {
     ) throws ExecutionException, InterruptedException {
         PostResponse response = postService.createPost(postRequest, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.CREATED.value(), "Post created successfully", response));
+                (HttpStatus.CREATED.value(), "تم إضافة المنشور بنجاح !", response));
     }
 
     // Update
@@ -91,7 +91,8 @@ public class PostController {
     ) {
         PostResponse response = postService.updatePost(id, image, description, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "Post updated successfully", response));
+                (HttpStatus.OK.value(), "تم تعديل المنشور بنجاح !", response));
+
     }
 
     // Delete
@@ -101,7 +102,7 @@ public class PostController {
             @PathVariable int id) {
         PostResponse response = postService.deletePost(id);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "Post deleted successfully", response));
+                (HttpStatus.OK.value(), "تم حذف المنشور بنجاح !", response));
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('DOCTOR')")

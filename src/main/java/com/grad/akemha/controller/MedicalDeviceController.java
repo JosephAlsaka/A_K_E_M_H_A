@@ -58,14 +58,15 @@ public class MedicalDeviceController {
                     .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), errorMessage.toString(), null));
         }
         medicalDeviceService.addDevice(request, httpHeaders);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device added successfully", null));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تم إضافة الجهاز بنجاح !", null));
     }
 
     @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("/{medicalDeviceId}")
     public ResponseEntity<BaseResponse<String>> deleteDevice(@PathVariable Long medicalDeviceId) {
         medicalDeviceService.deleteDevice(medicalDeviceId);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "device deleted successfully", null));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تم حذف الجهاز بنجاح !", null));
+
     }
 
     @PreAuthorize("hasRole('OWNER')")

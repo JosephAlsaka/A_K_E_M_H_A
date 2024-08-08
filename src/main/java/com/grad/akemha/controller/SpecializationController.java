@@ -57,7 +57,7 @@ public class SpecializationController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<Specialization>> addSpecialization(@ModelAttribute SpecializationRequest request) {
         Specialization savedSpecialization = specializationService.addSpecialization(request);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "specializations", savedSpecialization));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تم إضافة التخصص بنجاح !", savedSpecialization));
     }
 
 

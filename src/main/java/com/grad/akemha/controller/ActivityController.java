@@ -58,7 +58,7 @@ public class ActivityController {
     ) {
         ActivityResponse response = activityService.createActivity(activityRequest, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.CREATED.value(), "تم إضافة المنشور بنجاح", response));
+                (HttpStatus.CREATED.value(), "تم إضافة النشاط بنجاح !", response));
     }
 
 
@@ -74,7 +74,7 @@ public class ActivityController {
     ) {
         ActivityResponse response = activityService.updateActivity(id, image, description, title, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "Activity updated successfully", response));
+                (HttpStatus.OK.value(), "تم تعديل النشاط بنجاح !", response));
     }
 
 
@@ -85,6 +85,6 @@ public class ActivityController {
             @PathVariable int id) {
         ActivityResponse response = activityService.deleteActivity(id);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.OK.value(), "Activity deleted successfully", response));
+                (HttpStatus.OK.value(), "تم حذف الشاط بنجاح !", response));
     }
 }

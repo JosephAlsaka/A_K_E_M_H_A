@@ -53,14 +53,15 @@ public class DoctorController {
                     .body(new BaseResponse<>(HttpStatus.BAD_REQUEST.value(), errorMessage.toString(), null));
         }
         doctorService.addDoctor(request);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تمت إضافة الطبيب بنجاح!", null));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تمت إضافة الطبيب بنجاح !", null));
     }
 
     @PreAuthorize("hasRole('OWNER')")
     @DeleteMapping("/{userId}")
     public ResponseEntity<BaseResponse<String>> deleteDoctor(@PathVariable Long userId) {
         doctorService.deleteDoctor(userId);
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor deleted successfully", null));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تمت حذف الطبيب بنجاح !", null));
+
     }
 
 
@@ -81,14 +82,14 @@ public class DoctorController {
     @PostMapping("/doctor_request/{requestId}")
     public ResponseEntity<BaseResponse<Long>> acceptDoctorRequest(@PathVariable Long requestId) throws ExecutionException, InterruptedException {
 
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request accepted successfully", doctorService.acceptDoctorRequest(requestId)));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تم قبول الطلب بنجاح !", doctorService.acceptDoctorRequest(requestId)));
     }
 
     @PreAuthorize("hasRole('OWNER')")
     @PatchMapping("/doctor_request/{requestId}")
     public ResponseEntity<BaseResponse<Long>> rejectDoctorRequest(@PathVariable Long requestId) {
 
-        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "doctor request deleted successfully", doctorService.rejectDoctorRequest(requestId)));
+        return ResponseEntity.ok().body(new BaseResponse<>(HttpStatus.OK.value(), "تم رفض الطلب بنجاح !", doctorService.rejectDoctorRequest(requestId)));
     }
 
     @PreAuthorize("hasRole('OWNER')")

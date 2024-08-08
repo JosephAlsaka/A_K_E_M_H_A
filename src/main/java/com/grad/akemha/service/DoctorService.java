@@ -18,6 +18,7 @@ import com.grad.akemha.service.cloudinary.CloudinaryService;
 import com.grad.akemha.repository.DoctorRequestRepository;
 import com.grad.akemha.repository.SpecializationRepository;
 import com.grad.akemha.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -184,7 +185,7 @@ public class DoctorService {
         doctorRequestRepository.save(doctorRequest);
         return doctorRequestRepository.countByStatusOrNull(null);
     }
-
+    @Transactional
     public long acceptDoctorRequest(Long requestId) throws ExecutionException, InterruptedException {
         DoctorRequest doctorRequest = doctorRequestRepository.findById(requestId).orElseThrow(() -> new UserNotFoundException("request not found"));
         doctorRequest.setStatus(DoctorRequestStatus.ACCEPTED);
@@ -200,8 +201,6 @@ public class DoctorService {
         user.setCreationDate(LocalDateTime.now());
         user.setSpecialization(doctorRequest.getSpecialization());
         userRepository.save(user);
-
-
         NotificationRequestToken tokenRequest = new NotificationRequestToken();
         tokenRequest.setTitle("تمت الإجابة على استشارتك");
         tokenRequest.setBody("notificationBody");
@@ -213,7 +212,6 @@ public class DoctorService {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
-
         emailService.sendSimpleEmail(doctorRequest.getEmail(), "subject", "body");
 
 

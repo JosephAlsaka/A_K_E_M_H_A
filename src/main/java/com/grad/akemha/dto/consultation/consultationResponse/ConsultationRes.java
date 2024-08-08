@@ -31,8 +31,10 @@ public class ConsultationRes {
     private Date createTime;
     private Date updateAnswerTime;
     private String title;
+    private Double rating;
 
     public ConsultationRes(Consultation consultation) {
+        this.rating = consultation.getRating();
         this.id = consultation.getId();
         this.consultationText = consultation.getConsultationText();
         this.consultationAnswer = consultation.getConsultationAnswer();

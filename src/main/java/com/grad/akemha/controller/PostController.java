@@ -77,7 +77,7 @@ public class PostController {
     ) throws ExecutionException, InterruptedException {
         PostResponse response = postService.createPost(postRequest, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.CREATED.value(), "Post created successfully", response));
+                (HttpStatus.CREATED.value(), "تم إضافة المنشور بنجاح!", response));
     }
 
     // Update

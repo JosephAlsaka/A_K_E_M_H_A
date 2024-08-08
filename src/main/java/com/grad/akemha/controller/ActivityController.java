@@ -58,7 +58,7 @@ public class ActivityController {
     ) {
         ActivityResponse response = activityService.createActivity(activityRequest, httpHeaders);
         return ResponseEntity.ok().body(new BaseResponse<>
-                (HttpStatus.CREATED.value(), "Activity created successfully", response));
+                (HttpStatus.CREATED.value(), "تم إضافة المنشور بنجاح", response));
     }
 
 

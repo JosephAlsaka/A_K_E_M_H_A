@@ -56,7 +56,7 @@ public class AuthenticationService {
         userRepository.save(user);
 
         // after I save the user I send him the code
-        whatsAppService.sendVerificationCode(user);
+//        whatsAppService.sendVerificationCode(user);
 
         return user.getId().toString();
     }
